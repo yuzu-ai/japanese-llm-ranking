@@ -1,0 +1,11 @@
+{
+    "name": "stormy",
+    "system": "以下はタスクを説明する指示です。要求を適切に満たすような返答を書いてください。\n\n",
+    "roles": ["指示", "返答"],
+    "offset": 0,
+    "sep_style": "ADD_COLON_SINGLE",
+    "sep":"\n###",
+    "stop_str":"###"
+}
+
+
