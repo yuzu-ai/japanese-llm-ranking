@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "jrank"
+name = "japanese-llm-ranking"
 version = "0.0.1"
 description = "An open benchmarking suite for Japanese large language models."
 readme = "README.md"
@@ -23,8 +23,8 @@ dependencies = [
 dev = ["black==23.3.0", "pylint==2.8.2"]
 
 [project.urls]
-"Homepage" = "https://github.com/yuzuai/jrank"
-"Bug Tracker" = "https://github.com/yuzuai/jrank/issues"
+"Homepage" = "https://github.com/yuzuai/japanese-llm-ranking"
+"Bug Tracker" = "https://github.com/yuzuai/japanese-llm-ranking/issues"
 
 [tool.setuptools.packages.find]
 exclude = ["assets*", "benchmark*", "docs", "dist*", "playground*", "scripts*", "tests*"]
