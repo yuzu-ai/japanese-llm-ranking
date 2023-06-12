@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "jrank"
 version = "0.0.1"
-description = "An open platform for benchmarking and ranking Japanese large language models."
+description = "An open benchmarking suite for Japanese large language models."
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
