@@ -6,7 +6,7 @@ import random
 import os
 from tqdm import tqdm
 
-from eval_gpt_review import get_review
+from reviewer_gpt import get_review
 
 INITIAL_ELO = 1000
 K = 32 # Elo update constant
@@ -113,6 +113,7 @@ class EloRanker:
         self.challenges = load_jsonl(challenges_path)
         self.referee = referee
         self.verbose = verbose
+        self.tournament = []
 
     def update_elo(self, bot1: Bot, bot2: Bot, bot1points: int) -> int:
       
@@ -151,12 +152,30 @@ class EloRanker:
 
         score = result['score']
 
+        old_elo1 = bot1.elo 
+        old_elo2 = bot2.elo
+
         if score == 1:
             self.update_elo(bot1, bot2 , 1)
         elif score == 2:
             self.update_elo(bot1, bot2 , 0)
         elif score == 3:
             self.update_elo(bot1, bot2 , 0.5)
+
+        # Add the match details to the tournament history
+        self.tournament.append({
+            'bot1': bot1.name,
+            'bot2': bot2.name,
+            'prematch_elo1': old_elo1,
+            'prematch_elo2': old_elo2,
+            'challenge': challenge['text'],
+            'response1': response1['text'],
+            'response2': response2['text'],
+            'referee_comments': result['text'],
+            'result': result['score'],
+            'postmatch_elo1': bot1.elo,
+            'postmatch_elo2': bot2.elo
+        })
             
     def run_tournament(self, num_matchups):
 
@@ -169,8 +188,6 @@ class EloRanker:
         
         if self.verbose:
             print(f'Running a tournament of {num_matchups} matchups out of {max_matchups} total possible')
-            #print(f'(first {len(cached_results)} cached)')
-
 
         matchup = 0
         # Run cached result first
@@ -223,12 +240,24 @@ class EloRanker:
                     
         assert(round(total_elo,6) == len(self.bots) * INITIAL_ELO),f'Total ELO: {total_elo}, Expected: {len(self.bots) * INITIAL_ELO}'
 
+    def output_standings(self, output_file):
+        """Convert bots to JSON format and save to a file."""
+        sorted_bots = sorted(self.bots, key=lambda bot: bot.elo, reverse=True)
+        bot_list = [{'name': bot.name, 'elo': bot.elo, 'num_matches': bot.num_matches} for bot in sorted_bots]
+        save_jsonl(bot_list, output_file)
+        # json_output = json.dumps(bot_list)
+        # with open(output_file, 'w') as f:
+        #     f.write(json_output)
+
+    def output_tournament(self, output_file):
+        """Convert bots to JSON format and save to a file."""
+        save_jsonl(self.tournament, output_file)
 
 if __name__ == '__main__':
     bots = [
         Bot('GPT3', 'answers/rakuda_koukou_v0/gpt3.jsonl'),
         Bot('Rinna 3.6B', 'answers/rakuda_koukou_v0/rinna-gpt-neox-3.6b.jsonl'),
-        Bot('Llama Retoken', 'answers/rakuda_koukou_v0/llama_retoken_alpaca_gpt4.jsonl'),
+        #Bot('Llama Retoken', 'answers/rakuda_koukou_v0/llama_retoken_alpaca_gpt4.jsonl'),
         Bot('GPT4 Alpaca', 'answers/rakuda_koukou_v0/gpt4alpaca.jsonl'),
         Bot('OpenCalm-Stormy', 'answers/rakuda_koukou_v0/stormy.jsonl')
     ]
@@ -240,4 +269,7 @@ if __name__ == '__main__':
                       model='gpt-3.5-turbo-0301')
 
     ranker = EloRanker(bots, 'questions/rakuda_koukou_v0.jsonl', referee, verbose=True)
-    ranker.run_tournament(140)
+    ranker.run_tournament(150)
+
+    ranker.output_standings('tournaments/rakuda_koukou_v0_tournament_result.jsonl')    
+    ranker.output_tournament('tournaments/rakuda_koukou_v0_tournament.jsonl')
