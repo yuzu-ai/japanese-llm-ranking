@@ -40,7 +40,11 @@ class BaseAdapter:
         return True
 
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
-        tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
+        try:
+            tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
+        except ValueError:
+            tokenizer = AutoTokenizer.from_pretrained(model_path)
+            
         model = AutoModelForCausalLM.from_pretrained(
             model_path, low_cpu_mem_usage=True, **from_pretrained_kwargs
         )
@@ -65,6 +69,7 @@ def get_model_adapter(model_path: str) -> BaseAdapter:
     for adapter in model_adapters:
         if adapter.match(model_path):
             return adapter
+    # The following should never happen: the base adapter matches everything
     raise ValueError(f"No valid model adapter for {model_path}")
 
 
@@ -522,11 +527,12 @@ class RedPajamaINCITEAdapter(BaseAdapter):
     def get_default_conv_template(self, model_path: str) -> Conversation:
         return get_conv_template("redpajama-incite")
 
-class CalmAdapter(BaseAdapter):
-    """The model adapter for cyberagent/open-calm-7b and derivatives."""
+class StormyAdapter(BaseAdapter):
+    """The model adapter for the izumi-lab/stormy-7b-10ep LoRA 
+    for the cyberagent/open-calm-7b base model"""
 
     def match(self, model_path: str):
-        return "calm" in model_path.lower() or "stormy" in model_path.lower()
+        return "stormy" in model_path.lower()
 
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
         tokenizer = AutoTokenizer.from_pretrained(model_path)  # no use_fast=False
@@ -538,7 +544,7 @@ class CalmAdapter(BaseAdapter):
         return model, tokenizer
 
     def get_default_conv_template(self, model_path: str) -> Conversation:
-        return get_conv_template("redpajama-incite")
+        return get_conv_template("stormy")
 
 class H2OGPTAdapter(BaseAdapter):
     """The model adapter for h2oGPT."""
@@ -554,7 +560,7 @@ class H2OGPTAdapter(BaseAdapter):
 # The one registered earlier has a higher matching priority.
 register_model_adapter(VicunaAdapter)
 register_model_adapter(T5Adapter)
-register_model_adapter(CalmAdapter)
+register_model_adapter(StormyAdapter)
 register_model_adapter(KoalaAdapter)
 register_model_adapter(AlpacaAdapter)
 register_model_adapter(ChatGLMAdapter)

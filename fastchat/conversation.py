@@ -510,14 +510,19 @@ register_conv_template(
     )
 )
 
-
-# if __name__ == "__main__":
-#     conv = get_conv_template("vicuna_v1.1")
-#     conv.append_message(conv.roles[0], "Hello!")
-#     conv.append_message(conv.roles[1], "Hi!")
-#     conv.append_message(conv.roles[0], "How are you?")
-#     conv.append_message(conv.roles[1], None)
-#     print(conv.get_prompt())
+# Stormy default template
+register_conv_template(
+    Conversation(
+        name="stormy",
+        system="以下はタスクを説明する指示です。要求を適切に満たすような返答を書いてください。\n\n",
+        roles=("指示", "返答"),
+        messages=(),
+        offset=0,
+        sep_style=SeparatorStyle.ADD_COLON_SINGLE,
+        sep="\n###",
+        stop_str="###",
+    )
+)
 
 if __name__ == "__main__":
     conv = get_conv_template("vicuna_v1.1")
