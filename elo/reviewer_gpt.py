@@ -103,7 +103,6 @@ def gen_prompt(reviewer_jsons, prompt_jsons, cat, ques, ans1, ans2):
 def get_review(
     reviewers, prompts, question, answer1, answer2, max_tokens: int, model: str
 ):
-
     assert answer1["question_id"] == question["question_id"] == answer2["question_id"]
 
     sys_prompt, prompt, reviewer_id = gen_prompt(

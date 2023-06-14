@@ -35,7 +35,6 @@ model_adapters[-1] = FastTokenizerAvailableBaseAdapter()
 
 
 def get_conv_from_template_path(template_path):
-
     with open(template_path, "r") as file:
         config = json.load(file)
 
@@ -73,7 +72,6 @@ def get_model_answers(
     # just generate the prompts (for debug)
     generate_prompts: bool = False,
 ):
-
     question_jsons = load_jsonl(question_file)
 
     # model_path = os.path.expanduser(model_path)

@@ -162,7 +162,6 @@ class EloRanker:
         self.tournament = []
 
     def update_elo(self, bot1: Bot, bot2: Bot, bot1points: int) -> int:
-
         expected_bot1 = 1 / (1 + 10 ** ((bot2.elo - bot1.elo) / 400))
         expected_bot2 = 1 / (1 + 10 ** ((bot1.elo - bot2.elo) / 400))
 
@@ -177,7 +176,6 @@ class EloRanker:
         return int(bot1.elo), int(bot2.elo)
 
     def run_challenge(self, bot1, bot2, challenge, verbose=False):
-
         if verbose:
             print(f"{bot1.name} vs {bot2.name}")
             print(f'Question: {challenge["text"]}')
@@ -194,7 +192,6 @@ class EloRanker:
         result = self.referee.get_result(challenge, response1, response2)
 
         if verbose:
-
             print(f"Referee comments: {result['text']}")
             print(f"Winner: {[bot1.name, bot2.name, 'draw'][result['score']-1]}")
 
@@ -229,7 +226,6 @@ class EloRanker:
         )
 
     def run_tournament(self, num_matchups):
-
         cached_results = self.referee.cache
 
         max_matchups = len(self.bots) * (len(self.bots) - 1) * len(self.challenges) * 2
@@ -335,7 +331,11 @@ class EloRanker:
         if self.verbose:
             print("=== Final Standings ===")
             pd.options.display.float_format = "{:.0f}".format
-            print(self.standings[['model', 'elo', 'error_y_plus', 'error_y_minus', 'num_matches']])
+            print(
+                self.standings[
+                    ["model", "elo", "error_y_plus", "error_y_minus", "num_matches"]
+                ]
+            )
 
         assert (
             round(total_elo, 6) == len(self.bots) * INITIAL_ELO
