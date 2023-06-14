@@ -2,17 +2,9 @@ checkpoints
 changelog.md
 todo.md
 references
-elo/helper 
+elo/helper
 
-data/alpaca/translated_data
 out
-wandb
-jobs 
-*.bin
-obsolete
-slurm
-flagged
-
 *.err
 *.out
 
