@@ -120,6 +120,7 @@ def get_review(reviewers, prompts, question, answer1, answer2, max_tokens: int, 
     review_json = {
         "review_id": shortuuid.uuid(),
         "question_id": question['question_id'],
+        "question_text": question['text'],
         "answer1_id": answer1["answer_id"], 
         "answer2_id": answer2["answer_id"],
         "answer1": answer1['text'],

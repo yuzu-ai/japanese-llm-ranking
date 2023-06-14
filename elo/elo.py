@@ -3,8 +3,11 @@ from typing import Dict, List
 import random
 import os
 from utils import load_jsonl, save_jsonl
-
+from tqdm import tqdm
+import pandas as pd
 from reviewer_gpt import get_review
+import copy
+import numpy as np 
 
 INITIAL_ELO = 1000
 K = 32 # Elo update constant
@@ -76,9 +79,9 @@ class Referee:
     def save_cache(self, data: List[Dict], file_path: str):
         save_jsonl(data, file_path)
 
-    def get_result(self, bot1: Bot, bot2: Bot, challenge, response1, response2):
+    def get_result(self, challenge, response1, response2):
         # If a cached result exists, return it
-        cached_result =  next((item for item in self.cache if item["question_id"] == challenge['question_id'] and item["model1_id"] == bot1.model_id and item["model2_id"] == bot2.model_id), None)
+        cached_result =  next((item for item in self.cache if item["question_id"] == challenge['question_id'] and item["answer1_id"] == response1['answer_id'] and item["answer2_id"] == response2['answer_id']), None)
         if cached_result:
             return cached_result
 
@@ -114,9 +117,9 @@ class EloRanker:
 
         return int(bot1.elo), int(bot2.elo)
 
-    def run_challenge(self, bot1, bot2, challenge):
+    def run_challenge(self, bot1, bot2, challenge, verbose=False):
         
-        if self.verbose:
+        if verbose:
             print(f'{bot1.name} vs {bot2.name}')
             print(f'Question: {challenge["text"]}')
 
@@ -124,14 +127,14 @@ class EloRanker:
         response1 = bot1.get_response(challenge)
         response2 = bot2.get_response(challenge)
 
-        if self.verbose:
+        if verbose:
             print(f"{bot1.name}: {response1['text']}")
             print(f"{bot2.name}: {response2['text']}")
 
         # Get the result of the matchup
-        result = self.referee.get_result(bot1, bot2, challenge, response1, response2)
+        result = self.referee.get_result(challenge, response1, response2)
 
-        if self.verbose:
+        if verbose:
 
             print(f"Referee comments: {result['text']}")
             print(f"Winner: {[bot1.name, bot2.name, 'draw'][result['score']-1]}")
@@ -154,11 +157,12 @@ class EloRanker:
             'bot2': bot2.name,
             'prematch_elo1': old_elo1,
             'prematch_elo2': old_elo2,
-            'challenge': challenge['text'],
+            'question': challenge['text'],
+            'question_id': challenge['question_id'],
             'response1': response1['text'],
             'response2': response2['text'],
             'referee_comments': result['text'],
-            'result': result['score'],
+            'score': result['score'],
             'postmatch_elo1': bot1.elo,
             'postmatch_elo2': bot2.elo
         })
@@ -188,7 +192,7 @@ class EloRanker:
             else:
                 if self.verbose:
                     print(f'Matchup {matchup + 1}/{num_matchups}:')
-                self.run_challenge(bot1, bot2, challenge)
+                self.run_challenge(bot1, bot2, challenge, self.verbose)
                 matchup+=1
 
         
@@ -205,47 +209,84 @@ class EloRanker:
             # Select a random challenge
             challenge = random.choice(self.challenges)
 
-            # Check if the matchup has already been played
+            # Check if the matchup has already been played and if not run it
             cached_result =  next((item for item in cached_results if item["question_id"] == challenge['question_id'] and item["model1_id"] == bot1.model_id and item["model2_id"] == bot2.model_id), None)
             if not cached_result:
                 if self.verbose:
                     print(f'Matchup {matchup + 1}/{num_matchups}:')
-                self.run_challenge(bot1, bot2, challenge)
+                self.run_challenge(bot1, bot2, challenge, self.verbose)
                 matchup+=1
 
-
-        # Sort the bots by ELO rating in descending order
-        sorted_bots = sorted(self.bots, key=lambda bot: bot.elo, reverse=True)
-
-        # Calculate the total ELO and print the sorted bots
+        # Check total ELO
         total_elo = 0
-        for bot in sorted_bots:
-            if self.verbose:
-                print(f'{bot.name}: {bot.elo} (N={bot.num_matches})')
+        for bot in self.bots:
             total_elo += bot.elo
-                    
+        assert(round(total_elo,6) == len(self.bots) * INITIAL_ELO),f'Total ELO: {total_elo}, Expected: {len(self.bots) * INITIAL_ELO}'
+
+        # Compute the bootstrapped ELO
+        bootstrap_elos = self.compute_bootstrap_elos(1000)
+
+        # Construct the standings
+        sorted_bots = sorted(self.bots, key=lambda bot: bot.elo, reverse=True)
+        self.standings = pd.DataFrame([{'model': bot.name, 'elo': bot.elo, 'num_matches': bot.num_matches} for bot in sorted_bots]).merge(bootstrap_elos)
+
+        # Print the standings
+        if self.verbose:
+            print(f'=== Final Standings ===')
+            print(self.standings)
+
         assert(round(total_elo,6) == len(self.bots) * INITIAL_ELO),f'Total ELO: {total_elo}, Expected: {len(self.bots) * INITIAL_ELO}'
 
     def output_standings(self, output_file):
         """Convert bots to JSON format and save to a file."""
-        sorted_bots = sorted(self.bots, key=lambda bot: bot.elo, reverse=True)
-        bot_list = [{'name': bot.name, 'elo': bot.elo, 'num_matches': bot.num_matches} for bot in sorted_bots]
-        save_jsonl(bot_list, output_file)
-        # json_output = json.dumps(bot_list)
-        # with open(output_file, 'w') as f:
-        #     f.write(json_output)
+        save_jsonl(self.standings.to_dict(orient='records'), output_file)
 
     def output_tournament(self, output_file):
         """Convert bots to JSON format and save to a file."""
         save_jsonl(self.tournament, output_file)
 
+    def compute_bootstrap_elos(self, num_samples):
+        """Compute bootstrap confidence intervals"""
+        rows = []
+        for i in tqdm(range(num_samples), desc="bootstrap"):
+            bootstrapped_tournament = random.choices(self.tournament, k=len(self.tournament))
+            bootstrapped_bots = [copy.deepcopy(bot) for bot in self.bots]
+            for bot in bootstrapped_bots:
+                bot.elo = INITIAL_ELO
+        
+            for row in bootstrapped_tournament:
+                bot1 = next((item for item in bootstrapped_bots if item.name == row["bot1"]))
+                bot2 = next((item for item in bootstrapped_bots if item.name == row["bot2"]))
+                score = row['score']
+                if score == 1:
+                    self.update_elo(bot1, bot2 , 1)
+                elif score == 2:
+                    self.update_elo(bot1, bot2 , 0)
+                elif score == 3:
+                    self.update_elo(bot1, bot2 , 0.5)
+                else:
+                    raise ValueError(f'Invalid score: {score}')
+
+            rows.append({bot.name:bot.elo for bot in bootstrapped_bots})
+        df = pd.DataFrame(rows)
+        df = df[df.median().sort_values(ascending=False).index]
+
+        bootstrap_elo = pd.DataFrame(dict(
+            lower = df.quantile(.025),
+            median = df.quantile(.5),
+            upper = df.quantile(.975))).reset_index().rename(columns={"index": "model"}).sort_values("median", ascending=False)
+        bootstrap_elo['error_y'] = bootstrap_elo['upper'] - bootstrap_elo["median"]
+        bootstrap_elo['error_y_minus'] = bootstrap_elo['median'] - bootstrap_elo["lower"]
+        return bootstrap_elo
+    
 if __name__ == '__main__':
     bots = [
         Bot('GPT3', 'answers/rakuda_koukou_v0/gpt3.jsonl'),
-        Bot('Rinna 3.6B - PPO', 'answers/rakuda_koukou_v0/rinna-gpt-neox-3.6b.jsonl'),
-        #Bot('Llama Retoken', 'answers/rakuda_koukou_v0/llama_retoken_alpaca_gpt4.jsonl'),
-        #Bot('GPT4 Alpaca', 'answers/rakuda_koukou_v0/gpt4alpaca.jsonl'),
-        Bot('Open Calm 7B - Stormy', 'answers/rakuda_koukou_v0/stormy.jsonl')
+        Bot('Rinna 3.6B - PPO', 'answers/rakuda_koukou_v0/rinna-ppo.jsonl'),
+        Bot('Rinna 3.6B - SFTv2', 'answers/rakuda_koukou_v0/rinna-sft.jsonl'),
+        Bot('Rinna 3.6B', 'answers/rakuda_koukou_v0/rinna.jsonl'),
+        Bot('Open Calm 7B - Stormy', 'answers/rakuda_koukou_v0/stormy.jsonl'),
+        Bot('Open Calm 7B', 'answers/rakuda_koukou_v0/calm.jsonl')
     ]
 
     referee = Referee('matchups/rakuda_koukou_v0.jsonl',
@@ -255,7 +296,7 @@ if __name__ == '__main__':
                       model='gpt-3.5-turbo-0301')
 
     ranker = EloRanker(bots, 'questions/rakuda_koukou_v0.jsonl', referee, verbose=True)
-    ranker.run_tournament(150)
+    ranker.run_tournament(400)
 
     ranker.output_standings('tournaments/rakuda_koukou_v0_tournament_result.jsonl')    
     ranker.output_tournament('tournaments/rakuda_koukou_v0_tournament.jsonl')

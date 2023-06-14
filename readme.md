@@ -1,5 +1,3 @@
-## DO NOT MAKE THIS PUBLIC: it has my openai key in unobfuscated plaintext.
-
 # jrank: Leaderboard for Japanese LLMs 
 
 This repository supports YuzuAI's leaderboard of LLM performance in Japanese.
