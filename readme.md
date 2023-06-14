@@ -4,7 +4,7 @@ This repository supports YuzuAI's leaderboard of LLM performance in Japanese.
 
 # Machine-judged ELO scores
 
-Head to head performance of models on a standard prompt list, judged by GPT. Essentially a Japanese version of LMSYS' [Vicuna eval](https://lmsys.org/vicuna_eval/) and a step towards a [Japanese LLM Arena](https://lmsys.org/blog/2023-05-03-arena/). Built on [FastChat](https://github.com/lm-sys/FastChat).
+Head to head performance of models on a standard prompt list, judged by GPT. Essentially a Japanese version of LMSYS' [Vicuna eval](https://lmsys.org/vicuna_eval/) and a step towards a [Japanese LLM Arena](https://lmsys.org/blog/2023-05-03-arena/). Built using [FastChat](https://github.com/lm-sys/FastChat).
 
 # Benchmarks
 
@@ -12,13 +12,3 @@ Head to head performance of models on a standard prompt list, judged by GPT. Ess
 
 Model performance on general japanese reasoning benchmarks like JGLUE. Essentially a japanese version of the (HF LLM Leaderboard)[https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard]. Built on [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness).
 
-<!-- 
-# Machine-ELO
-
-    Head to head performance of models on a standard prompt list, as judged by other machine-learning models (namely gpt models)
-
-# ELO
-
-    A service to serve chatbots and get users to rate them
-    
- -->

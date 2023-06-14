@@ -5,29 +5,49 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "japanese-llm-ranking"
 version = "0.0.1"
+authors = [{name="Sam Passaglia"}]
 description = "An open benchmarking suite for Japanese large language models."
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
 ]
-dependencies = [
-    "accelerate", "fastapi", "gradio==3.34.0", "httpx", "markdown2[all]", "nh3", "numpy",
-    "prompt_toolkit>=3.0.0", "pydantic", "requests", "rich>=10.0.0", "sentencepiece",
-    "shortuuid", "shortuuid", "tiktoken", "tokenizers>=0.12.1", "torch",
-    "transformers>=4.29.0, "uvicorn", "wandb",
-]
-
-[project.optional-dependencies]
-dev = ["black==23.3.0", "pylint==2.8.2"]
 
 [project.urls]
 "Homepage" = "https://github.com/yuzuai/japanese-llm-ranking"
 "Bug Tracker" = "https://github.com/yuzuai/japanese-llm-ranking/issues"
 
-[tool.setuptools.packages.find]
-exclude = ["assets*", "benchmark*", "docs", "dist*", "playground*", "scripts*", "tests*"]
+dynamic = ["dependencies"]
 
-[tool.wheel]
-exclude = ["assets*", "benchmark*", "docs", "dist*", "playground*", "scripts*", "tests*"]
+# iSort
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+# virtual_env = "venv"
+
+# Black formatting
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+    /(
+      .eggs         # exclude a few common directories
+    | .git          # in the root of the project
+    | .hg
+    | .mypy_cache
+    | .tox
+    | venv
+    | data 
+    | jobs
+    | checkpoints
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+  '''
+
