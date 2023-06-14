@@ -17,8 +17,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import sys
 
-#openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_key = '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'
+openai.api_key = os.getenv("OPENAI_API_KEY")
 assert openai.api_key, 'Please set OPENAI_API_KEY environment variable'
 
 logging.basicConfig(level=logging.INFO)

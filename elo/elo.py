@@ -1,31 +1,17 @@
-import json
 import random
-from collections import defaultdict
 from typing import Dict, List
 import random
 import os
-from tqdm import tqdm
+from utils import load_jsonl, save_jsonl
 
 from reviewer_gpt import get_review
 
 INITIAL_ELO = 1000
 K = 32 # Elo update constant
 
-def load_jsonl(file_path: str) -> List[Dict]:
-    data = []
-    with open(file_path, 'r') as file:
-        for line in file:
-            data.append(json.loads(line))
-    return data
-
-def save_jsonl(data: List[Dict], file_path: str):
-    with open(file_path, 'w') as file:
-        for item in data:
-            file.write(json.dumps(item,ensure_ascii=False) + '\n')
-
 class Bot:
     def __init__(self, name: str, cache_path: str):
-        self.name = name
+        self.name = name # Name of the bot: does not matter
         self.elo = INITIAL_ELO
         self.cache_path = cache_path
         self.num_matches = 0
@@ -256,10 +242,10 @@ class EloRanker:
 if __name__ == '__main__':
     bots = [
         Bot('GPT3', 'answers/rakuda_koukou_v0/gpt3.jsonl'),
-        Bot('Rinna 3.6B', 'answers/rakuda_koukou_v0/rinna-gpt-neox-3.6b.jsonl'),
+        Bot('Rinna 3.6B - PPO', 'answers/rakuda_koukou_v0/rinna-gpt-neox-3.6b.jsonl'),
         #Bot('Llama Retoken', 'answers/rakuda_koukou_v0/llama_retoken_alpaca_gpt4.jsonl'),
-        Bot('GPT4 Alpaca', 'answers/rakuda_koukou_v0/gpt4alpaca.jsonl'),
-        Bot('OpenCalm-Stormy', 'answers/rakuda_koukou_v0/stormy.jsonl')
+        #Bot('GPT4 Alpaca', 'answers/rakuda_koukou_v0/gpt4alpaca.jsonl'),
+        Bot('Open Calm 7B - Stormy', 'answers/rakuda_koukou_v0/stormy.jsonl')
     ]
 
     referee = Referee('matchups/rakuda_koukou_v0.jsonl',

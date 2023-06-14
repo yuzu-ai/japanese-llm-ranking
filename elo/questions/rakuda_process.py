@@ -6,16 +6,13 @@ def process_txt_to_jsonl(input_file, output_file):
         question_id = 1
         for line in f_in:
             line = line.strip()  # remove leading/trailing white space
-            print(line)
             if line.startswith('#'):  # this is a category line
-                print(line)
-                category = line[1:].strip().strip('「」')  # remove '#' and leading/trailing white space
-                print(category)
+                category = line[1:].strip() # remove '#'
             elif line:  # this is a question line
                 data = {
                     'category': category,
                     'question_id': question_id,
-                    'text': line
+                    'text': line.strip().strip('「」') 
                 }
 
                 f_out.write(json.dumps(data, ensure_ascii=False) + '\n')

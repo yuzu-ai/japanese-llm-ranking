@@ -1,5 +1,5 @@
 {
-    "name": "llama gptsan retoken alpaca",
+    "name": "alpaca jp short style",
     "system": "",
     "roles": ["### 指示:", "### レスポンス:"],
     "offset": 0,

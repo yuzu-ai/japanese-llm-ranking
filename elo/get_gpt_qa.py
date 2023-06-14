@@ -10,22 +10,20 @@ import concurrent.futures
 import openai
 import tqdm
 import shortuuid
+from utils import save_jsonl, load_jsonl
 
-#openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_key = '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'
+openai.api_key = os.getenv("OPENAI_API_KEY")
 assert openai.api_key, 'Please set OPENAI_API_KEY environment variable'
 
-# MODEL="gpt-4"
-# MODEL_ID="gpt-4:20230520"
-
 MODEL = "gpt-3.5-turbo-0301"
-MODEL_ID = "gpt-3.5-turbo-0301:20230607"
+MODEL_ID = "gpt-3.5-turbo-0301:20230614"
 
 def get_answer(question_id: int, question: str, max_tokens: int):
     ans = {
         "answer_id": shortuuid.uuid(),
         "question_id": question_id,
         "model_id": MODEL_ID,
+        "metadata": {}
     }
     for _ in range(3):
         try:
@@ -61,20 +59,16 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    questions_dict = {}
-    with open(os.path.expanduser(args.question)) as f:
-        for line in f:
-            if not line:
-                continue
-            q = json.loads(line)
-            questions_dict[q["question_id"]] = q["text"]
+    questions = load_jsonl(os.path.expanduser(args.question))
 
+    print(questions)
+    
     answers = []
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
         futures = []
-        for qid, question in questions_dict.items():
-            future = executor.submit(get_answer, qid, question, args.max_tokens)
+        for question in questions:
+            future = executor.submit(get_answer, question['question_id'], question['text'], args.max_tokens)
             futures.append(future)
 
         for future in tqdm.tqdm(
@@ -84,6 +78,4 @@ if __name__ == "__main__":
 
     answers.sort(key=lambda x: x["question_id"])
 
-    with open(os.path.expanduser(args.output), "w") as f:
-        table = [json.dumps(ans, ensure_ascii=False) for ans in answers]
-        f.write("\n".join(table))
+    save_jsonl(answers, args.output)
