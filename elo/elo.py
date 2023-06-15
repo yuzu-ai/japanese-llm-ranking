@@ -433,7 +433,7 @@ class EloRanker:
 
 if __name__ == "__main__":
     bots = [
-        # Bot("GPT3", "answers/rakuda_koukou_v0/gpt3.jsonl"),
+        Bot("GPT3", "answers/rakuda_koukou_v0/gpt3.jsonl"),
         Bot("Rinna 3.6B - PPO", "answers/rakuda_koukou_v0/rinna-ppo.jsonl"),
         # Bot("Rinna 3.6B - SFTv2", "answers/rakuda_koukou_v0/rinna-sft.jsonl"),
         Bot("Rinna 3.6B", "answers/rakuda_koukou_v0/rinna.jsonl"),
@@ -450,7 +450,7 @@ if __name__ == "__main__":
     )
 
     ranker = EloRanker(bots, "questions/rakuda_koukou_v0.jsonl", referee, verbose=True)
-    ranker.run_tournament(960)
+    ranker.run_tournament(800)
 
     ranker.output_standings("tournaments/rakuda_koukou_v0_tournament_result.jsonl")
     ranker.output_tournament("tournaments/rakuda_koukou_v0_tournament.jsonl")
