@@ -3,14 +3,39 @@ import os
 import random
 from typing import Dict, List
 
+import numpy as np
 import pandas as pd
 from reviewer_gpt import get_review
 from tqdm import tqdm
 from utils import load_jsonl, save_jsonl
 
-INITIAL_ELO = 1000
-K = 32  # Elo update constant
+## Choose the fundamental parameters that control convergence rate
+BETA = 0.05 # Computed to be near optimal # Can be overwritten below if K is set explicitly
+ETA = -0.8  # Home field advantage parameter # Computed from observed win rates
 
+## Meaningless shift parameter
+INITIAL_ELO = 1000 # Commonly used
+#INITIAL_ELO = 0.0 # Easier to understand
+
+# Meaningless scale parameters
+BASE = 10. # Commonly used
+S = 400. # Commonly used
+
+# S = 1.0 # Some of the formulas in the literature assume this
+# BASE = np.e # Some of the formulas in the literature assume this
+
+# K scales the point exchange rate. 
+# In the literature it is viewed as a dependent parameter of BETA
+# For S=1 and BASE= np.e , K = BETA
+K = BETA * (S / np.log(BASE)) #
+
+# In common practice K is set directly and BETA is then the derived parameter
+# K = 32 # Commonly used in literature
+K = 10 # Computed to be near-optimal
+
+# If K set explicitly, the input value for BETA is overwritten
+if K != BETA * (S / np.log(BASE)):
+    BETA = K / (S / np.log(BASE))
 
 class Bot:
     def __init__(self, name: str, cache_path: str):
@@ -162,8 +187,8 @@ class EloRanker:
         self.tournament = []
 
     def update_elo(self, bot1: Bot, bot2: Bot, bot1points: int) -> int:
-        expected_bot1 = 1 / (1 + 10 ** ((bot2.elo - bot1.elo) / 400))
-        expected_bot2 = 1 / (1 + 10 ** ((bot1.elo - bot2.elo) / 400))
+        expected_bot1 = 1 / (1 + BASE ** ((bot2.elo - bot1.elo) / S  - ETA / np.log(BASE)))
+        expected_bot2 = 1 / (1 + BASE ** ((bot1.elo - bot2.elo ) / S + ETA / np.log(BASE)))
 
         assert round(expected_bot1 + expected_bot2, 6) == 1, 1 - (
             expected_bot1 + expected_bot2
@@ -227,6 +252,7 @@ class EloRanker:
 
     def run_tournament(self, num_matchups):
         cached_results = self.referee.cache
+        # random.shuffle(cached_results)
 
         max_matchups = len(self.bots) * (len(self.bots) - 1) * len(self.challenges) * 2
 
@@ -330,11 +356,14 @@ class EloRanker:
         # Print the standings
         if self.verbose:
             print("=== Final Standings ===")
-            pd.options.display.float_format = "{:.0f}".format
+            pd.options.display.float_format = "{:.3f}".format
             print(
                 self.standings[
                     ["model", "elo", "error_y_plus", "error_y_minus", "num_matches"]
                 ]
+            )
+            print(
+                f"BETA: {BETA}, K: {K}, INITIAL_ELO: {INITIAL_ELO}, BASE: {BASE}, S: {S}"
             )
 
         assert (
@@ -384,9 +413,11 @@ class EloRanker:
         bootstrap_elo = (
             pd.DataFrame(
                 dict(
-                    lower=df.quantile(0.025),
+                    # lower=df.quantile(0.025),
+                    lower=df.quantile(0.16),
                     median=df.quantile(0.5),
-                    upper=df.quantile(0.975),
+                    upper=df.quantile(0.84),
+                    # upper=df.quantile(0.975),
                 )
             )
             .reset_index()
@@ -402,9 +433,9 @@ class EloRanker:
 
 if __name__ == "__main__":
     bots = [
-        Bot("GPT3", "answers/rakuda_koukou_v0/gpt3.jsonl"),
+        # Bot("GPT3", "answers/rakuda_koukou_v0/gpt3.jsonl"),
         Bot("Rinna 3.6B - PPO", "answers/rakuda_koukou_v0/rinna-ppo.jsonl"),
-        Bot("Rinna 3.6B - SFTv2", "answers/rakuda_koukou_v0/rinna-sft.jsonl"),
+        # Bot("Rinna 3.6B - SFTv2", "answers/rakuda_koukou_v0/rinna-sft.jsonl"),
         Bot("Rinna 3.6B", "answers/rakuda_koukou_v0/rinna.jsonl"),
         Bot("Open Calm 7B - Stormy", "answers/rakuda_koukou_v0/stormy.jsonl"),
         Bot("Open Calm 7B", "answers/rakuda_koukou_v0/calm.jsonl"),
@@ -419,7 +450,7 @@ if __name__ == "__main__":
     )
 
     ranker = EloRanker(bots, "questions/rakuda_koukou_v0.jsonl", referee, verbose=True)
-    ranker.run_tournament(320)
+    ranker.run_tournament(960)
 
     ranker.output_standings("tournaments/rakuda_koukou_v0_tournament_result.jsonl")
     ranker.output_tournament("tournaments/rakuda_koukou_v0_tournament.jsonl")
