@@ -252,9 +252,9 @@ class EloRanker:
 
     def run_tournament(self, num_matchups):
         cached_results = self.referee.cache
-        # random.shuffle(cached_results)
+        random.shuffle(cached_results)
 
-        max_matchups = len(self.bots) * (len(self.bots) - 1) * len(self.challenges) * 2
+        max_matchups = len(self.bots) * (len(self.bots) - 1) * len(self.challenges)
 
         if num_matchups > max_matchups:
             num_matchups = max_matchups
