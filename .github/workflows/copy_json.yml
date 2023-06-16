@@ -13,7 +13,7 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v2
             - name: List elo score
-              run: ls elo/registery
+              run: ls 
             - name: Push to website repo
               uses: cpina/github-action-push-to-another-repository@main
               env:
