@@ -1,0 +1,16 @@
+name: Share Elo Score
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload json file
+        uses: actions/upload-artifact@v2
+        with:
+          name: elo-score
+          path: ./elo/registry/registry.jsonl
