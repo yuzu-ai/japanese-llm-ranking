@@ -20,7 +20,8 @@ jobs:
                 API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
               with:
                 source-directory: "elo"
-                destination-username: "yuzu-ai"
-                destination-repository: "public-website"
-                destination-directory: "src/app/config/elo_score.jsonl"
+                destination-github-username: "yuzu-ai"
+                destination-repository-name: "public-website"
+                destination-directory: "src/app/config/elo"
+                create-target-branch-if-needed: true
                 user-email: "yudataguy@gmail.com"
