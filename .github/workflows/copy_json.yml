@@ -16,8 +16,9 @@ jobs:
               run: cp elo/registry/registry.jsonl elo/elo_score.jsonl
             - name: Push to website repo
               uses: nkoppel/push-files-to-another-repository@v1.1.1
-              with:
+              env:
                 API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+              with:
                 source-files: "elo/elo_score.jsonl"
                 destination-username: "yudataguy"
                 destination-repository: "yuzu-ai/public-website"
