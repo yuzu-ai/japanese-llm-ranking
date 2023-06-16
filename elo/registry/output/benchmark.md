@@ -20,3 +20,5 @@ Elo ranking is a system for comparing the skill levels of models head to head. I
 | 3 | Open Calm 7B | 921 |
 | 4 | Rinna 3.6B - PPO | 913 |
 | 5 | Rinna 3.6B | 807 |
+
+Updated: 2023-06-16
