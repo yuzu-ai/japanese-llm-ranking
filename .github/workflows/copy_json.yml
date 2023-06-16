@@ -13,13 +13,13 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v2
             - name: List elo score
-              run: ls elo/registery
+              run: ls elo/registry
             - name: Push to website repo
               uses: cpina/github-action-push-to-another-repository@main
               env:
                 API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
               with:
-                source-directory: "./elo/registery"
+                source-directory: "elo/registry"
                 target-directory: "src/app/config/elo"
                 destination-github-username: "yuzu-ai"
                 destination-repository-name: "public-website"
