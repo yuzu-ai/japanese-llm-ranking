@@ -20,6 +20,6 @@ jobs:
                 API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
                 source-files: "elo/elo_score.jsonl"
                 destination-username: "yudataguy"
-                destination-repository: "https://github.com/yuzu-ai/public-website"
+                destination-repository: "yuzu-ai/public-website"
                 destination-directory: "src/app/config/elo_score.jsonl"
                 commit-email: "yudataguy@gmail.com"
