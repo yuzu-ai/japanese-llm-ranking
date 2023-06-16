@@ -19,7 +19,7 @@ jobs:
               env:
                 API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
               with:
-                source-directory: "elo/registery"
+                source-directory: "./elo/registery"
                 target-directory: "src/app/config/elo"
                 destination-github-username: "yuzu-ai"
                 destination-repository-name: "public-website"
