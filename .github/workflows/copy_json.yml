@@ -12,6 +12,8 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
+            - name: Copy elo score
+              run: cp -r elo/registery elo/registery
             - name: Push to website repo
               uses: cpina/github-action-push-to-another-repository@main
               env:
