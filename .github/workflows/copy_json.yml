@@ -1,0 +1,26 @@
+name: Share Elo Score
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    copy_elo_score:
+        name: Copy elo score to website repo
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+                uses: actions/checkout@v2
+            - name: Copy elo score
+                run: cp elo/registry/registry.jsonl elo/elo_score.jsonl
+            - name: Push to website repo
+                uses: nkoppel/push-files-to-another-repository@v1.1.1
+                with:
+                    API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+                    source-files: "elo/elo_score.jsonl"
+                    destination-username: "yudataguy"
+                    destination-repository: "https://github.com/yuzu-ai/public-website"
+                    destination-directory: "src/app/config/elo_score.jsonl"
+                    commit-email: "yudataguy@gmail.com"
+                run: cp elo_score.json webpage/

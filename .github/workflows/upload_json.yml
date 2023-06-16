@@ -14,3 +14,4 @@ jobs:
         with:
           name: elo-score
           path: elo/registry/registry.jsonl
+        if-no-files-found: error
