@@ -381,18 +381,19 @@ class EloRanker:
 
         standings_json = self.standings.to_dict(orient="records")
 
-        metadata = {
+        elo_metadata = {
             'BETA': BETA,
             'K': K,
             'INITIAL_ELO': INITIAL_ELO,
             'BASE': BASE,
             'S': S,
+            'ETA': ETA,
             'bootstrap_samples': BOOTSTRAP_SAMPLES,
         }
         
         output = {
             'date': datetime.now().isoformat(),
-            "elo_metadata": metadata,
+            "elo_metadata": elo_metadata,
             'rankings': standings_json,
         }
 
@@ -458,28 +459,28 @@ class EloRanker:
 
 if __name__ == "__main__":
     
-    # bots = [
-    #     Bot("GPT3", "answers/rakuda_koukou_v0/gpt3.jsonl"),
-    #     Bot("Rinna 3.6B - PPO", "answers/rakuda_koukou_v0/rinna-ppo.jsonl"),
-    #     # Bot("Rinna 3.6B - SFTv2", "answers/rakuda_koukou_v0/rinna-sft.jsonl"),
-    #     Bot("Rinna 3.6B", "answers/rakuda_koukou_v0/rinna.jsonl"),
-    #     Bot("Open Calm 7B - Stormy", "answers/rakuda_koukou_v0/stormy.jsonl"),
-    #     Bot("Open Calm 7B", "answers/rakuda_koukou_v0/calm.jsonl"),
-    # ]
+    bots = [
+        Bot("GPT3", "answers/rakuda_koukou_v0/gpt3.jsonl"),
+        Bot("Rinna 3.6B - PPO", "answers/rakuda_koukou_v0/rinna-ppo.jsonl"),
+        # Bot("Rinna 3.6B - SFTv2", "answers/rakuda_koukou_v0/rinna-sft.jsonl"),
+        Bot("Rinna 3.6B", "answers/rakuda_koukou_v0/rinna.jsonl"),
+        Bot("Open Calm 7B - Stormy", "answers/rakuda_koukou_v0/stormy.jsonl"),
+        Bot("Open Calm 7B", "answers/rakuda_koukou_v0/calm.jsonl"),
+    ]
 
-    # referee = Referee(
-    #     "matchups/rakuda_koukou_v0.jsonl",
-    #     "prompts/rakuda_reviewer.jsonl",
-    #     "prompts/rakuda_prompt_threeclass.jsonl",
-    #     max_tokens=1024,
-    #     model="gpt-3.5-turbo-0301",
-    # )
+    referee = Referee(
+        "matchups/rakuda_koukou_v0.jsonl",
+        "prompts/rakuda_reviewer.jsonl",
+        "prompts/rakuda_prompt_threeclass.jsonl",
+        max_tokens=1024,
+        model="gpt-3.5-turbo-0301",
+    )
 
-    # ranker = EloRanker(bots, "questions/rakuda_koukou_v0.jsonl", referee, verbose=True)
-    # ranker.run_tournament(800)
+    ranker = EloRanker(bots, "questions/rakuda_koukou_v0.jsonl", referee, verbose=True)
+    ranker.run_tournament(800)
 
-    # ranker.output_standings("tournaments/rakuda_koukou_v0_tournament_result.json")
-    # ranker.output_tournament("tournaments/rakuda_koukou_v0_tournament.jsonl")
+    ranker.output_standings("tournaments/rakuda_koukou_v0_tournament_result.json")
+    ranker.output_tournament("tournaments/rakuda_koukou_v0_tournament.jsonl")
 
     registry = StandingsRegistry('./registry/registry.jsonl')
     registry.register('tournaments/rakuda_koukou_v0_tournament_result.json')
