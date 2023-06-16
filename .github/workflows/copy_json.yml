@@ -12,16 +12,14 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
-            - name: Copy elo score
-              run: cp elo/registry/registry.jsonl elo/elo_score.jsonl
             - name: Push to website repo
               uses: cpina/github-action-push-to-another-repository@main
               env:
                 API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
               with:
-                source-directory: "elo"
+                source-directory: "elo/registery"
+                target-directory: "src/app/config/elo"
                 destination-github-username: "yuzu-ai"
                 destination-repository-name: "public-website"
-                destination-directory: "src/app/config/elo"
                 create-target-branch-if-needed: true
                 user-email: "yudataguy@gmail.com"
