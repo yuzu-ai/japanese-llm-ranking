@@ -15,12 +15,12 @@ jobs:
             - name: Copy elo score
               run: cp elo/registry/registry.jsonl elo/elo_score.jsonl
             - name: Push to website repo
-              uses: nkoppel/push-files-to-another-repository@v1.1.1
+              uses: cpina/github-action-push-to-another-repository@main
               env:
                 API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
               with:
-                source-files: "elo/elo_score.jsonl"
-                destination-username: yuzu-ai"
-                destination-repository: "yuzu-ai/public-website"
+                source-directory: "elo"
+                destination-username: "yuzu-ai"
+                destination-repository: "public-website"
                 destination-directory: "src/app/config/elo_score.jsonl"
-                commit-email: "yudataguy@gmail.com"
+                user-email: "yudataguy@gmail.com"
