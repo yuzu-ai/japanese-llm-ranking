@@ -13,28 +13,28 @@ from registry import StandingsRegistry
 from datetime import datetime
 
 ## Choose the fundamental parameters that control convergence rate
-BETA = 0.05 # Computed to be near optimal # Can be overwritten below if K is set explicitly
+BETA = 0.05  # Computed to be near optimal # Can be overwritten below if K is set explicitly
 ETA = -0.8  # Home field advantage parameter # Computed from observed win rates
 
 ## Meaningless shift parameter
-INITIAL_ELO = 1000 # Commonly used
-#INITIAL_ELO = 0.0 # Easier to understand
+INITIAL_ELO = 1000  # Commonly used
+# INITIAL_ELO = 0.0 # Easier to understand
 
 # Meaningless scale parameters
-BASE = 10. # Commonly used
-S = 400. # Commonly used
+BASE = 10.0  # Commonly used
+S = 400.0  # Commonly used
 
 # S = 1.0 # Some of the formulas in the literature assume this
 # BASE = np.e # Some of the formulas in the literature assume this
 
-# K scales the point exchange rate. 
+# K scales the point exchange rate.
 # In the literature it is viewed as a dependent parameter of BETA
 # For S=1 and BASE= np.e , K = BETA
-K = BETA * (S / np.log(BASE)) #
+K = BETA * (S / np.log(BASE))  #
 
 # In common practice K is set directly and BETA is then the derived parameter
 # K = 32 # Commonly used in literature
-K = 10 # Computed to be near-optimal
+K = 10  # Computed to be near-optimal
 
 # If K set explicitly, the input value for BETA is overwritten
 if K != BETA * (S / np.log(BASE)):
@@ -42,6 +42,7 @@ if K != BETA * (S / np.log(BASE)):
 
 # We use bootstrap for the error estimate
 BOOTSTRAP_SAMPLES = 10000
+
 
 class Bot:
     def __init__(self, name: str, cache_path: str):
@@ -193,8 +194,12 @@ class EloRanker:
         self.tournament = []
 
     def update_elo(self, bot1: Bot, bot2: Bot, bot1points: int) -> int:
-        expected_bot1 = 1 / (1 + BASE ** ((bot2.elo - bot1.elo) / S  - ETA / np.log(BASE)))
-        expected_bot2 = 1 / (1 + BASE ** ((bot1.elo - bot2.elo ) / S + ETA / np.log(BASE)))
+        expected_bot1 = 1 / (
+            1 + BASE ** ((bot2.elo - bot1.elo) / S - ETA / np.log(BASE))
+        )
+        expected_bot2 = 1 / (
+            1 + BASE ** ((bot1.elo - bot2.elo) / S + ETA / np.log(BASE))
+        )
 
         assert round(expected_bot1 + expected_bot2, 6) == 1, 1 - (
             expected_bot1 + expected_bot2
@@ -382,22 +387,22 @@ class EloRanker:
         standings_json = self.standings.to_dict(orient="records")
 
         elo_metadata = {
-            'BETA': BETA,
-            'K': K,
-            'INITIAL_ELO': INITIAL_ELO,
-            'BASE': BASE,
-            'S': S,
-            'ETA': ETA,
-            'bootstrap_samples': BOOTSTRAP_SAMPLES,
-        }
-        
-        output = {
-            'date': datetime.now().isoformat(),
-            "elo_metadata": elo_metadata,
-            'rankings': standings_json,
+            "BETA": BETA,
+            "K": K,
+            "INITIAL_ELO": INITIAL_ELO,
+            "BASE": BASE,
+            "S": S,
+            "ETA": ETA,
+            "bootstrap_samples": BOOTSTRAP_SAMPLES,
         }
 
-        with open(output_file, 'w',  encoding='utf-8') as f:
+        output = {
+            "date": datetime.now().isoformat(),
+            "elo_metadata": elo_metadata,
+            "rankings": standings_json,
+        }
+
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump(output, f, ensure_ascii=False, indent=4)
 
     def output_tournament(self, output_file):
@@ -458,7 +463,6 @@ class EloRanker:
 
 
 if __name__ == "__main__":
-    
     bots = [
         Bot("GPT3", "answers/rakuda_koukou_v0/gpt3.jsonl"),
         Bot("Rinna 3.6B - PPO", "answers/rakuda_koukou_v0/rinna-ppo.jsonl"),
@@ -482,5 +486,8 @@ if __name__ == "__main__":
     ranker.output_standings("tournaments/rakuda_koukou_v0_tournament_result.json")
     ranker.output_tournament("tournaments/rakuda_koukou_v0_tournament.jsonl")
 
-    registry = StandingsRegistry('./registry/registry.jsonl')
-    registry.register('tournaments/rakuda_koukou_v0_tournament_result.json')
+    registry = StandingsRegistry("./registry/registry.jsonl")
+    registry.register("tournaments/rakuda_koukou_v0_tournament_result.json")
+    registry.convert_to_markdown(
+        "./registry/benchmark_template.md", "./registry/output/benchmark.md"
+    )
