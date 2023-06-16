@@ -6,7 +6,6 @@ def load_jsonl(file_path: str) -> List[Dict]:
     data = []
     with open(file_path, "r") as file:
         for line in file:
-            print(line)
             data.append(json.loads(line))
     return data
 

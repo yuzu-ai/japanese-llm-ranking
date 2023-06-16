@@ -8,6 +8,9 @@ import pandas as pd
 from reviewer_gpt import get_review
 from tqdm import tqdm
 from utils import load_jsonl, save_jsonl
+import json
+from registry import StandingsRegistry
+from datetime import datetime
 
 ## Choose the fundamental parameters that control convergence rate
 BETA = 0.05 # Computed to be near optimal # Can be overwritten below if K is set explicitly
@@ -36,6 +39,9 @@ K = 10 # Computed to be near-optimal
 # If K set explicitly, the input value for BETA is overwritten
 if K != BETA * (S / np.log(BASE)):
     BETA = K / (S / np.log(BASE))
+
+# We use bootstrap for the error estimate
+BOOTSTRAP_SAMPLES = 10000
 
 class Bot:
     def __init__(self, name: str, cache_path: str):
@@ -342,7 +348,7 @@ class EloRanker:
         ), f"Total ELO: {total_elo}, Expected: {len(self.bots) * INITIAL_ELO}"
 
         # Compute the bootstrapped ELO
-        bootstrap_elos = self.compute_bootstrap_elos(10000)
+        bootstrap_elos = self.compute_bootstrap_elos(BOOTSTRAP_SAMPLES)
 
         # Construct the standings
         sorted_bots = sorted(self.bots, key=lambda bot: bot.elo, reverse=True)
@@ -372,7 +378,26 @@ class EloRanker:
 
     def output_standings(self, output_file):
         """Convert bots to JSON format and save to a file."""
-        save_jsonl(self.standings.to_dict(orient="records"), output_file)
+
+        standings_json = self.standings.to_dict(orient="records")
+
+        metadata = {
+            'BETA': BETA,
+            'K': K,
+            'INITIAL_ELO': INITIAL_ELO,
+            'BASE': BASE,
+            'S': S,
+            'bootstrap_samples': BOOTSTRAP_SAMPLES,
+        }
+        
+        output = {
+            'date': datetime.now().isoformat(),
+            "elo_metadata": metadata,
+            'rankings': standings_json,
+        }
+
+        with open(output_file, 'w',  encoding='utf-8') as f:
+            json.dump(output, f, ensure_ascii=False, indent=4)
 
     def output_tournament(self, output_file):
         """Convert bots to JSON format and save to a file."""
@@ -432,25 +457,29 @@ class EloRanker:
 
 
 if __name__ == "__main__":
-    bots = [
-        Bot("GPT3", "answers/rakuda_koukou_v0/gpt3.jsonl"),
-        Bot("Rinna 3.6B - PPO", "answers/rakuda_koukou_v0/rinna-ppo.jsonl"),
-        # Bot("Rinna 3.6B - SFTv2", "answers/rakuda_koukou_v0/rinna-sft.jsonl"),
-        Bot("Rinna 3.6B", "answers/rakuda_koukou_v0/rinna.jsonl"),
-        Bot("Open Calm 7B - Stormy", "answers/rakuda_koukou_v0/stormy.jsonl"),
-        Bot("Open Calm 7B", "answers/rakuda_koukou_v0/calm.jsonl"),
-    ]
+    
+    # bots = [
+    #     Bot("GPT3", "answers/rakuda_koukou_v0/gpt3.jsonl"),
+    #     Bot("Rinna 3.6B - PPO", "answers/rakuda_koukou_v0/rinna-ppo.jsonl"),
+    #     # Bot("Rinna 3.6B - SFTv2", "answers/rakuda_koukou_v0/rinna-sft.jsonl"),
+    #     Bot("Rinna 3.6B", "answers/rakuda_koukou_v0/rinna.jsonl"),
+    #     Bot("Open Calm 7B - Stormy", "answers/rakuda_koukou_v0/stormy.jsonl"),
+    #     Bot("Open Calm 7B", "answers/rakuda_koukou_v0/calm.jsonl"),
+    # ]
 
-    referee = Referee(
-        "matchups/rakuda_koukou_v0.jsonl",
-        "prompts/rakuda_reviewer.jsonl",
-        "prompts/rakuda_prompt_threeclass.jsonl",
-        max_tokens=1024,
-        model="gpt-3.5-turbo-0301",
-    )
+    # referee = Referee(
+    #     "matchups/rakuda_koukou_v0.jsonl",
+    #     "prompts/rakuda_reviewer.jsonl",
+    #     "prompts/rakuda_prompt_threeclass.jsonl",
+    #     max_tokens=1024,
+    #     model="gpt-3.5-turbo-0301",
+    # )
 
-    ranker = EloRanker(bots, "questions/rakuda_koukou_v0.jsonl", referee, verbose=True)
-    ranker.run_tournament(800)
+    # ranker = EloRanker(bots, "questions/rakuda_koukou_v0.jsonl", referee, verbose=True)
+    # ranker.run_tournament(800)
 
-    ranker.output_standings("tournaments/rakuda_koukou_v0_tournament_result.jsonl")
-    ranker.output_tournament("tournaments/rakuda_koukou_v0_tournament.jsonl")
+    # ranker.output_standings("tournaments/rakuda_koukou_v0_tournament_result.json")
+    # ranker.output_tournament("tournaments/rakuda_koukou_v0_tournament.jsonl")
+
+    registry = StandingsRegistry('./registry/registry.jsonl')
+    registry.register('tournaments/rakuda_koukou_v0_tournament_result.json')
