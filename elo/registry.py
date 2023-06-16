@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 from utils import save_jsonl, load_jsonl
 
 class StandingsRegistry:
@@ -36,6 +37,9 @@ class StandingsRegistry:
 
         lines.pop()
         lines.append(table)
+
+        lines.append("\n")
+        lines.append(f"Updated: {datetime.fromisoformat(data['date']).date()}")
 
         with open(markdown_file, "w") as file:
             file.writelines(lines)
