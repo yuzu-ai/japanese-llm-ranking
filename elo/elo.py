@@ -488,6 +488,3 @@ if __name__ == "__main__":
 
     registry = StandingsRegistry("./registry/registry.jsonl")
     registry.register("tournaments/rakuda_koukou_v0_tournament_result.json")
-    registry.convert_to_markdown(
-        "./registry/benchmark_template.md", "./registry/output/benchmark.md"
-    )
