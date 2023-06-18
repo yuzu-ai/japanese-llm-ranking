@@ -1,0 +1,25 @@
+name: Share Elo Score
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    copy-elo-benchmark-file:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+  
+      - name: Copy elo benchmark file
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: 'elo/registry/output/benchmark.md'
+          destination_repo: 'yuzu-ai/public-website'
+          destination_folder: 'src/content/pages'
+          user_email: 'yudataguy@gmail.com'
+          user_name: 'yudataguy'
+          commit_message: 'Update elo score'
