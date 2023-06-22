@@ -17,7 +17,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: "elo/registry/registry.jsonl"
+          source_file: "jrank/registry/registry.jsonl"
           destination_repo: "yuzu-ai/public-website"
           destination_folder: "src/content/pages"
           user_email: "yudataguy@gmail.com"
