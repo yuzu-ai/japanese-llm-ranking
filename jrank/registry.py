@@ -1,9 +1,7 @@
 import json
 import os
-from datetime import datetime
 
 from utils import load_jsonl, save_jsonl
-
 
 
 class StandingsRegistry:
