@@ -14,7 +14,7 @@ conda activate jrank
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
 export CUDA_VISIBLE_DEVICES=2
 
-EVAL_DIR=/home/passaglia/projects/jrank/elo
+EVAL_DIR=/home/passaglia/projects/jrank/jrank
 CHECKPOINT_DIR=/home/passaglia/projects/llama-retoken/checkpoints
 
 LORA_DIR=$CHECKPOINT_DIR/opencalm7b-alpaca-colab-4400
