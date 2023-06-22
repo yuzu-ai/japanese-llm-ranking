@@ -5,6 +5,7 @@ from datetime import datetime
 from utils import load_jsonl, save_jsonl
 
 
+
 class StandingsRegistry:
     def __init__(self, registry_file):
         self.registry_file = registry_file
@@ -25,25 +26,3 @@ class StandingsRegistry:
 
     def get_registry(self):
         return self.registry_data
-
-    def convert_to_markdown(self, template_file, markdown_file):
-        data = self.registry_data[-1]
-
-        rankings = sorted(data["ranking"], key=lambda x: x["mle"], reverse=True)
-        table = "| Rank # | Model | Strength |\n| --- | --- | --- |\n"
-        for i, rank in enumerate(rankings):
-            table += f"| {i+1} | {rank['model_id']} | {int(rank['mle'])} |\n"
-
-        with open(template_file, "r") as f:
-            lines = f.readlines()
-
-        lines.pop()
-        lines.append(table)
-
-        lines.append("\n")
-        lines.append(f"Updated: {datetime.fromisoformat(data['date']).date()}")
-
-        with open(markdown_file, "w") as file:
-            file.writelines(lines)
-
-        print("Converted elo ranking to markdown table")

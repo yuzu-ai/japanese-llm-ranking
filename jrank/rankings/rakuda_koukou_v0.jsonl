@@ -1,0 +1,72 @@
+{
+    "date": "2023-06-22T16:52:13.780100",
+    "model_metadata": {
+        "gpt-3.5-turbo-0301:20230614": {
+            "model_id": "gpt-3.5-turbo-0301:20230614",
+            "path": "answers/rakuda_koukou_v0/gpt3.jsonl"
+        },
+        "rinna/japanese-gpt-neox-3.6b-instruction-ppo": {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-ppo",
+            "path": "answers/rakuda_koukou_v0/rinna-ppo.jsonl"
+        },
+        "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2": {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2",
+            "path": "answers/rakuda_koukou_v0/rinna-sft.jsonl"
+        },
+        "rinna/japanese-gpt-neox-3.6b": {
+            "model_id": "rinna/japanese-gpt-neox-3.6b",
+            "path": "answers/rakuda_koukou_v0/rinna.jsonl"
+        },
+        "open-calm-7b-stormy": {
+            "model_id": "open-calm-7b-stormy",
+            "path": "answers/rakuda_koukou_v0/stormy.jsonl"
+        },
+        "open-calm-7b": {
+            "model_id": "open-calm-7b",
+            "path": "answers/rakuda_koukou_v0/calm.jsonl"
+        }
+    },
+    "metadata": {
+        "questions_path": "questions/rakuda_koukou_v0.jsonl",
+        "reviewer_path": "prompts/rakuda_reviewer.jsonl",
+        "prompt_path": "prompts/rakuda_prompt.jsonl"
+    },
+    "ranking": [
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b",
+            "mle": -0.27741656002894804,
+            "one_sigma_down": 0.146786461976172,
+            "one_sigma_up": 0.14822998020562822
+        },
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2",
+            "mle": -0.23757918485821225,
+            "one_sigma_down": 0.14886403322720793,
+            "one_sigma_up": 0.14833933106387043
+        },
+        {
+            "model_id": "open-calm-7b-stormy",
+            "mle": -0.20777039053304802,
+            "one_sigma_down": 0.1504733486437113,
+            "one_sigma_up": 0.14865917840841675
+        },
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-ppo",
+            "mle": -0.17305702887904845,
+            "one_sigma_down": 0.1465693529529203,
+            "one_sigma_up": 0.1490068034623909
+        },
+        {
+            "model_id": "open-calm-7b",
+            "mle": 0.024581521375165442,
+            "one_sigma_down": 0.14972538041296546,
+            "one_sigma_up": 0.1482815035176448
+        },
+        {
+            "model_id": "gpt-3.5-turbo-0301:20230614",
+            "mle": 0.8714263922287433,
+            "one_sigma_down": 0.15443202431862468,
+            "one_sigma_up": 0.152824408339572
+        }
+    ]
+}
