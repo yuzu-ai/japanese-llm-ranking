@@ -15,13 +15,13 @@ conda activate jrank
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
 export CUDA_VISIBLE_DEVICES=4
 
-EVAL_DIR=/home/passaglia/projects/jrank/elo
+EVAL_DIR=/home/passaglia/projects/jrank/jrank
 
 OUTPUT_DIR=$EVAL_DIR
 
 python $EVAL_DIR/eval_gpt_review.py \
  -q $EVAL_DIR/questions/rakuda_koukou_v0.jsonl \
- -p $EVAL_DIR/prompts/rakuda_prompt_threeclass.jsonl \
+ -p $EVAL_DIR/prompts/rakuda_prompt.jsonl \
  -r $EVAL_DIR/prompts/rakuda_reviewer.jsonl \
  -a $EVAL_DIR/answers/rakuda_koukou_v0/gpt3.jsonl $EVAL_DIR/answers/rakuda_koukou_v0/rinna-gpt-neox-3.6b.jsonl \
  -o $EVAL_DIR/matchups/rakuda_koukou_v0 \

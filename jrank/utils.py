@@ -10,7 +10,7 @@ def load_jsonl(file_path: str) -> List[Dict]:
     return data
 
 
-def save_jsonl(data: List[Dict], file_path: str):
-    with open(file_path, "w") as file:
+def save_jsonl(data: List[Dict], file_path: str, write_flag: str = "w"):
+    with open(file_path, write_flag) as file:
         for item in data:
             file.write(json.dumps(item, ensure_ascii=False) + "\n")

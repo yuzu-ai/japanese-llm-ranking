@@ -50,10 +50,9 @@ def get_eval(sys_prompt, user_prompt: str, max_tokens: int, model: str):
 
 def parse_three_class_score(review):
     try:
-        # score = int(review.strip().split("\n")[-1].strip())
-
         matches = re.findall("\d", review)
         score = int(matches[-1])
+        assert score in [1, 2, 3]
 
         return score
 
@@ -101,10 +100,16 @@ def gen_prompt(reviewer_jsons, prompt_jsons, cat, ques, ans1, ans2):
 
 
 def get_review(
-    reviewers, prompts, question, answer1, answer2, max_tokens: int, model: str
+    reviewers,
+    prompts,
+    question,
+    answer1,
+    answer2,
+    model: str,
+    max_tokens: int = None,
 ):
     assert answer1["question_id"] == question["question_id"] == answer2["question_id"]
-
+    time.sleep(REQ_TIME_GAP)
     sys_prompt, prompt, reviewer_id = gen_prompt(
         reviewers,
         prompts,
@@ -113,6 +118,9 @@ def get_review(
         answer1["text"],
         answer2["text"],
     )
+
+    if not max_tokens:
+        max_tokens = reviewers[reviewer_id - 1]["metadata"]["max_tokens"]
 
     review = get_eval(sys_prompt, prompt, max_tokens, model)
 

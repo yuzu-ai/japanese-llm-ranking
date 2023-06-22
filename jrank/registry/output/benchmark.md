@@ -13,12 +13,13 @@ Elo ranking is a system for comparing the skill levels of models head to head. I
 
 ### Rankings
 
-| Rank # | Model | Elo |
+| Rank # | Model | Strength |
 | --- | --- | --- |
-| 1 | GPT3 | 1413 |
-| 2 | Open Calm 7B - Stormy | 945 |
-| 3 | Open Calm 7B | 921 |
-| 4 | Rinna 3.6B - PPO | 913 |
-| 5 | Rinna 3.6B | 807 |
+| 1 | gpt-3.5-turbo-0301:20230614 | 0 |
+| 2 | cyberagent/open-calm-7b | 0 |
+| 3 | rinna/japanese-gpt-neox-3.6b-instruction-ppo | 0 |
+| 4 | izumi-lab/stormy-7b-10ep | 0 |
+| 5 | rinna/japanese-gpt-neox-3.6b-instruction-sft-v2 | 0 |
+| 6 | rinna/japanese-gpt-neox-3.6b | 0 |
 
-Updated: 2023-06-16
+Updated: 2023-06-22
