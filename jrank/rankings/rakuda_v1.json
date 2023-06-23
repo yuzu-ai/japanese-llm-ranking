@@ -1,0 +1,72 @@
+{
+    "date": "2023-06-23T21:20:43.775661",
+    "model_metadata": {
+        "gpt-3.5-turbo-0301:20230614": {
+            "model_id": "gpt-3.5-turbo-0301:20230614",
+            "path": "answers/rakuda_v1/gpt3.jsonl"
+        },
+        "rinna/japanese-gpt-neox-3.6b-instruction-ppo": {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-ppo",
+            "path": "answers/rakuda_v1/rinna-ppo.jsonl"
+        },
+        "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2": {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2",
+            "path": "answers/rakuda_v1/rinna-sft.jsonl"
+        },
+        "rinna/japanese-gpt-neox-3.6b": {
+            "model_id": "rinna/japanese-gpt-neox-3.6b",
+            "path": "answers/rakuda_v1/rinna.jsonl"
+        },
+        "izumi-lab/stormy-7b-10ep": {
+            "model_id": "izumi-lab/stormy-7b-10ep",
+            "path": "answers/rakuda_v1/stormy.jsonl"
+        },
+        "cyberagent/open-calm-7b": {
+            "model_id": "cyberagent/open-calm-7b",
+            "path": "answers/rakuda_v1/calm.jsonl"
+        }
+    },
+    "metadata": {
+        "questions_path": "questions/rakuda_v1.jsonl",
+        "reviewer_path": "prompts/rakuda_reviewer.jsonl",
+        "prompt_path": "prompts/rakuda_prompt.jsonl"
+    },
+    "ranking": [
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b",
+            "mle": -0.2793585270335402,
+            "one_sigma_down": 0.14882114996154694,
+            "one_sigma_up": 0.1489250511855054
+        },
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2",
+            "mle": -0.24924616833032157,
+            "one_sigma_down": 0.15083382350888025,
+            "one_sigma_up": 0.14876609925977802
+        },
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-ppo",
+            "mle": -0.20418973725382156,
+            "one_sigma_down": 0.15004212102033165,
+            "one_sigma_up": 0.149844583097325
+        },
+        {
+            "model_id": "izumi-lab/stormy-7b-10ep",
+            "mle": -0.14926894028344173,
+            "one_sigma_down": 0.1468283101702225,
+            "one_sigma_up": 0.1473414423322572
+        },
+        {
+            "model_id": "cyberagent/open-calm-7b",
+            "mle": 0.009992151273789841,
+            "one_sigma_down": 0.1485944588017261,
+            "one_sigma_up": 0.14911601293388774
+        },
+        {
+            "model_id": "gpt-3.5-turbo-0301:20230614",
+            "mle": 0.8719689096442886,
+            "one_sigma_down": 0.1535473552727178,
+            "one_sigma_up": 0.1547529818632365
+        }
+    ]
+}

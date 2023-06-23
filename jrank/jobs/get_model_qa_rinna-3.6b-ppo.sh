@@ -1,5 +1,5 @@
 #!/bin/bash 
-#SBATCH --job-name=qa_rinna
+#SBATCH --job-name=qa_rinna_ppo
 #SBATCH --account=passaglia
 #SBATCH --time=2-00:00:00
 #SBATCH --gres=gpu:1
@@ -22,8 +22,8 @@ python $EVAL_DIR/get_model_qa.py \
     --model_path rinna/japanese-gpt-neox-3.6b-instruction-ppo \
     --conv_template $EVAL_DIR/templates/rinna.json \
     --model_id rinna/japanese-gpt-neox-3.6b-instruction-ppo \
-    --question_file $EVAL_DIR/questions/rakuda_koukou_v0.jsonl \
-    --answer_file $EVAL_DIR/answers/rakuda_koukou_v0/rinna-ppo.jsonl \
+    --question_file $EVAL_DIR/questions/rakuda_v1.jsonl \
+    --answer_file $EVAL_DIR/answers/rakuda_v1/rinna-ppo.jsonl \
     --load_8bit False \
     --max_new_tokens 256 \
     --repetition_penalty 1.1 > $OUTPUTS_DIR/rinna-ppo.out 2> $OUTPUTS_DIR/rinna-ppo.err

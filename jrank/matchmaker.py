@@ -2,7 +2,7 @@ import json
 import os
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from itertools import combinations
+from itertools import permutations
 from typing import Dict, List, Tuple
 
 from reviewer_gpt import get_review
@@ -52,6 +52,8 @@ class Referee:
         # Load cache if exists; else create an empty cache file
         self.cache = self.load_cache() if os.path.isfile(self.cache_path) else {}
 
+        print(len(self.cache))
+
     def load_cache(self) -> Dict:
         cache = load_jsonl(self.cache_path)
 
@@ -97,10 +99,13 @@ class MatchMaker:
         self.matches = []
 
     def _get_result(self, match) -> dict:
-        bot1_id, bot2_id, question = match
+        bot1_id, bot2_id, question_id = match
 
         bot1 = self.bots[bot1_id]
         bot2 = self.bots[bot2_id]
+
+        # Get the question
+        question = next( q for q in self.questions if q["question_id"] == question_id)
 
         # Get the cached responses of the bots for the question
         response1 = bot1.get_response(question["question_id"])
@@ -144,21 +149,24 @@ class MatchMaker:
             bot2_id = next(
                 key for key in self.bots.keys() if key == result["model2_id"]
             )
-            question = next(
-                q for q in self.questions if q["question_id"] == result["question_id"]
+            question_id = next(
+                q["question_id"] for q in self.questions if q["question_id"] == result["question_id"]
             )
-            if bot1_id and bot2_id and question:
-                matches.append((bot1_id, bot2_id, question))
+            if bot1_id and bot2_id and question_id:
+                matches.append((bot1_id, bot2_id, question_id))
+
+        print(f'Number of matches imported from cache', len(matches))
 
         # If there are not enough cached results, create new matches
         bot_ids = list(self.bots.keys())
-        all_possible_matches = list(combinations(bot_ids, 2))
+        all_possible_matches = list(permutations(bot_ids, 2))
 
         for bot1_id, bot2_id in all_possible_matches:
-            for question in self.questions:
+            for q in self.questions:
                 if len(matches) == num_matchups:
                     return matches
-                matches.append((bot1_id, bot2_id, question))
+                if (bot1_id, bot2_id, q['question_id']) not in matches:
+                    matches.append((bot1_id, bot2_id, q['question_id']))
 
         return matches
 
@@ -200,23 +208,23 @@ class MatchMaker:
 
 if __name__ == "__main__":
     bots = [
-        Bot("answers/rakuda_koukou_v0/gpt3.jsonl"),
-        Bot("answers/rakuda_koukou_v0/rinna-ppo.jsonl"),
-        Bot("answers/rakuda_koukou_v0/rinna-sft.jsonl"),
-        Bot("answers/rakuda_koukou_v0/rinna.jsonl"),
-        Bot("answers/rakuda_koukou_v0/stormy.jsonl"),
-        Bot("answers/rakuda_koukou_v0/calm.jsonl"),
+        Bot("answers/rakuda_v1/gpt3.jsonl"),
+        Bot("answers/rakuda_v1/rinna-ppo.jsonl"),
+        Bot("answers/rakuda_v1/rinna-sft.jsonl"),
+        Bot("answers/rakuda_v1/rinna.jsonl"),
+        Bot("answers/rakuda_v1/stormy.jsonl"),
+        Bot("answers/rakuda_v1/calm.jsonl"),
     ]
 
     referee = Referee(
-        "reviews/rakuda_koukou_v0.jsonl",
+        "reviews/rakuda_v1.jsonl",
         "prompts/rakuda_reviewer.jsonl",
         "prompts/rakuda_prompt.jsonl",
         model="gpt-3.5-turbo-0301",
     )
 
     matchmaker = MatchMaker(
-        bots, "questions/rakuda_koukou_v0.jsonl", referee, verbose=True
+        bots, "questions/rakuda_v1.jsonl", referee, verbose=False
     )
     matchmaker.run_matches(1200)
-    matchmaker.output_matches("tournaments/rakuda_koukou_v0.jsonl")
+    matchmaker.output_matches("tournaments/rakuda_v1.jsonl")
