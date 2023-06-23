@@ -2,7 +2,15 @@ checkpoints
 changelog.md
 todo.md
 references
-elo/helper
+jrank/helper
+jrank/jobs
+!jrank/jobs/eval_gpt_review.sh 
+!jrank/jobs/get_gpt_qa.sh 
+!jrank/jobs/get_gpt_qa_calm.sh 
+!jrank/jobs/get_gpt_qa_rinna-3.6b-ppo.sh
+!jrank/jobs/get_gpt_qa_rinna-3.6b-sft.sh
+!jrank/jobs/get_gpt_qa_rinna-3.6b.sh
+!jrank/jobs/get_gpt_qa_stormy-7b.sh
 
 out
 *.err
