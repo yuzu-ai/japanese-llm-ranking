@@ -105,7 +105,7 @@ class MatchMaker:
         bot2 = self.bots[bot2_id]
 
         # Get the question
-        question = next( q for q in self.questions if q["question_id"] == question_id)
+        question = next(q for q in self.questions if q["question_id"] == question_id)
 
         # Get the cached responses of the bots for the question
         response1 = bot1.get_response(question["question_id"])
@@ -150,12 +150,14 @@ class MatchMaker:
                 key for key in self.bots.keys() if key == result["model2_id"]
             )
             question_id = next(
-                q["question_id"] for q in self.questions if q["question_id"] == result["question_id"]
+                q["question_id"]
+                for q in self.questions
+                if q["question_id"] == result["question_id"]
             )
             if bot1_id and bot2_id and question_id:
                 matches.append((bot1_id, bot2_id, question_id))
 
-        print(f'Number of matches imported from cache', len(matches))
+        print(f"Number of matches imported from cache", len(matches))
 
         # If there are not enough cached results, create new matches
         bot_ids = list(self.bots.keys())
@@ -165,8 +167,8 @@ class MatchMaker:
             for q in self.questions:
                 if len(matches) == num_matchups:
                     return matches
-                if (bot1_id, bot2_id, q['question_id']) not in matches:
-                    matches.append((bot1_id, bot2_id, q['question_id']))
+                if (bot1_id, bot2_id, q["question_id"]) not in matches:
+                    matches.append((bot1_id, bot2_id, q["question_id"]))
 
         return matches
 
@@ -223,8 +225,6 @@ if __name__ == "__main__":
         model="gpt-3.5-turbo-0301",
     )
 
-    matchmaker = MatchMaker(
-        bots, "questions/rakuda_v1.jsonl", referee, verbose=False
-    )
+    matchmaker = MatchMaker(bots, "questions/rakuda_v1.jsonl", referee, verbose=False)
     matchmaker.run_matches(1200)
     matchmaker.output_matches("tournaments/rakuda_v1.jsonl")
