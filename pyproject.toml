@@ -14,12 +14,11 @@ classifiers = [
     "Operating System :: OS Independent",
     "License :: OSI Approved :: MIT License",
 ]
+dynamic = ["dependencies"]
 
 [project.urls]
 "Homepage" = "https://github.com/yuzuai/japanese-llm-ranking"
 "Bug Tracker" = "https://github.com/yuzuai/japanese-llm-ranking/issues"
-
-dynamic = ["dependencies"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
