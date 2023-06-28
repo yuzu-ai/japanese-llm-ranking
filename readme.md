@@ -1,4 +1,4 @@
-# jrank: Ranking for Japanese LLMs 
+# jrank: Ranking Japanese LLMs 
 
 | [**Ranking**](https://yuzuai.jp/benchmark) |
 [**Blog**](https://yuzuai.jp/blog/rakuda) |

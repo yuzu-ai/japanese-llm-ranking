@@ -43,7 +43,7 @@ exclude = '''
     | .mypy_cache
     | .tox
     | venv
-    | data 
+    | data
     | jobs
     | checkpoints
     | _build

@@ -20,6 +20,8 @@ from utils import load_jsonl, save_jsonl
 
 
 class FastTokenizerAvailableBaseAdapter(BaseAdapter):
+    # This approach to modifying fastchat is from
+    # https://huggingface.co/spaces/izumi-lab/stormy-7b-10ep/blob/main/app.py
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
         try:
             tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
