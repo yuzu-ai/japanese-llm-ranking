@@ -40,5 +40,5 @@ jobs:
           destination-repository-name: 'public-website'
           user-email: "contact@yuzuai.jp"
           target-branch: main
-          target-directory: "public/images/"
+          target-directory: "public/images/charts"
           commit-message: "trasnfer charts to yuzuai website repo"
