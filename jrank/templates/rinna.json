@@ -1,0 +1,8 @@
+{
+    "name": "rinna/japanese-gpt-neox-3.6b-instruction-ppoo",
+    "system": "",
+    "roles": ["ユーザー: ", "システム: "],
+    "offset": 0,
+    "sep_style": "NO_COLON_SINGLE",
+    "sep": "<NL>"
+}

@@ -1,0 +1,8 @@
+{
+    "name": "alpaca jp short style",
+    "system": "",
+    "roles": ["### 指示:", "### レスポンス:"],
+    "offset": 0,
+    "sep_style": "ADD_NEW_LINE_SINGLE",
+    "sep": "\n\n"
+}
