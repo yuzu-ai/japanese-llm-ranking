@@ -36,8 +36,8 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
           source-directory: 'jrank/charts'
-          destination-github-username: 'yudataguy'
-          destination-repository-name: 'yuzu-ai/public-website'
+          destination-github-username: 'yuzu-ai'
+          destination-repository-name: 'public-website'
           user-email: "contact@yuzuai.jp"
           target-branch: main
           target-directory: "public/images/"
