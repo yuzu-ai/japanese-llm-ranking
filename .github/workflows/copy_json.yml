@@ -23,3 +23,22 @@ jobs:
           user_email: "yudataguy@gmail.com"
           user_name: "yudataguy"
           commit_message: "send elo file to public website repo"
+  
+  share-chart:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Pushes to another repository
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: 'jrank/charts'
+          destination-github-username: 'yudataguy'
+          destination-repository-name: 'yuzu-ai/public-website'
+          user-email: "contact@yuzuai.jp"
+          target-branch: main
+          target-directory: "public/images/"
+          commit-message: "trasnfer charts to yuzuai website repo"
