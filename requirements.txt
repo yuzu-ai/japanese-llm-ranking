@@ -2,7 +2,7 @@ samplotlib==0.0.6
 emcee==3.1.4
 transformers==4.28.1
 openai==0.27.7
-fschat @ git+https://github.com/lm-sys/FastChat.git@640ec6205031955e841523e1a8606afb4d0538c2
+fschat==0.2.18
 peft @ git+https://github.com/huggingface/peft.git@b1059b73aab9043b118ff19b0cf96263ea86248a
 fire==0.5.0
 shortuuid==1.0.11

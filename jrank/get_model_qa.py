@@ -11,7 +11,9 @@ from typing import Optional
 import shortuuid
 import torch
 from fastchat.conversation import Conversation, SeparatorStyle, get_conv_template
-from fastchat.model.model_adapter import BaseAdapter, load_model, model_adapters
+from fastchat.model.model_adapter import BaseModelAdapter, load_model, model_adapters, RwkvAdapter
+from fastchat.model.rwkv_model import RwkvModel
+
 from fire import Fire
 from peft import PeftModel
 from tqdm import tqdm
@@ -19,7 +21,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 from utils import load_jsonl, save_jsonl
 
 
-class FastTokenizerAvailableBaseAdapter(BaseAdapter):
+class FastTokenizerAvailableBaseAdapter(BaseModelAdapter):
     # This approach to modifying fastchat is from
     # https://huggingface.co/spaces/izumi-lab/stormy-7b-10ep/blob/main/app.py
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
@@ -32,8 +34,66 @@ class FastTokenizerAvailableBaseAdapter(BaseAdapter):
         )
         return model, tokenizer
 
-
 model_adapters[-1] = FastTokenizerAvailableBaseAdapter()
+
+class RwkvModelFix(RwkvModel):
+
+    def generate(
+        self, input_ids, do_sample, temperature, max_new_tokens, repetition_penalty=1.0
+    ):
+        # This function is used by fastchat.llm_judge.
+        # Because RWKV does not support huggingface generation API,
+        # we reuse fastchat.serve.inference.generate_stream as a workaround.
+        from transformers import AutoTokenizer
+
+        from fastchat.serve.inference import generate_stream
+        from fastchat.conversation import get_conv_template
+
+        if self.tokenizer is None:
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                "EleutherAI/pythia-160m", use_fast=True
+            )
+        prompt = self.tokenizer.decode(input_ids[0].tolist())
+        conv = get_conv_template("rwkv")
+
+        gen_params = {
+            "model": self.model_path,
+            "prompt": prompt,
+            "temperature": temperature,
+            "repetition_penalty": repetition_penalty,
+            "max_new_tokens": max_new_tokens,
+            "stop": conv.stop_str,
+            "stop_token_ids": conv.stop_token_ids,
+            "echo": False,
+        }
+
+        res_iter = generate_stream(self, self.tokenizer, gen_params, "cuda", context_len=4096)
+
+        for res in res_iter:
+            pass
+
+        output = res["text"]
+        output_ids = self.tokenizer.encode(output)
+
+        return [input_ids[0].tolist() + output_ids]
+
+
+class RwkvAdapterFix(RwkvAdapter):
+    """The model adapter for BlinkDL/RWKV-4-Raven"""
+    
+    def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        #from fastchat.model.rwkv_model import RwkvModel
+        model = RwkvModelFix(model_path)
+        revision = from_pretrained_kwargs.get("revision", "main")
+        tokenizer = AutoTokenizer.from_pretrained(
+            "EleutherAI/pythia-160m", revision=revision
+        )
+        return model, tokenizer
+
+for i in range(len(model_adapters)):
+    if 'Rwkv' in type(model_adapters[i]).__name__ :
+        model_adapters[i] = RwkvAdapterFix()
+
 
 
 def get_conv_from_template_path(template_path):
@@ -135,15 +195,25 @@ def get_model_answers(
             )
             print(f"input_ids: {input_ids}", file=sys.stderr)
             print(f"len(input_ids): {len(input_ids)}", file=sys.stderr)
-
-            output_ids = model.generate(
-                input_ids=input_ids.to(model.device),
-                generation_config=generation_config,
-                max_new_tokens=max_new_tokens,
-                pad_token_id=tokenizer.pad_token_id,
-                bos_token_id=tokenizer.bos_token_id,
-                eos_token_id=tokenizer.eos_token_id,
-            )
+            
+            if 'RWKV' not in model_path:
+                output_ids = model.generate(
+                    input_ids=input_ids.to(model.device),
+                    generation_config=generation_config,
+                    max_new_tokens=max_new_tokens,
+                    pad_token_id=tokenizer.pad_token_id,
+                    bos_token_id=tokenizer.bos_token_id,
+                    eos_token_id=tokenizer.eos_token_id,
+                )
+            else:
+                #https://github.com/BlinkDL/ChatRWKV/blob/main/API_DEMO_WORLD.py
+                output_ids = model.generate(
+                    input_ids=input_ids.to(device),
+                    temperature=temperature,
+                    repetition_penalty=repetition_penalty,
+                    do_sample=True,
+                    max_new_tokens=max_new_tokens,
+                )
 
             output_ids = output_ids[0][len(input_ids[0]) :]
             outputs = tokenizer.decode(output_ids, skip_special_tokens=True).strip()
