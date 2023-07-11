@@ -1,5 +1,5 @@
 {
-    "name": "rinna/japanese-gpt-neox-3.6b-instruction-ppoo",
+    "name": "rinna/japanese-gpt-neox-3.6b-instruction-ppo",
     "system": "",
     "roles": ["ユーザー: ", "システム: "],
     "offset": 0,
