@@ -48,7 +48,6 @@ def get_answer(question_id: int, question: str, max_tokens: int):
         except Exception as e:
             print("[ERROR]", e)
             ans["text"] = "#ERROR#"
-            time.sleep(15)
     return ans
 
 
