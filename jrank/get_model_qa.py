@@ -11,90 +11,20 @@ from typing import Optional
 import shortuuid
 import torch
 from fastchat.conversation import Conversation, SeparatorStyle, get_conv_template
-from fastchat.model.model_adapter import BaseModelAdapter, load_model, model_adapters, RwkvAdapter
-from fastchat.model.rwkv_model import RwkvModel
+from fastchat.model.model_adapter import load_model, model_adapters
+from adapters import FastTokenizerAvailableBaseAdapter, RwkvWorldAdapter
 
 from fire import Fire
 from peft import PeftModel
 from tqdm import tqdm
-from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
+from transformers import GenerationConfig
 from utils import load_jsonl, save_jsonl
-
-
-class FastTokenizerAvailableBaseAdapter(BaseModelAdapter):
-    # This approach to modifying fastchat is from
-    # https://huggingface.co/spaces/izumi-lab/stormy-7b-10ep/blob/main/app.py
-    def load_model(self, model_path: str, from_pretrained_kwargs: dict):
-        try:
-            tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
-        except ValueError:
-            tokenizer = AutoTokenizer.from_pretrained(model_path)
-        model = AutoModelForCausalLM.from_pretrained(
-            model_path, low_cpu_mem_usage=True, **from_pretrained_kwargs
-        )
-        return model, tokenizer
 
 model_adapters[-1] = FastTokenizerAvailableBaseAdapter()
 
-class RwkvModelFix(RwkvModel):
-
-    def generate(
-        self, input_ids, do_sample, temperature, max_new_tokens, repetition_penalty=1.0
-    ):
-        # This function is used by fastchat.llm_judge.
-        # Because RWKV does not support huggingface generation API,
-        # we reuse fastchat.serve.inference.generate_stream as a workaround.
-        from transformers import AutoTokenizer
-
-        from fastchat.serve.inference import generate_stream
-        from fastchat.conversation import get_conv_template
-
-        if self.tokenizer is None:
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                "EleutherAI/pythia-160m", use_fast=True
-            )
-        prompt = self.tokenizer.decode(input_ids[0].tolist())
-        conv = get_conv_template("rwkv")
-
-        gen_params = {
-            "model": self.model_path,
-            "prompt": prompt,
-            "temperature": temperature,
-            "repetition_penalty": repetition_penalty,
-            "max_new_tokens": max_new_tokens,
-            "stop": conv.stop_str,
-            "stop_token_ids": conv.stop_token_ids,
-            "echo": False,
-        }
-
-        res_iter = generate_stream(self, self.tokenizer, gen_params, "cuda", context_len=4096)
-
-        for res in res_iter:
-            pass
-
-        output = res["text"]
-        output_ids = self.tokenizer.encode(output)
-
-        return [input_ids[0].tolist() + output_ids]
-
-
-class RwkvAdapterFix(RwkvAdapter):
-    """The model adapter for BlinkDL/RWKV-4-Raven"""
-    
-    def load_model(self, model_path: str, from_pretrained_kwargs: dict):
-        #from fastchat.model.rwkv_model import RwkvModel
-        model = RwkvModelFix(model_path)
-        revision = from_pretrained_kwargs.get("revision", "main")
-        tokenizer = AutoTokenizer.from_pretrained(
-            "EleutherAI/pythia-160m", revision=revision
-        )
-        return model, tokenizer
-
 for i in range(len(model_adapters)):
     if 'Rwkv' in type(model_adapters[i]).__name__ :
-        model_adapters[i] = RwkvAdapterFix()
-
-
+        model_adapters[i] = RwkvWorldAdapter()
 
 def get_conv_from_template_path(template_path):
     with open(template_path, "r") as file:
@@ -104,8 +34,10 @@ def get_conv_from_template_path(template_path):
     if "sep_style" in config:
         config["sep_style"] = SeparatorStyle[config["sep_style"]]
 
-    # Start an empty conversation with configuration from json
-    config["messages"] = []
+    # Start a conversation 
+    if "messages" not in config:
+        config["messages"] = []
+
     return Conversation(**config)
 
 
@@ -136,8 +68,6 @@ def get_model_answers(
 ):
     question_jsons = load_jsonl(question_file)
 
-    # model_path = os.path.expanduser(model_path)
-
     if not model_id:
         model_id = shortuuid.uuid()
 
@@ -164,9 +94,6 @@ def get_model_answers(
                 model, lora_path, torch_dtype=torch.float16
             )
 
-        if debug:
-            print(model)
-
     answer_jsons = []
     for i, ques_json in enumerate(tqdm(question_jsons)):
         idx = ques_json["question_id"]
@@ -187,16 +114,29 @@ def get_model_answers(
         # conv.append_message(conv.roles[1], None)
 
         prompt = conv.get_prompt()
-        print(f"Prompt: {prompt}", file=sys.stderr)
 
         if not generate_prompts:
-            input_ids = tokenizer.encode(
-                prompt, return_tensors="pt", add_special_tokens=False
-            )
-            print(f"input_ids: {input_ids}", file=sys.stderr)
-            print(f"len(input_ids): {len(input_ids)}", file=sys.stderr)
-            
-            if 'RWKV' not in model_path:
+            if 'RWKV' in model_path:
+                #https://github.com/BlinkDL/ChatRWKV/blob/main/API_DEMO_WORLD.py
+
+                input_ids = torch.Tensor(tokenizer.encode(
+                    prompt
+                )).unsqueeze(0)
+
+                output_ids = model.generate(
+                    input_ids=input_ids,
+                    temperature=temperature,
+                    top_p=top_p,
+                    max_new_tokens=max_new_tokens,
+                )
+
+                output_ids = output_ids[0][len(input_ids[0]) :]
+                outputs = tokenizer.decode(output_ids).strip()
+            else:
+                input_ids = tokenizer.encode(
+                    prompt, return_tensors="pt", add_special_tokens=False
+                )
+
                 output_ids = model.generate(
                     input_ids=input_ids.to(model.device),
                     generation_config=generation_config,
@@ -205,18 +145,14 @@ def get_model_answers(
                     bos_token_id=tokenizer.bos_token_id,
                     eos_token_id=tokenizer.eos_token_id,
                 )
-            else:
-                #https://github.com/BlinkDL/ChatRWKV/blob/main/API_DEMO_WORLD.py
-                output_ids = model.generate(
-                    input_ids=input_ids.to(device),
-                    temperature=temperature,
-                    repetition_penalty=repetition_penalty,
-                    do_sample=True,
-                    max_new_tokens=max_new_tokens,
-                )
 
-            output_ids = output_ids[0][len(input_ids[0]) :]
-            outputs = tokenizer.decode(output_ids, skip_special_tokens=True).strip()
+
+                output_ids = output_ids[0][len(input_ids[0]) :]
+                outputs = tokenizer.decode(output_ids, skip_special_tokens=True).strip()
+
+            print(f"input_ids: {input_ids}", file=sys.stderr)
+            print(f"len(input_ids): {len(input_ids)}", file=sys.stderr)
+            
             print(f"outputs: {outputs}", file=sys.stderr)
             print(f"len(outputs_ids): {output_ids}", file=sys.stderr)
         else:
@@ -233,6 +169,7 @@ def get_model_answers(
             }
         )
 
+    print(answer_jsons)
     save_jsonl(answer_jsons, answer_file)
 
     return answer_jsons
