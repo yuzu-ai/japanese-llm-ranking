@@ -43,11 +43,12 @@ def get_answer(question_id: int, question: str, max_tokens: int):
             print(response_array)
 
             ans["text"] = response_array["data"][0]
+            time.sleep(15)
             return ans
         except Exception as e:
             print("[ERROR]", e)
             ans["text"] = "#ERROR#"
-            time.sleep(5)
+            time.sleep(15)
     return ans
 
 
