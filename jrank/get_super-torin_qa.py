@@ -65,7 +65,13 @@ if __name__ == "__main__":
 
     questions = load_jsonl(os.path.expanduser(args.question))
 
-    answers = []
+    if os.path.exists(os.path.expanduser(args.output)):
+        answers = load_jsonl(os.path.expanduser(args.output))
+        answers = [a for a in answers if a["text"] != "#ERROR#"]
+    else:
+        answers = []
+
+    questions = [q for q in questions if q["question_id"] not in [a["question_id"] for a in answers]]
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
         futures = []
