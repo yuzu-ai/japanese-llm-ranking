@@ -1,5 +1,5 @@
 #!/bin/bash 
-#SBATCH --job-name=get_gpt_qa
+#SBATCH --job-name=get_torin_qa
 #SBATCH --account=passaglia
 #SBATCH --time=2-00:00:00
 #SBATCH --gres=gpu:1
