@@ -19,4 +19,4 @@ EVAL_DIR=/home/passaglia/projects/jrank/jrank
 
 OUTPUT_DIR=$EVAL_DIR
 
-python $EVAL_DIR/get_gpt_qa.py -q $EVAL_DIR/questions/rakuda_v1.jsonl -o $EVAL_DIR/answers/rakuda_v1/gpt3.jsonl > $OUTPUT_DIR/qa_gpt.out 2> $OUTPUT_DIR/qa_gpt.err
+python $EVAL_DIR/get_gpt_qa.py -q $EVAL_DIR/questions/rakuda_v1.jsonl -o $EVAL_DIR/answers/rakuda_v1/gpt4.jsonl > $OUTPUT_DIR/qa_gpt.out 2> $OUTPUT_DIR/qa_gpt.err
