@@ -14,9 +14,11 @@ from utils import load_jsonl, save_jsonl
 openai.api_key = os.getenv("OPENAI_API_KEY")
 assert openai.api_key, "Please set OPENAI_API_KEY environment variable"
 
-MODEL = "gpt-3.5-turbo-0301"
-MODEL_ID = "gpt-3.5-turbo-0301:20230614"
+# MODEL = "gpt-3.5-turbo-0301"
+# MODEL_ID = "gpt-3.5-turbo-0301:20230614"
 
+MODEL = "gpt-4"
+MODEL_ID = "gpt-4:20230713"
 
 def get_answer(question_id: int, question: str, max_tokens: int):
     ans = {
@@ -27,6 +29,7 @@ def get_answer(question_id: int, question: str, max_tokens: int):
     }
     for _ in range(3):
         try:
+            time.sleep(15)
             response = openai.ChatCompletion.create(
                 model=MODEL,
                 messages=[
@@ -43,7 +46,7 @@ def get_answer(question_id: int, question: str, max_tokens: int):
         except Exception as e:
             print("[ERROR]", e)
             ans["text"] = "#ERROR#"
-            time.sleep(1)
+            time.sleep(15)
     return ans
 
 
@@ -61,11 +64,15 @@ if __name__ == "__main__":
 
     questions = load_jsonl(os.path.expanduser(args.question))
 
-    print(questions)
+    if os.path.exists(os.path.expanduser(args.output)):
+        answers = load_jsonl(os.path.expanduser(args.output))
+        answers = [a for a in answers if a["text"] != "#ERROR#"]
+    else:
+        answers = []
 
-    answers = []
+    questions = [q for q in questions if q["question_id"] not in [a["question_id"] for a in answers]]
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
         futures = []
         for question in questions:
             future = executor.submit(
