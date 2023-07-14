@@ -1,5 +1,5 @@
 {
-    "date": "2023-07-13T23:59:59.767783",
+    "date": "2023-07-14T11:00:16.501707",
     "model_metadata": {
         "gpt-4:20230713": {
             "model_id": "gpt-4:20230713",
@@ -45,85 +45,85 @@
     },
     "ranking": [
         {
-            "model_id": "gpt-4:20230713",
-            "median": 1519.9671698398583,
-            "one_sigma_up": 54.23281796179367,
-            "one_sigma_down": 49.41309077339952,
-            "stronger_than_next_confidence": 0.9918285714285714,
-            "win_rate": 0.9255813953488372,
-            "short_name": "gpt-4"
+            "model_id": "rinna/japanese-gpt-neox-3.6b",
+            "median": 698.9913020475115,
+            "one_sigma_up": 35.752530658702995,
+            "one_sigma_down": 37.16706665602965,
+            "stronger_than_next_confidence": -1.0,
+            "win_rate": 0.1657754010695187,
+            "short_name": "rinna-3.6b"
+        },
+        {
+            "model_id": "cyberagent/open-calm-7b",
+            "median": 790.5125545608346,
+            "one_sigma_up": 32.76924783587151,
+            "one_sigma_down": 33.4477748571079,
+            "stronger_than_next_confidence": 0.97221,
+            "win_rate": 0.27325581395348836,
+            "short_name": "open-calm-7b"
+        },
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2",
+            "median": 810.8997957745601,
+            "one_sigma_up": 33.78176273460815,
+            "one_sigma_down": 33.44750949199499,
+            "stronger_than_next_confidence": 0.670135,
+            "win_rate": 0.29874213836477986,
+            "short_name": "rinna-3.6b-SFT"
+        },
+        {
+            "model_id": "izumi-lab/stormy-7b-10ep",
+            "median": 845.5325383470723,
+            "one_sigma_up": 32.24765235411883,
+            "one_sigma_down": 33.31176841593435,
+            "stronger_than_next_confidence": 0.7628375,
+            "win_rate": 0.3282208588957055,
+            "short_name": "stormy-7b"
+        },
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-ppo",
+            "median": 860.0227621752631,
+            "one_sigma_up": 33.301513369329655,
+            "one_sigma_down": 33.94073435505163,
+            "stronger_than_next_confidence": 0.6201725,
+            "win_rate": 0.38741721854304634,
+            "short_name": "rinna-3.6b-PPO"
+        },
+        {
+            "model_id": "super-torin-sama-alpha2",
+            "median": 1010.5062823376504,
+            "one_sigma_up": 32.12812630650774,
+            "one_sigma_down": 31.2491044571658,
+            "stronger_than_next_confidence": 0.9997425,
+            "win_rate": 0.5706214689265536,
+            "short_name": "super-torin"
+        },
+        {
+            "model_id": "rwkv-world-jpn-55",
+            "median": 1076.665210251055,
+            "one_sigma_up": 34.25355778345056,
+            "one_sigma_down": 33.80798216771973,
+            "stronger_than_next_confidence": 0.9137775,
+            "win_rate": 0.5338983050847458,
+            "short_name": "rwkv-world"
         },
         {
             "model_id": "gpt-3.5-turbo-0301:20230614",
-            "median": 1385.1899399066644,
-            "one_sigma_up": 44.78866400642869,
-            "one_sigma_down": 42.44981397354377,
+            "median": 1384.010025877907,
+            "one_sigma_up": 45.62727816672759,
+            "one_sigma_down": 42.465529289006554,
             "stronger_than_next_confidence": 1.0,
             "win_rate": 0.8442211055276382,
             "short_name": "gpt-3.5"
         },
         {
-            "model_id": "rwkv-world-jpn-55",
-            "median": 1075.5881841360886,
-            "one_sigma_up": 33.45118545733726,
-            "one_sigma_down": 33.01601246497762,
-            "stronger_than_next_confidence": 0.9137357142857143,
-            "win_rate": 0.5338983050847458,
-            "short_name": "rwkv-world"
-        },
-        {
-            "model_id": "super-torin-sama-alpha2",
-            "median": 1011.4543057216899,
-            "one_sigma_up": 31.339271273841177,
-            "one_sigma_down": 31.396751685008212,
-            "stronger_than_next_confidence": 0.999675,
-            "win_rate": 0.5706214689265536,
-            "short_name": "super-torin"
-        },
-        {
-            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-ppo",
-            "median": 860.1170693960955,
-            "one_sigma_up": 32.79604998463242,
-            "one_sigma_down": 33.68856496235617,
-            "stronger_than_next_confidence": 0.6189,
-            "win_rate": 0.38741721854304634,
-            "short_name": "rinna-3.6b-PPO"
-        },
-        {
-            "model_id": "izumi-lab/stormy-7b-10ep",
-            "median": 845.1439593723417,
-            "one_sigma_up": 33.18585142724737,
-            "one_sigma_down": 32.16774870588381,
-            "stronger_than_next_confidence": 0.775325,
-            "win_rate": 0.3282208588957055,
-            "short_name": "stormy-7b"
-        },
-        {
-            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2",
-            "median": 810.6803219286293,
-            "one_sigma_up": 33.67658839036551,
-            "one_sigma_down": 33.9158350723975,
-            "stronger_than_next_confidence": 0.6583214285714286,
-            "win_rate": 0.29874213836477986,
-            "short_name": "rinna-3.6b-SFT"
-        },
-        {
-            "model_id": "cyberagent/open-calm-7b",
-            "median": 790.9470668159943,
-            "one_sigma_up": 33.16263085147443,
-            "one_sigma_down": 32.855492402749746,
-            "stronger_than_next_confidence": 0.9731678571428571,
-            "win_rate": 0.27325581395348836,
-            "short_name": "open-calm-7b"
-        },
-        {
-            "model_id": "rinna/japanese-gpt-neox-3.6b",
-            "median": 697.8176502608201,
-            "one_sigma_up": 36.9113200144418,
-            "one_sigma_down": 36.703522441214886,
-            "stronger_than_next_confidence": -1.0,
-            "win_rate": 0.1657754010695187,
-            "short_name": "rinna-3.6b"
+            "model_id": "gpt-4:20230713",
+            "median": 1520.4348909092596,
+            "one_sigma_up": 53.18798452138276,
+            "one_sigma_down": 49.03475995474105,
+            "stronger_than_next_confidence": 0.9935225,
+            "win_rate": 0.9255813953488372,
+            "short_name": "gpt-4"
         }
     ]
 }
