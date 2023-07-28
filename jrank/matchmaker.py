@@ -214,15 +214,16 @@ if __name__ == "__main__":
         Bot("answers/rakuda_v1/rinna.jsonl"),
         Bot("answers/rakuda_v1/stormy.jsonl"),
         Bot("answers/rakuda_v1/calm.jsonl"),
+        Bot("answers/rakuda_v1/rwkv.jsonl"),
     ]
 
     referee = Referee(
         "reviews/rakuda_v1.jsonl",
         "prompts/rakuda_reviewer.jsonl",
         "prompts/rakuda_prompt.jsonl",
-        model="gpt-3.5-turbo-0301",
+        model="gpt-4",
     )
 
     matchmaker = MatchMaker(bots, "questions/rakuda_v1.jsonl", referee, verbose=False)
-    matchmaker.run_matches(1200)
+    matchmaker.run_matches(10)
     matchmaker.output_matches("tournaments/rakuda_v1.jsonl")
