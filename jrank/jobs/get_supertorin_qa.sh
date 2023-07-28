@@ -1,5 +1,5 @@
 #!/bin/bash 
-#SBATCH --job-name=get_gpt_qa
+#SBATCH --job-name=get_torin_qa
 #SBATCH --account=passaglia
 #SBATCH --time=2-00:00:00
 #SBATCH --gres=gpu:1
@@ -19,4 +19,4 @@ EVAL_DIR=/home/passaglia/projects/jrank/jrank
 
 OUTPUT_DIR=$EVAL_DIR
 
-python $EVAL_DIR/get_gpt_qa.py -q $EVAL_DIR/questions/rakuda_v1.jsonl -o $EVAL_DIR/answers/rakuda_v1/gpt4.jsonl > $OUTPUT_DIR/qa_gpt.out 2> $OUTPUT_DIR/qa_gpt.err
+python $EVAL_DIR/get_super-torin_qa.py -q $EVAL_DIR/questions/rakuda_v1.jsonl -o $EVAL_DIR/answers/rakuda_v1/super-torin.jsonl > $OUTPUT_DIR/qa_torin.out 2> $OUTPUT_DIR/qa_torin.err

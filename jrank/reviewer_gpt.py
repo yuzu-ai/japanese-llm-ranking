@@ -105,7 +105,7 @@ def get_review(
     question,
     answer1,
     answer2,
-    model: str,
+    model: str = None,
     max_tokens: int = None,
 ):
     assert answer1["question_id"] == question["question_id"] == answer2["question_id"]
@@ -122,6 +122,9 @@ def get_review(
     if not max_tokens:
         max_tokens = reviewers[reviewer_id - 1]["metadata"]["max_tokens"]
 
+    if not model:
+        model = reviewers[reviewer_id - 1]["reviewer_id"]
+        
     review = get_eval(sys_prompt, prompt, max_tokens, model)
 
     score = parse_three_class_score(review)
@@ -136,7 +139,7 @@ def get_review(
         "answer2": answer2["text"],
         "model1_id": answer1["model_id"],
         "model2_id": answer2["model_id"],
-        "reviewer_id": reviewer_id,
+        "reviewer_id": model,
         "text": review,
         "score": score,
         "metadata": {},
@@ -230,7 +233,6 @@ if __name__ == "__main__":
                     answer1_jsons[i],
                     answer2_jsons[i],
                     args.max_tokens,
-                    args.model,
                 )
             )
             logger.info(

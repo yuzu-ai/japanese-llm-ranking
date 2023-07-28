@@ -7,7 +7,7 @@ from typing import Dict, List, Tuple
 from reviewer_gpt import get_review
 from tqdm import tqdm
 from utils import load_jsonl, save_jsonl
-
+from random import shuffle
 
 class Bot:
     def __init__(self, cache_path: str):
@@ -38,7 +38,6 @@ class Referee:
         cache_path: str,
         reviewer_path: str,
         prompt_path: str,
-        model: str,
     ):
         self.cache_path = cache_path
         self.reviewer_path = reviewer_path
@@ -46,7 +45,6 @@ class Referee:
 
         self.reviewers = load_jsonl(reviewer_path)
         self.prompts = load_jsonl(prompt_path)
-        self.model = model
 
         # Load cache if exists; else create an empty cache file
         self.cache = self.load_cache() if os.path.isfile(self.cache_path) else {}
@@ -78,8 +76,7 @@ class Referee:
                 self.prompts,
                 question,
                 response1,
-                response2,
-                self.model,
+                response2
             )
             self.add_to_cache(review_json)
 
@@ -160,14 +157,21 @@ class MatchMaker:
 
         # If there are not enough cached results, create new matches
         bot_ids = list(self.bots.keys())
-        all_possible_matches = list(permutations(bot_ids, 2))
+        all_possible_pairs = list(permutations(bot_ids, 2))
 
-        for bot1_id, bot2_id in all_possible_matches:
+        all_possible_matches = []
+        for bot1_id, bot2_id in all_possible_pairs:
             for q in self.questions:
-                if len(matches) == num_matchups:
-                    return matches
-                if (bot1_id, bot2_id, q["question_id"]) not in matches:
-                    matches.append((bot1_id, bot2_id, q["question_id"]))
+                all_possible_matches.append((bot1_id, bot2_id, q["question_id"]))
+
+        shuffle(all_possible_matches)
+
+        #TODO: preferentially sample matches with teams that haven't played much before?
+        for possible_match in all_possible_matches:
+            if len(matches) == num_matchups:
+                return matches
+            if possible_match not in matches:
+                matches.append(possible_match)      
 
         return matches
 
@@ -208,6 +212,7 @@ class MatchMaker:
 
 if __name__ == "__main__":
     bots = [
+        Bot("answers/rakuda_v1/gpt4.jsonl"),
         Bot("answers/rakuda_v1/gpt3.jsonl"),
         Bot("answers/rakuda_v1/rinna-ppo.jsonl"),
         Bot("answers/rakuda_v1/rinna-sft.jsonl"),
@@ -215,15 +220,15 @@ if __name__ == "__main__":
         Bot("answers/rakuda_v1/stormy.jsonl"),
         Bot("answers/rakuda_v1/calm.jsonl"),
         Bot("answers/rakuda_v1/rwkv.jsonl"),
+        Bot("answers/rakuda_v1/super-torin.jsonl"),
     ]
 
     referee = Referee(
-        "reviews/rakuda_v1.jsonl",
-        "prompts/rakuda_reviewer.jsonl",
+        "reviews/rakuda_v1_gpt4.jsonl",
+        "prompts/gpt4_reviewer.jsonl",
         "prompts/rakuda_prompt.jsonl",
-        model="gpt-4",
     )
 
     matchmaker = MatchMaker(bots, "questions/rakuda_v1.jsonl", referee, verbose=False)
-    matchmaker.run_matches(10)
-    matchmaker.output_matches("tournaments/rakuda_v1.jsonl")
+    matchmaker.run_matches(800)
+    matchmaker.output_matches("tournaments/rakuda_v1_gpt4.jsonl")
