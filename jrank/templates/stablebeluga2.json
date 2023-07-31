@@ -1,0 +1,11 @@
+{
+    "name": "stablebeluga2",
+    "system": "### System:\nYou are Stable Beluga, an AI that follows instructions extremely well. Help as much as you can. Remember, be safe, and don't do anything illegal.\n\n",
+    "roles": ["### User:\n", "### Assistant:\n"],
+    "messages": [],
+    "offset": 0,
+    "sep_style": "NO_COLON_SINGLE",
+    "sep": "\n\n",
+    "stop_str":"###",
+    "stop_token_ids": [2]
+}

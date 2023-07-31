@@ -7,7 +7,7 @@ from typing import Dict, List, Tuple
 from reviewer_gpt import get_review
 from tqdm import tqdm
 from utils import load_jsonl, save_jsonl
-from random import shuffle
+from random import shuffle, choice
 
 class Bot:
     def __init__(self, cache_path: str):
@@ -159,19 +159,44 @@ class MatchMaker:
         bot_ids = list(self.bots.keys())
         all_possible_pairs = list(permutations(bot_ids, 2))
 
-        all_possible_matches = []
+        all_possible_new_matches = []
         for bot1_id, bot2_id in all_possible_pairs:
             for q in self.questions:
-                all_possible_matches.append((bot1_id, bot2_id, q["question_id"]))
+                if (bot1_id, bot2_id, q["question_id"]) not in matches:
+                    all_possible_new_matches.append((bot1_id, bot2_id, q["question_id"]))
 
-        shuffle(all_possible_matches)
+        shuffle(all_possible_new_matches)
 
-        #TODO: preferentially sample matches with teams that haven't played much before?
-        for possible_match in all_possible_matches:
-            if len(matches) == num_matchups:
-                return matches
+        # Create a dictionary to count the number of matches for each bot pair
+        bot_match_counts = {bot_id: 0 for bot_id in bot_ids}
+
+        # Update the dictionary with the number of existing matches
+        for match in matches:
+            bot_match_counts[match[0]] += 1
+            bot_match_counts[match[1]] += 1
+            
+
+        while len(matches) < num_matchups and all_possible_new_matches:
+            # Sort bots by the number of matches they have participated in
+            sorted_bots = sorted(bot_match_counts.items(), key=lambda x: x[1])
+            
+            # Select a bot with fewest matches
+            selected_bot = choice([bot for bot, count in sorted_bots if count == sorted_bots[0][1]])
+
+            # Select a match involving the selected bot
+            selected_matches = [match for match in all_possible_new_matches if selected_bot in match]
+                      
+            # Select a match and add it to matches
+            possible_match = choice(selected_matches)
             if possible_match not in matches:
-                matches.append(possible_match)      
+                matches.append(possible_match)
+                all_possible_new_matches.remove(possible_match)
+
+                # Update the number of matches for each bot
+                bot_match_counts[possible_match[0]] += 1
+                bot_match_counts[possible_match[1]] += 1
+            else:
+                raise RuntimeError("Match already exists in matches despite being drawn from all_possible_new_matches")
 
         return matches
 
@@ -179,7 +204,7 @@ class MatchMaker:
         matches = self._prepare_matches(num_matchups)
 
         # Create a pool of workers to process the matches
-        with ThreadPoolExecutor(max_workers=4) as executor:
+        with ThreadPoolExecutor(max_workers=2) as executor:
             results = list(
                 tqdm(executor.map(self._get_result, matches), total=len(matches))
             )
@@ -220,7 +245,9 @@ if __name__ == "__main__":
         Bot("answers/rakuda_v1/stormy.jsonl"),
         Bot("answers/rakuda_v1/calm.jsonl"),
         Bot("answers/rakuda_v1/rwkv.jsonl"),
-        Bot("answers/rakuda_v1/super-torin.jsonl"),
+        Bot("answers/rakuda_v1/rwkv-jp-v1.jsonl"),
+        Bot("answers/rakuda_v1/stablebeluga2.jsonl"),
+        Bot("answers/rakuda_v1/super-trin.jsonl"),
     ]
 
     referee = Referee(
@@ -230,5 +257,5 @@ if __name__ == "__main__":
     )
 
     matchmaker = MatchMaker(bots, "questions/rakuda_v1.jsonl", referee, verbose=False)
-    matchmaker.run_matches(800)
-    matchmaker.output_matches("tournaments/rakuda_v1_gpt4.jsonl")
+    matchmaker.run_matches(900)
+    matchmaker.output_matches("tournaments/rakuda_v1_7-31.jsonl")

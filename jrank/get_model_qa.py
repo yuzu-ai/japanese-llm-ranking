@@ -17,7 +17,7 @@ from adapters import FastTokenizerAvailableBaseAdapter, RwkvWorldAdapter
 from fire import Fire
 from peft import PeftModel
 from tqdm import tqdm
-from transformers import GenerationConfig
+from transformers import GenerationConfig, StoppingCriteriaList, StoppingCriteria
 from utils import load_jsonl, save_jsonl
 
 model_adapters[-1] = FastTokenizerAvailableBaseAdapter()
@@ -62,7 +62,7 @@ def get_model_answers(
     top_k: float = 0,
     repetition_penalty: float = 1.0,
     num_beams: int = 1,
-    max_new_tokens: int = 128,
+    max_tokens: Optional[int] = None,
     # just generate the prompts (for debug)
     generate_prompts: bool = False,
 ):
@@ -94,6 +94,19 @@ def get_model_answers(
                 model, lora_path, torch_dtype=torch.float16
             )
 
+        if max_tokens is None:
+            seqlen_config_attrs = ("n_positions", "max_position_embeddings", "n_ctx")
+            for attr in seqlen_config_attrs:
+                if hasattr(model.config, attr):
+                    max_tokens = getattr(model.config, attr)
+                    print(f"{attr}: {max_tokens}")
+            if max_tokens is None:
+                raise ValueError(
+                    "max_tokens must be specified if model does not have a max length"
+                )
+            else:
+                print(f"Using max_tokens={max_tokens}")
+
     answer_jsons = []
     for i, ques_json in enumerate(tqdm(question_jsons)):
         idx = ques_json["question_id"]
@@ -105,17 +118,41 @@ def get_model_answers(
         conv.append_message(conv.roles[0], ques_json["text"])
         conv.append_message(conv.roles[1], None)
 
-        # if we were doing an OA prompter/assistant conversation
-        # for parent in ques_json["parents"][::-1]:
-        #     if parent['role'] == 'prompter':
-        #         conv.append_message(conv.roles[0], parent['text'])
-        #     elif parent['role'] == 'assistant':
-        #         conv.append_message(conv.roles[1], parent['text'])
-        # conv.append_message(conv.roles[1], None)
-
         prompt = conv.get_prompt()
 
         if not generate_prompts:
+            
+            if conv.stop_str:
+
+                print(f'STOP STRING {conv.stop_str} IN CONV', file=sys.stderr)
+
+                class StoppingCriteriaSub(StoppingCriteria):
+
+                    def __init__(self, stops = [], encounters=1):
+                        super().__init__()
+                        self.stops = [stop.to(model.device) for stop in stops]
+
+                    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor):
+                        for stop in self.stops:
+                            if torch.all((stop == input_ids[0][-len(stop):])).item():
+                                return True
+
+                        return False
+
+
+                stop_words = [conv.stop_str]
+                stop_words_ids = [tokenizer.encode('a'+stop_word, return_tensors='pt',add_special_tokens=False)[0,2:] 
+                for stop_word in stop_words]
+
+                stop_words_ids += [torch.Tensor(conv.stop_token_ids).to(model.device)]
+                
+                print(f'STOP STRING {stop_words_ids} IN CONV', file=sys.stderr)
+                print(f'STOP STRING SIZE {stop_words_ids[0].size()} IN CONV', file=sys.stderr)
+
+                stopping_criteria = StoppingCriteriaList([StoppingCriteriaSub(stop_words_ids)])
+            else:
+                stopping_criteria = None
+                
             if 'RWKV' in model_path:
                 #https://github.com/BlinkDL/ChatRWKV/blob/main/API_DEMO_WORLD.py
 
@@ -127,7 +164,8 @@ def get_model_answers(
                     input_ids=input_ids,
                     temperature=temperature,
                     top_p=top_p,
-                    max_new_tokens=max_new_tokens,
+                    max_new_tokens=4096,
+                    stopping_criteria=stopping_criteria,
                 )
 
                 output_ids = output_ids[0][len(input_ids[0]) :]
@@ -140,7 +178,8 @@ def get_model_answers(
                 output_ids = model.generate(
                     input_ids=input_ids.to(model.device),
                     generation_config=generation_config,
-                    max_new_tokens=max_new_tokens,
+                    stopping_criteria=stopping_criteria,
+                    max_new_tokens=max_tokens - len(input_ids[0]),
                     pad_token_id=tokenizer.pad_token_id,
                     bos_token_id=tokenizer.bos_token_id,
                     eos_token_id=tokenizer.eos_token_id,
@@ -149,6 +188,9 @@ def get_model_answers(
 
                 output_ids = output_ids[0][len(input_ids[0]) :]
                 outputs = tokenizer.decode(output_ids, skip_special_tokens=True).strip()
+
+                if conv.stop_str:
+                    outputs = outputs.split(conv.stop_str)[0].strip()
 
             print(f"input_ids: {input_ids}", file=sys.stderr)
             print(f"len(input_ids): {len(input_ids)}", file=sys.stderr)

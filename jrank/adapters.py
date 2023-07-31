@@ -6,6 +6,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 class FastTokenizerAvailableBaseAdapter(BaseModelAdapter):
     # https://huggingface.co/spaces/izumi-lab/stormy-7b-10ep/blob/main/app.py
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        print('model kwargs:', from_pretrained_kwargs)
         try:
             tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
         except ValueError:
