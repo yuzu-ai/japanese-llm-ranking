@@ -121,7 +121,7 @@ def get_model_answers(
         prompt = conv.get_prompt()
 
         if not generate_prompts:
-            
+
             if conv.stop_str:
 
                 print(f'STOP STRING {conv.stop_str} IN CONV', file=sys.stderr)
@@ -194,7 +194,7 @@ def get_model_answers(
 
             print(f"input_ids: {input_ids}", file=sys.stderr)
             print(f"len(input_ids): {len(input_ids)}", file=sys.stderr)
-            
+
             print(f"outputs: {outputs}", file=sys.stderr)
             print(f"len(outputs_ids): {output_ids}", file=sys.stderr)
         else:
