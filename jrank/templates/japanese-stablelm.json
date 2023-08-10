@@ -1,0 +1,10 @@
+{
+    "name": "japanese-stablelm",
+    "system": "以下は、タスクを説明する指示と、文脈のある入力の組み合わせです。要求を適切に満たす応答を書きなさい。",
+    "roles": ["指示: ", "応答: "],
+    "offset": 0,
+    "sep_style": "ADD_NEW_LINE_SINGLE",
+    "sep": "\n\n### ",
+    "stop_str":"###",
+    "stop_token_ids": [3]
+}
