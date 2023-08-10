@@ -1,0 +1,142 @@
+{
+    "date": "2023-08-10T16:56:13.527072",
+    "model_metadata": {
+        "gpt-4:20230713": {
+            "model_id": "gpt-4:20230713",
+            "path": "answers/rakuda_v1/gpt4.jsonl"
+        },
+        "gpt-3.5-turbo-0301:20230614": {
+            "model_id": "gpt-3.5-turbo-0301:20230614",
+            "path": "answers/rakuda_v1/gpt3.jsonl"
+        },
+        "rinna/japanese-gpt-neox-3.6b-instruction-ppo": {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-ppo",
+            "path": "answers/rakuda_v1/rinna-ppo.jsonl"
+        },
+        "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2": {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2",
+            "path": "answers/rakuda_v1/rinna-sft.jsonl"
+        },
+        "izumi-lab/stormy-7b-10ep": {
+            "model_id": "izumi-lab/stormy-7b-10ep",
+            "path": "answers/rakuda_v1/stormy.jsonl"
+        },
+        "cyberagent/open-calm-7b": {
+            "model_id": "cyberagent/open-calm-7b",
+            "path": "answers/rakuda_v1/calm.jsonl"
+        },
+        "rwkv-world-jp-v1": {
+            "model_id": "rwkv-world-jp-v1",
+            "path": "answers/rakuda_v1/rwkv-jp-v1.jsonl"
+        },
+        "stabilityai/StableBeluga2": {
+            "model_id": "stabilityai/StableBeluga2",
+            "path": "answers/rakuda_v1/stablebeluga2.jsonl"
+        },
+        "super-torin-sama-alpha2": {
+            "model_id": "super-torin-sama-alpha2",
+            "path": "answers/rakuda_v1/super-trin.jsonl"
+        },
+        "stabilityai/japanese-stablelm-instruct-alpha-7b": {
+            "model_id": "stabilityai/japanese-stablelm-instruct-alpha-7b",
+            "path": "answers/rakuda_v1/japanese-stablelm-instruct-alpha.jsonl"
+        }
+    },
+    "metadata": {
+        "questions_path": "questions/rakuda_v1.jsonl",
+        "reviewer_path": "prompts/gpt4_reviewer.jsonl",
+        "prompt_path": "prompts/rakuda_prompt.jsonl"
+    },
+    "ranking": [
+        {
+            "model_id": "cyberagent/open-calm-7b",
+            "median": 726.0678932946905,
+            "one_sigma_up": 36.64384759455004,
+            "one_sigma_down": 37.18008464306649,
+            "stronger_than_next_confidence": -1.0,
+            "win_rate": 0.22865853658536586,
+            "short_name": "opencalm-7b"
+        },
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2",
+            "median": 727.8284469389451,
+            "one_sigma_up": 35.825174287253844,
+            "one_sigma_down": 37.24934582245612,
+            "stronger_than_next_confidence": 0.5125671052631579,
+            "win_rate": 0.2484076433121019,
+            "short_name": "rinna-3.6b (SFT)"
+        },
+        {
+            "model_id": "izumi-lab/stormy-7b-10ep",
+            "median": 732.6940609597991,
+            "one_sigma_up": 35.399153231225,
+            "one_sigma_down": 36.202758306949704,
+            "stronger_than_next_confidence": 0.5412184210526316,
+            "win_rate": 0.23053892215568864,
+            "short_name": "opencalm-7b (stormy)"
+        },
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-ppo",
+            "median": 762.8027865582023,
+            "one_sigma_up": 35.5077764917022,
+            "one_sigma_down": 35.80021721707169,
+            "stronger_than_next_confidence": 0.7356473684210526,
+            "win_rate": 0.29545454545454547,
+            "short_name": "rinna-3.6b (PPO)"
+        },
+        {
+            "model_id": "stabilityai/japanese-stablelm-instruct-alpha-7b",
+            "median": 903.4740581593669,
+            "one_sigma_up": 36.07498449159061,
+            "one_sigma_down": 36.53829058803535,
+            "stronger_than_next_confidence": 0.9966828947368421,
+            "win_rate": 0.39338235294117646,
+            "short_name": "ja-stablelm-7b (instruct-alpha)"
+        },
+        {
+            "model_id": "super-torin-sama-alpha2",
+            "median": 956.012156053497,
+            "one_sigma_up": 33.111580632497294,
+            "one_sigma_down": 32.790184020581705,
+            "stronger_than_next_confidence": 0.8535013157894736,
+            "win_rate": 0.5171428571428571,
+            "short_name": "supertrin"
+        },
+        {
+            "model_id": "rwkv-world-jp-v1",
+            "median": 1075.3603532210454,
+            "one_sigma_up": 37.17049873102087,
+            "one_sigma_down": 36.553948098262936,
+            "stronger_than_next_confidence": 0.9919868421052631,
+            "win_rate": 0.5912408759124088,
+            "short_name": "rwkv-world-7b (jp-v1)"
+        },
+        {
+            "model_id": "stabilityai/StableBeluga2",
+            "median": 1172.6439694450753,
+            "one_sigma_up": 39.602436920521086,
+            "one_sigma_down": 39.18572361829388,
+            "stronger_than_next_confidence": 0.97745,
+            "win_rate": 0.7007299270072993,
+            "short_name": "llama2-70b (StableBeluga2)"
+        },
+        {
+            "model_id": "gpt-3.5-turbo-0301:20230614",
+            "median": 1391.4667363384747,
+            "one_sigma_up": 50.58701644193843,
+            "one_sigma_down": 47.048414116849926,
+            "stronger_than_next_confidence": 0.9997618421052632,
+            "win_rate": 0.8387096774193549,
+            "short_name": "gpt-3.5"
+        },
+        {
+            "model_id": "gpt-4:20230713",
+            "median": 1550.06316459277,
+            "one_sigma_up": 61.2801855730097,
+            "one_sigma_down": 58.41700819772973,
+            "stronger_than_next_confidence": 0.995825,
+            "win_rate": 0.9233128834355828,
+            "short_name": "gpt-4"
+        }
+    ]
+}
