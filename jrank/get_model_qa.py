@@ -12,7 +12,7 @@ import shortuuid
 import torch
 from fastchat.conversation import Conversation, SeparatorStyle, get_conv_template
 from fastchat.model.model_adapter import load_model, model_adapters
-from adapters import FastTokenizerAvailableBaseAdapter, RwkvWorldAdapter
+from adapters import FastTokenizerAvailableBaseAdapter, JapaneseStableLMAdapter #,RwkvWorldAdapter
 
 from fire import Fire
 from peft import PeftModel
@@ -20,11 +20,14 @@ from tqdm import tqdm
 from transformers import GenerationConfig, StoppingCriteriaList, StoppingCriteria
 from utils import load_jsonl, save_jsonl
 
-model_adapters[-1] = FastTokenizerAvailableBaseAdapter()
 
-for i in range(len(model_adapters)):
-    if 'Rwkv' in type(model_adapters[i]).__name__ :
-        model_adapters[i] = RwkvWorldAdapter()
+model_adapters[-1] = FastTokenizerAvailableBaseAdapter()
+model_adapters.insert(0, JapaneseStableLMAdapter())
+
+
+# for i in range(len(model_adapters)):
+#     if 'Rwkv' in type(model_adapters[i]).__name__ :
+#         model_adapters[i] = RwkvWorldAdapter()
 
 def get_conv_from_template_path(template_path):
     with open(template_path, "r") as file:
@@ -104,8 +107,8 @@ def get_model_answers(
                 raise ValueError(
                     "max_tokens must be specified if model does not have a max length"
                 )
-            else:
-                print(f"Using max_tokens={max_tokens}")
+        print(f"Using max_tokens={max_tokens}")
+        print(f"pad_token_id={tokenizer.pad_token_id}, bos_token_id={tokenizer.bos_token_id}, eos_token_id={tokenizer.eos_token_id}")
 
     answer_jsons = []
     for i, ques_json in enumerate(tqdm(question_jsons)):
@@ -124,7 +127,7 @@ def get_model_answers(
 
             if conv.stop_str:
 
-                print(f'STOP STRING {conv.stop_str} IN CONV', file=sys.stderr)
+                print(f'Stop string `{conv.stop_str}` in conv template', file=sys.stderr)
 
                 class StoppingCriteriaSub(StoppingCriteria):
 
@@ -141,12 +144,19 @@ def get_model_answers(
 
 
                 stop_words = [conv.stop_str]
-                stop_words_ids = [tokenizer.encode('a'+stop_word, return_tensors='pt',add_special_tokens=False)[0,2:] 
-                for stop_word in stop_words]
+
+                if 'beluga' in model_path:
+                    stop_words_ids = [tokenizer.encode('a'+stop_word, return_tensors='pt',add_special_tokens=False)[0,2:] 
+                    for stop_word in stop_words]
+                else:
+                    stop_words_ids = [tokenizer.encode(stop_word, return_tensors='pt',add_special_tokens=False)[0,:] 
+                    for stop_word in stop_words]
+                print(f'stop_words_ids {stop_words_ids}', file=sys.stderr)
+
 
                 stop_words_ids += [torch.Tensor(conv.stop_token_ids).to(model.device)]
                 
-                print(f'STOP STRING {stop_words_ids} IN CONV', file=sys.stderr)
+                print(f'STOP WORD IDS {stop_words_ids} IN CONV', file=sys.stderr)
                 print(f'STOP STRING SIZE {stop_words_ids[0].size()} IN CONV', file=sys.stderr)
 
                 stopping_criteria = StoppingCriteriaList([StoppingCriteriaSub(stop_words_ids)])
@@ -187,16 +197,21 @@ def get_model_answers(
 
 
                 output_ids = output_ids[0][len(input_ids[0]) :]
-                outputs = tokenizer.decode(output_ids, skip_special_tokens=True).strip()
+                if 'japanese-stablelm' in model_path:
+                    outputs = tokenizer.decode(output_ids, skip_special_tokens=False).replace('<|endoftext|>','').strip()
+                else:
+                    outputs = tokenizer.decode(output_ids, skip_special_tokens=True).strip()
 
                 if conv.stop_str:
                     outputs = outputs.split(conv.stop_str)[0].strip()
 
+            print(f"inputs: {prompt}", file=sys.stderr)
             print(f"input_ids: {input_ids}", file=sys.stderr)
             print(f"len(input_ids): {len(input_ids)}", file=sys.stderr)
 
             print(f"outputs: {outputs}", file=sys.stderr)
-            print(f"len(outputs_ids): {output_ids}", file=sys.stderr)
+            print(f"outputs_ids: {output_ids}", file=sys.stderr)
+            print(f"len(outputs_ids): {len(output_ids)}", file=sys.stderr)
         else:
             outputs = ""
 

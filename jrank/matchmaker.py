@@ -140,10 +140,10 @@ class MatchMaker:
             if len(matches) == num_matchups:
                 return matches
             bot1_id = next(
-                key for key in self.bots.keys() if key == result["model1_id"]
+                (key for key in self.bots.keys() if key == result["model1_id"]), None
             )
             bot2_id = next(
-                key for key in self.bots.keys() if key == result["model2_id"]
+                (key for key in self.bots.keys() if key == result["model2_id"]), None
             )
             question_id = next(
                 q["question_id"]
@@ -241,13 +241,14 @@ if __name__ == "__main__":
         Bot("answers/rakuda_v1/gpt3.jsonl"),
         Bot("answers/rakuda_v1/rinna-ppo.jsonl"),
         Bot("answers/rakuda_v1/rinna-sft.jsonl"),
-        Bot("answers/rakuda_v1/rinna.jsonl"),
+        #Bot("answers/rakuda_v1/rinna.jsonl"),
         Bot("answers/rakuda_v1/stormy.jsonl"),
         Bot("answers/rakuda_v1/calm.jsonl"),
-        Bot("answers/rakuda_v1/rwkv.jsonl"),
+        #Bot("answers/rakuda_v1/rwkv.jsonl"),
         Bot("answers/rakuda_v1/rwkv-jp-v1.jsonl"),
         Bot("answers/rakuda_v1/stablebeluga2.jsonl"),
         Bot("answers/rakuda_v1/super-trin.jsonl"),
+        Bot("answers/rakuda_v1/japanese-stablelm-instruct-alpha.jsonl"),
     ]
 
     referee = Referee(
@@ -257,5 +258,5 @@ if __name__ == "__main__":
     )
 
     matchmaker = MatchMaker(bots, "questions/rakuda_v1.jsonl", referee, verbose=False)
-    matchmaker.run_matches(950)
-    matchmaker.output_matches("tournaments/rakuda_v1_7-31.jsonl")
+    matchmaker.run_matches(800)
+    matchmaker.output_matches("tournaments/rakuda_v1_8-10.jsonl")
