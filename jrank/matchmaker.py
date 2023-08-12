@@ -258,5 +258,5 @@ if __name__ == "__main__":
     )
 
     matchmaker = MatchMaker(bots, "questions/rakuda_v1.jsonl", referee, verbose=False)
-    matchmaker.run_matches(800)
+    matchmaker.run_matches(788)
     matchmaker.output_matches("tournaments/rakuda_v1_8-10.jsonl")
