@@ -12,7 +12,7 @@ import shortuuid
 import torch
 from fastchat.conversation import Conversation, SeparatorStyle, get_conv_template
 from fastchat.model.model_adapter import load_model, model_adapters
-from adapters import FastTokenizerAvailableBaseAdapter, JapaneseStableLMAdapter #,RwkvWorldAdapter
+from adapters import FastTokenizerAvailableBaseAdapter, JapaneseStableLMAdapter, RwkvWorldAdapter
 
 from fire import Fire
 from peft import PeftModel
@@ -20,15 +20,14 @@ from tqdm import tqdm
 from transformers import GenerationConfig, StoppingCriteriaList, StoppingCriteria
 from utils import load_jsonl, save_jsonl
 
-
+# Hack the fastchat model adapters
 model_adapters[-1] = FastTokenizerAvailableBaseAdapter()
 model_adapters.insert(0, JapaneseStableLMAdapter())
+for i in range(len(model_adapters)):
+    if 'Rwkv' in type(model_adapters[i]).__name__ :
+        model_adapters[i] = RwkvWorldAdapter()
 
-
-# for i in range(len(model_adapters)):
-#     if 'Rwkv' in type(model_adapters[i]).__name__ :
-#         model_adapters[i] = RwkvWorldAdapter()
-
+# Helper that generate a fastchat conversation from a template file
 def get_conv_from_template_path(template_path):
     with open(template_path, "r") as file:
         config = json.load(file)
