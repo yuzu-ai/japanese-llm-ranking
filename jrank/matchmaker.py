@@ -49,7 +49,7 @@ class Referee:
         # Load cache if exists; else create an empty cache file
         self.cache = self.load_cache() if os.path.isfile(self.cache_path) else {}
 
-        print(len(self.cache))
+        print(f'Cache length: {len(self.cache)}')
 
     def load_cache(self) -> Dict:
         cache = load_jsonl(self.cache_path)
@@ -155,6 +155,9 @@ class MatchMaker:
 
         print(f"Number of matches imported from cache {len(matches)}")
 
+        if len(matches) < num_matchups:
+            print(f"Generating another {num_matchups-len(matches)} matchups")
+
         # If there are not enough cached results, create new matches
         bot_ids = list(self.bots.keys())
         all_possible_pairs = list(permutations(bot_ids, 2))
@@ -197,11 +200,16 @@ class MatchMaker:
                 bot_match_counts[possible_match[1]] += 1
             else:
                 raise RuntimeError("Match already exists in matches despite being drawn from all_possible_new_matches")
+        
+
+        print(f"Finished generating matchups")
 
         return matches
 
     def run_matches(self, num_matchups: int):
         matches = self._prepare_matches(num_matchups)
+
+        print(f"Now sending matches to the referee")
 
         # Create a pool of workers to process the matches
         with ThreadPoolExecutor(max_workers=2) as executor:
@@ -243,12 +251,15 @@ if __name__ == "__main__":
         Bot("answers/rakuda_v1/rinna-sft.jsonl"),
         #Bot("answers/rakuda_v1/rinna.jsonl"),
         Bot("answers/rakuda_v1/stormy.jsonl"),
-        Bot("answers/rakuda_v1/calm.jsonl"),
-        Bot("answers/rakuda_v1/rwkv.jsonl"),
+        #Bot("answers/rakuda_v1/calm.jsonl"),
+        #Bot("answers/rakuda_v1/rwkv.jsonl"),
         Bot("answers/rakuda_v1/rwkv-jp-v1.jsonl"),
         Bot("answers/rakuda_v1/stablebeluga2.jsonl"),
         Bot("answers/rakuda_v1/super-trin.jsonl"),
         Bot("answers/rakuda_v1/japanese-stablelm-instruct-alpha.jsonl"),
+        Bot("answers/rakuda_v1/japanese-stablelm-experimental.jsonl"),
+        Bot("answers/rakuda_v1/line-3.6b-sft.jsonl"),
+        Bot("answers/rakuda_v1/weblab-10b-instruction-sft.jsonl"),
     ]
 
     referee = Referee(
@@ -258,6 +269,5 @@ if __name__ == "__main__":
     )
 
     matchmaker = MatchMaker(bots, "questions/rakuda_v1.jsonl", referee, verbose=False)
-    #matchmaker.run_matches(788)
-    matchmaker.run_matches(962)
-    matchmaker.output_matches("tournaments/rakuda_v1_8-10.jsonl")
+    matchmaker.run_matches(1000)
+    matchmaker.output_matches("tournaments/rakuda_v1_8-22.jsonl")

@@ -12,7 +12,7 @@ import shortuuid
 import torch
 from fastchat.conversation import Conversation, SeparatorStyle, get_conv_template
 from fastchat.model.model_adapter import load_model, model_adapters
-from adapters import FastTokenizerAvailableBaseAdapter, JapaneseStableLMAdapter #,RwkvWorldAdapter
+from adapters import FastTokenizerAvailableBaseAdapter, JapaneseStableLMAdapter, RwkvWorldAdapter
 
 from fire import Fire
 from peft import PeftModel
@@ -20,15 +20,14 @@ from tqdm import tqdm
 from transformers import GenerationConfig, StoppingCriteriaList, StoppingCriteria
 from utils import load_jsonl, save_jsonl
 
-
+# Hack the fastchat model adapters
 model_adapters[-1] = FastTokenizerAvailableBaseAdapter()
 model_adapters.insert(0, JapaneseStableLMAdapter())
+for i in range(len(model_adapters)):
+    if 'Rwkv' in type(model_adapters[i]).__name__ :
+        model_adapters[i] = RwkvWorldAdapter()
 
-
-# for i in range(len(model_adapters)):
-#     if 'Rwkv' in type(model_adapters[i]).__name__ :
-#         model_adapters[i] = RwkvWorldAdapter()
-
+# Helper that generate a fastchat conversation from a template file
 def get_conv_from_template_path(template_path):
     with open(template_path, "r") as file:
         config = json.load(file)
@@ -107,6 +106,12 @@ def get_model_answers(
                 raise ValueError(
                     "max_tokens must be specified if model does not have a max length"
                 )
+        
+        if model_id == 'matsuo-lab/weblab-10b-instruction-sft':
+            tokenizer.pad_token_id = 1
+            tokenizer.eos_token_id = 0
+            tokenizer.bos_token_id = tokenizer.pad_token_id
+
         print(f"Using max_tokens={max_tokens}")
         print(f"pad_token_id={tokenizer.pad_token_id}, bos_token_id={tokenizer.bos_token_id}, eos_token_id={tokenizer.eos_token_id}")
 
@@ -197,7 +202,7 @@ def get_model_answers(
 
 
                 output_ids = output_ids[0][len(input_ids[0]) :]
-                if 'japanese-stablelm' in model_path:
+                if 'japanese-stablelm' in model_id:
                     outputs = tokenizer.decode(output_ids, skip_special_tokens=False).replace('<|endoftext|>','').strip()
                 else:
                     outputs = tokenizer.decode(output_ids, skip_special_tokens=True).strip()
@@ -207,11 +212,11 @@ def get_model_answers(
 
             print(f"inputs: {prompt}", file=sys.stderr)
             print(f"input_ids: {input_ids}", file=sys.stderr)
-            print(f"len(input_ids): {len(input_ids)}", file=sys.stderr)
+            print(f"len(input_ids): {len(input_ids[0])}", file=sys.stderr)
 
             print(f"outputs: {outputs}", file=sys.stderr)
-            print(f"outputs_ids: {output_ids}", file=sys.stderr)
-            print(f"len(outputs_ids): {len(output_ids)}", file=sys.stderr)
+            print(f"output_ids: {output_ids}", file=sys.stderr)
+            print(f"len(output_ids): {len(output_ids)}", file=sys.stderr)
         else:
             outputs = ""
 

@@ -1,12 +1,12 @@
-from fastchat.model.model_adapter import BaseModelAdapter, RwkvAdapter
-from fastchat.model.rwkv_model import RwkvModel
+from fastchat.model.model_adapter import BaseModelAdapter
 from transformers import AutoTokenizer, AutoModelForCausalLM
+import sys 
 
 ## For Rinna support
 class FastTokenizerAvailableBaseAdapter(BaseModelAdapter):
     # https://huggingface.co/spaces/izumi-lab/stormy-7b-10ep/blob/main/app.py
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
-        print('model kwargs:', from_pretrained_kwargs)
+        print('Loading using default adapter with model kwargs:', from_pretrained_kwargs)
         try:
             tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
         except ValueError:
@@ -16,16 +16,34 @@ class FastTokenizerAvailableBaseAdapter(BaseModelAdapter):
         )
         return model, tokenizer
 
+## For JapaneseStableLM support
+class JapaneseStableLMAdapter(BaseModelAdapter):
+    def match(self, model_path: str):
+        return "japanese-stablelm" in model_path.lower()
+
+    def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        print('Loading using Japanese-StableLM adapter', file=sys.stderr)
+        print('model kwargs:', from_pretrained_kwargs, file=sys.stderr)
+        from transformers import LlamaTokenizer
+        tokenizer = LlamaTokenizer.from_pretrained("novelai/nerdstash-tokenizer-v1")
+
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path, trust_remote_code=True, **from_pretrained_kwargs
+        )
+
+        return model, tokenizer
+
 
 ## For Rwkv_world support
-from rwkv.model import RWKV
-from rwkv.utils import PIPELINE, PIPELINE_ARGS
-from types import SimpleNamespace
-import warnings
-
+from fastchat.model.model_adapter import RwkvAdapter
+from fastchat.model.rwkv_model import RwkvModel
 class RwkvModelFix(RwkvModel):
 
     def __init__(self, model_path):
+
+        from rwkv.model import RWKV
+        from types import SimpleNamespace
+        import warnings
 
         self.config = SimpleNamespace(is_encoder_decoder=False)
         self.model = RWKV(model=model_path, strategy="cuda fp16")
@@ -35,6 +53,7 @@ class RwkvModelFix(RwkvModel):
     def generate(
         self, input_ids, temperature=1.0, top_p = 0.2, max_new_tokens=999, 
     ):
+        from rwkv.utils import PIPELINE
 
         if self.pipeline is None:
             self.pipeline = PIPELINE(self.model, "rwkv_vocab_v20230424")
@@ -83,6 +102,8 @@ class RwkvWorldAdapter(RwkvAdapter):
     """The model adapter for BlinkDL/RWKV-4-World"""
     
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        from rwkv.utils import PIPELINE
+
         #from fastchat.model.rwkv_model import RwkvModel
         model = RwkvModelFix(model_path)
         revision = from_pretrained_kwargs.get("revision", "main")
