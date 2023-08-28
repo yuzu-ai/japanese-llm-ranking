@@ -104,7 +104,7 @@ def get_model_answers(
                     print(f"{attr}: {max_tokens}")
             if max_tokens is None:
                 raise ValueError(
-                    "max_tokens must be specified if model does not have a max length"
+                    "max_tokens must be specified if model.config doesn't have an attribute n_positions, max_position_embeddings, or n_ctx"
                 )
         
         if model_id == 'matsuo-lab/weblab-10b-instruction-sft':
@@ -112,8 +112,8 @@ def get_model_answers(
             tokenizer.eos_token_id = 0
             tokenizer.bos_token_id = tokenizer.pad_token_id
 
-        print(f"Using max_tokens={max_tokens}")
-        print(f"pad_token_id={tokenizer.pad_token_id}, bos_token_id={tokenizer.bos_token_id}, eos_token_id={tokenizer.eos_token_id}")
+        print(f"Max_tokens={max_tokens}")
+
 
     answer_jsons = []
     for i, ques_json in enumerate(tqdm(question_jsons)):
@@ -130,7 +130,7 @@ def get_model_answers(
 
         if not generate_prompts:
 
-            if conv.stop_str:
+            if conv.stop_str and 'RWKV' not in model_path:
 
                 print(f'Stop string `{conv.stop_str}` in conv template', file=sys.stderr)
 
@@ -180,12 +180,13 @@ def get_model_answers(
                     temperature=temperature,
                     top_p=top_p,
                     max_new_tokens=4096,
-                    stopping_criteria=stopping_criteria,
                 )
 
                 output_ids = output_ids[0][len(input_ids[0]) :]
                 outputs = tokenizer.decode(output_ids).strip()
             else:
+                print(f"pad_token_id={tokenizer.pad_token_id}, bos_token_id={tokenizer.bos_token_id}, eos_token_id={tokenizer.eos_token_id}")
+
                 input_ids = tokenizer.encode(
                     prompt, return_tensors="pt", add_special_tokens=False
                 )

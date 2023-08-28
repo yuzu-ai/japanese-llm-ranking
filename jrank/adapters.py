@@ -19,7 +19,7 @@ class FastTokenizerAvailableBaseAdapter(BaseModelAdapter):
 ## For JapaneseStableLM support
 class JapaneseStableLMAdapter(BaseModelAdapter):
     def match(self, model_path: str):
-        return "japanese-stablelm" in model_path.lower()
+        return ("japanese-stablelm" in model_path.lower()) or ('llm-experimental' in model_path.lower())
 
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
         print('Loading using Japanese-StableLM adapter', file=sys.stderr)
@@ -34,7 +34,7 @@ class JapaneseStableLMAdapter(BaseModelAdapter):
         return model, tokenizer
 
 
-## For Rwkv_world support
+# For Rwkv_world support
 from fastchat.model.model_adapter import RwkvAdapter
 from fastchat.model.rwkv_model import RwkvModel
 class RwkvModelFix(RwkvModel):
