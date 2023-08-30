@@ -7,12 +7,12 @@
 
 This repository supports YuzuAI's [Rakuda leaderboard](https://yuzuai.jp/benchmark) of Japanese LLMs, which is a Japanese-focused analogue of LMSYS' [Vicuna eval](https://lmsys.org/vicuna_eval/).
 
-This repo has the following components:
+## Adding a model to Rakuda
 
-- `jrank/questions/`: Stores question lists, such as our [Rakuda questions](https://huggingface.co/datasets/yuzuai/rakuda-questions).
+To add a model to the Rakuda leaderboard, first have the model answer the Rakuda questions. These questions are stored in `jrank/questions/` and on [hugging-face](https://huggingface.co/datasets/yuzuai/rakuda-questions).
 
-- `jrank/get_model_qa.py` and `jrank/get_gpt_qa.py`: Gets hugging-face or GPT models to answer a list of questions. Uses [FastChat](https://github.com/lm-sys/FastChat) as a common abstraction layer for models. Answers are stored in `jrank/answers/` . Jobs to launch these scripts are included in `jrank/jobs/`.
+If you wish, you can use the `jrank/get_model_qa.py` script to generate these answers. This script loads and runs models using model adapters from [FastChat](https://github.com/lm-sys/FastChat). Custom adapters can also be implemented in `jrank/adapters.py`, and scripts showing exactly the commands used to run existing models on the leaderboard are stored in `jrank/jobs/`. If your model is only accessible via an API, consult `jrank/get_gpt_qa.py`.
 
-- `jrank/matchmaker.py`: Gets pairs of answers to questions and sends them to a reviewer (`jrank/reviewer_gpt.py`) to evaluate which answer is better. Reviews are cached in `jrank/reviews` and the full set of matches is stored in `jrank/tournaments`.
+Once your model has answered the Rakuda questions, use `jrank/matchmaker.py` to send pairs of answers from your model and other ranked models to an external reviewer, by default GPT-4 (`jrank/reviewer_gpt.py`). The reviewer will evaluate which answer is better and store its results in `jrank/reviews`. 
 
-- `jrank/bradley-terry.ipynb`: A notebook that performs a Bayesian fit of the Bradley-Terry model to the match data to estimate the strength of each model. Rankings are output to `jrank/rankings/`.
+Finally run the analysis notebook `jrank/bradley-terry.ipynb` which will perform a Bayesian analysis of the reviews and infer the strength of each model. The ranking will be output to `jrank/rankings/`.

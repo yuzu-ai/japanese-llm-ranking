@@ -19,7 +19,7 @@ class FastTokenizerAvailableBaseAdapter(BaseModelAdapter):
 ## For JapaneseStableLM support
 class JapaneseStableLMAdapter(BaseModelAdapter):
     def match(self, model_path: str):
-        return "japanese-stablelm" in model_path.lower()
+        return ("japanese-stablelm" in model_path.lower()) or ('llm-experimental' in model_path.lower())
 
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
         print('Loading using Japanese-StableLM adapter', file=sys.stderr)
@@ -34,7 +34,7 @@ class JapaneseStableLMAdapter(BaseModelAdapter):
         return model, tokenizer
 
 
-## For Rwkv_world support
+# For Rwkv_world support
 from fastchat.model.model_adapter import RwkvAdapter
 from fastchat.model.rwkv_model import RwkvModel
 class RwkvModelFix(RwkvModel):
@@ -75,7 +75,7 @@ class RwkvModelFix(RwkvModel):
             
             token = self.pipeline.sample_logits(out, temperature=temperature, top_p=top_p) #### sample the next token
 
-            if token in [0, 261]: break #### exit at token [0] = <|endoftext|>
+            if token in [0, 1]: break #### exit at token [0] = <|endoftext|>
             
             out_tokens += [token]
 
@@ -83,15 +83,10 @@ class RwkvModelFix(RwkvModel):
             occurrence[token] = 1 + (occurrence[token] if token in occurrence else 0)
             
             tmp = self.pipeline.decode(out_tokens[out_len:])
-            if ('\ufffd' not in tmp) and (not tmp.endswith('\n')): #### print() only when out_str is valid utf-8 and not end with \n
+            if ('\ufffd' not in tmp): #### print() only when out_str is valid utf-8 and not end with \n
                 out_str += tmp
                 print(tmp, end = '', flush = True)
-                out_len = i + 1    
-            elif '\n\n' in tmp: #### exit at '\n\n'
-                tmp = tmp.rstrip()
-                out_str += tmp
-                print(tmp, end = '', flush = True)
-                break
+                out_len = i + 1
 
         output = out_str.strip()
         output_ids = self.pipeline.encode(output)
