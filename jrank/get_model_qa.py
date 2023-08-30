@@ -179,7 +179,7 @@ def get_model_answers(
                     input_ids=input_ids,
                     temperature=temperature,
                     top_p=top_p,
-                    max_new_tokens=4096,
+                    max_new_tokens=1024,
                 )
 
                 output_ids = output_ids[0][len(input_ids[0]) :]

@@ -1,0 +1,10 @@
+{
+    "name":"chatntq",
+    "system":"",
+    "roles":["Human: ", "Assistant: "],
+    "messages":[],
+    "offset":0,
+    "sep_style":"NO_COLON_SINGLE",
+    "sep":"\u0000",
+    "stop_str":""
+}
