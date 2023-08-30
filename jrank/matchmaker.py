@@ -257,7 +257,7 @@ if __name__ == "__main__":
         Bot("answers/rakuda_v1/stablebeluga2.jsonl"),
         Bot("answers/rakuda_v1/super-trin.jsonl"),
         Bot("answers/rakuda_v1/japanese-stablelm-instruct-alpha.jsonl"),
-        Bot("answers/rakuda_v1/japanese-stablelm-experimental.jsonl"),
+        #Bot("answers/rakuda_v1/japanese-stablelm-experimental.jsonl"),
         Bot("answers/rakuda_v1/line-3.6b-sft.jsonl"),
         Bot("answers/rakuda_v1/weblab-10b-instruction-sft.jsonl"),
     ]
@@ -269,5 +269,5 @@ if __name__ == "__main__":
     )
 
     matchmaker = MatchMaker(bots, "questions/rakuda_v1.jsonl", referee, verbose=False)
-    matchmaker.run_matches(1000)
+    matchmaker.run_matches(850)
     matchmaker.output_matches("tournaments/rakuda_v1_8-22.jsonl")
