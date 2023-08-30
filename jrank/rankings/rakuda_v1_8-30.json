@@ -1,0 +1,208 @@
+{
+    "date": "2023-08-30T17:48:08.397563",
+    "model_metadata": {
+        "gpt-4:20230713": {
+            "model_id": "gpt-4:20230713",
+            "path": "answers/rakuda_v1/gpt4.jsonl"
+        },
+        "gpt-3.5-turbo-0301:20230614": {
+            "model_id": "gpt-3.5-turbo-0301:20230614",
+            "path": "answers/rakuda_v1/gpt3.jsonl"
+        },
+        "rinna/japanese-gpt-neox-3.6b-instruction-ppo": {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-ppo",
+            "path": "answers/rakuda_v1/rinna-ppo.jsonl"
+        },
+        "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2": {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2",
+            "path": "answers/rakuda_v1/rinna-sft.jsonl"
+        },
+        "izumi-lab/stormy-7b-10ep": {
+            "model_id": "izumi-lab/stormy-7b-10ep",
+            "path": "answers/rakuda_v1/stormy.jsonl"
+        },
+        "rwkv-world-jp-v1": {
+            "model_id": "rwkv-world-jp-v1",
+            "path": "answers/rakuda_v1/rwkv-jp-v1.jsonl"
+        },
+        "stabilityai/StableBeluga2": {
+            "model_id": "stabilityai/StableBeluga2",
+            "path": "answers/rakuda_v1/stablebeluga2.jsonl"
+        },
+        "super-torin-sama-alpha2": {
+            "model_id": "super-torin-sama-alpha2",
+            "path": "answers/rakuda_v1/super-trin.jsonl"
+        },
+        "stabilityai/japanese-stablelm-instruct-alpha-7b": {
+            "model_id": "stabilityai/japanese-stablelm-instruct-alpha-7b",
+            "path": "answers/rakuda_v1/japanese-stablelm-instruct-alpha.jsonl"
+        },
+        "line-corporation/japanese-large-lm-3.6b-instruction-sft": {
+            "model_id": "line-corporation/japanese-large-lm-3.6b-instruction-sft",
+            "path": "answers/rakuda_v1/line-3.6b-sft.jsonl"
+        },
+        "matsuo-lab/weblab-10b-instruction-sft": {
+            "model_id": "matsuo-lab/weblab-10b-instruction-sft",
+            "path": "answers/rakuda_v1/weblab-10b-instruction-sft.jsonl"
+        },
+        "elyza/ELYZA-japanese-Llama-2-7b-fast-instruct": {
+            "model_id": "elyza/ELYZA-japanese-Llama-2-7b-fast-instruct",
+            "path": "answers/rakuda_v1/elyza-7b-fast-instruct.jsonl"
+        },
+        "elyza/ELYZA-japanese-Llama-2-7b-instruct": {
+            "model_id": "elyza/ELYZA-japanese-Llama-2-7b-instruct",
+            "path": "answers/rakuda_v1/elyza-7b-instruct.jsonl"
+        },
+        "NTQAI/chatntq-7b-jpntuned": {
+            "model_id": "NTQAI/chatntq-7b-jpntuned",
+            "path": "answers/rakuda_v1/chatntq-7b-jpntuned.jsonl"
+        }
+    },
+    "metadata": {
+        "questions_path": "questions/rakuda_v1.jsonl",
+        "reviewer_path": "prompts/gpt4_reviewer.jsonl",
+        "prompt_path": "prompts/rakuda_prompt.jsonl"
+    },
+    "ranking": [
+        {
+            "model_id": "izumi-lab/stormy-7b-10ep",
+            "median": 679.6147898636361,
+            "one_sigma_up": 35.02162108292396,
+            "one_sigma_down": 36.327322623488726,
+            "stronger_than_next_confidence": -1.0,
+            "win_rate": 0.1751269035532995,
+            "short_name": "opencalm-7b (stormy)",
+            "license": "open"
+        },
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-sft-v2",
+            "median": 705.6323607820445,
+            "one_sigma_up": 34.39841270304623,
+            "one_sigma_down": 35.593531313721314,
+            "stronger_than_next_confidence": 0.7041395833333334,
+            "win_rate": 0.20441988950276244,
+            "short_name": "rinna-3.6b (sft)",
+            "license": "open"
+        },
+        {
+            "model_id": "rinna/japanese-gpt-neox-3.6b-instruction-ppo",
+            "median": 730.7629404569384,
+            "one_sigma_up": 33.44590013492825,
+            "one_sigma_down": 35.30041301450501,
+            "stronger_than_next_confidence": 0.7039625,
+            "win_rate": 0.23876404494382023,
+            "short_name": "rinna-3.6b (ppo)",
+            "license": "open"
+        },
+        {
+            "model_id": "matsuo-lab/weblab-10b-instruction-sft",
+            "median": 819.8657884345703,
+            "one_sigma_up": 34.74679629006687,
+            "one_sigma_down": 34.986444078424825,
+            "stronger_than_next_confidence": 0.9681729166666667,
+            "win_rate": 0.29927007299270075,
+            "short_name": "weblab-10b (SFT)",
+            "license": "non-commercial"
+        },
+        {
+            "model_id": "stabilityai/japanese-stablelm-instruct-alpha-7b",
+            "median": 899.5614998233967,
+            "one_sigma_up": 29.06583758001591,
+            "one_sigma_down": 30.046219539846902,
+            "stronger_than_next_confidence": 0.9567125,
+            "win_rate": 0.3790322580645161,
+            "short_name": "ja-stablelm-7b (instruct-alpha)",
+            "license": "non-commercial"
+        },
+        {
+            "model_id": "super-torin-sama-alpha2",
+            "median": 952.2381572179598,
+            "one_sigma_up": 28.38103740889221,
+            "one_sigma_down": 28.439660356841955,
+            "stronger_than_next_confidence": 0.8958791666666667,
+            "win_rate": 0.4830917874396135,
+            "short_name": "supertrin",
+            "license": "closed"
+        },
+        {
+            "model_id": "line-corporation/japanese-large-lm-3.6b-instruction-sft",
+            "median": 988.1785272046451,
+            "one_sigma_up": 32.26807358901408,
+            "one_sigma_down": 32.31967804403109,
+            "stronger_than_next_confidence": 0.7993,
+            "win_rate": 0.5102040816326531,
+            "short_name": "line-3.6b (sft)",
+            "license": "open"
+        },
+        {
+            "model_id": "rwkv-world-jp-v1",
+            "median": 1024.2211920234995,
+            "one_sigma_up": 29.78830529933157,
+            "one_sigma_down": 28.908326329951137,
+            "stronger_than_next_confidence": 0.79513125,
+            "win_rate": 0.546448087431694,
+            "short_name": "rwkv-world-7b (jp-v1)",
+            "license": "open"
+        },
+        {
+            "model_id": "elyza/ELYZA-japanese-Llama-2-7b-instruct",
+            "median": 1037.6785706446217,
+            "one_sigma_up": 35.02231012875109,
+            "one_sigma_down": 33.536596056184976,
+            "stronger_than_next_confidence": 0.6139645833333334,
+            "win_rate": 0.5300751879699248,
+            "short_name": "elyza-ja-llama2-7b (instruct)",
+            "license": "open"
+        },
+        {
+            "model_id": "NTQAI/chatntq-7b-jpntuned",
+            "median": 1078.4574632660954,
+            "one_sigma_up": 34.20372244795749,
+            "one_sigma_down": 34.35107170824131,
+            "stronger_than_next_confidence": 0.8036166666666666,
+            "win_rate": 0.5714285714285714,
+            "short_name": "rwkv-world-7b (chatntq-jpn)",
+            "license": "open"
+        },
+        {
+            "model_id": "elyza/ELYZA-japanese-Llama-2-7b-fast-instruct",
+            "median": 1084.3531503196011,
+            "one_sigma_up": 34.29079798225348,
+            "one_sigma_down": 33.59344276035063,
+            "stronger_than_next_confidence": 0.55360625,
+            "win_rate": 0.6127819548872181,
+            "short_name": "elyza-ja-llama2-7b-fast (instruct)",
+            "license": "open"
+        },
+        {
+            "model_id": "stabilityai/StableBeluga2",
+            "median": 1133.261925479439,
+            "one_sigma_up": 31.560717842501617,
+            "one_sigma_down": 31.028453228575472,
+            "stronger_than_next_confidence": 0.84818125,
+            "win_rate": 0.6724137931034483,
+            "short_name": "llama2-70b (StableBeluga2)",
+            "license": "non-commercial"
+        },
+        {
+            "model_id": "gpt-3.5-turbo-0301:20230614",
+            "median": 1339.1447427663547,
+            "one_sigma_up": 39.67997208999054,
+            "one_sigma_down": 38.25749380496063,
+            "stronger_than_next_confidence": 0.9999645833333334,
+            "win_rate": 0.8160377358490566,
+            "short_name": "gpt-3.5",
+            "license": "closed"
+        },
+        {
+            "model_id": "gpt-4:20230713",
+            "median": 1525.6749898692933,
+            "one_sigma_up": 56.014694711170705,
+            "one_sigma_down": 51.83868809019009,
+            "stronger_than_next_confidence": 0.9996791666666667,
+            "win_rate": 0.9293193717277487,
+            "short_name": "gpt-4",
+            "license": "closed"
+        }
+    ]
+}
