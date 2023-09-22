@@ -20,7 +20,20 @@ assert openai.api_key, "Please set OPENAI_API_KEY environment variable"
 MODEL = "gpt-4"
 MODEL_ID = "gpt-4:20230713"
 
+
 def get_answer(question_id: int, question: str, max_tokens: int):
+    """
+    Retrieve answer from GPT model.
+
+    Args:
+        question_id (int): The ID of the question.
+        question (str): The question to ask the GPT model.
+        max_tokens (int): The maximum number of tokens to generate in the response.
+
+    Returns:
+        dict: A dictionary containing the answer ID, question ID, model ID, and the generated text response.
+    """
+
     ans = {
         "answer_id": shortuuid.uuid(),
         "question_id": question_id,
@@ -70,13 +83,17 @@ if __name__ == "__main__":
     else:
         answers = []
 
-    questions = [q for q in questions if q["question_id"] not in [a["question_id"] for a in answers]]
+    questions = [
+        q
+        for q in questions
+        if q["question_id"] not in [a["question_id"] for a in answers]
+    ]
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
         futures = []
-        for question in questions:
+        for q in questions:
             future = executor.submit(
-                get_answer, question["question_id"], question["text"], args.max_tokens
+                get_answer, q["question_id"], q["text"], args.max_tokens
             )
             futures.append(future)
 
