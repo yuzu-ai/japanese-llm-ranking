@@ -1,21 +1,4 @@
-#!/bin/bash 
-#SBATCH --job-name=qa_rinna
-#SBATCH --account=passaglia
-#SBATCH --time=2-00:00:00
-#SBATCH --gres=gpu:1
-#SBATCH --mem=32G
-#SBATCH --cpus-per-task=6
-#SBATCH --output=/home/passaglia/slurm/R-%x.%j.out
-#SBATCH --error=/home/passaglia/slurm/R-%x.%j.err
-
-source ~/.bashrc
-conda activate jrank
-
-export CUDA_DEVICE_ORDER=PCI_BUS_ID
-export CUDA_VISIBLE_DEVICES=4
-
 EVAL_DIR=/home/passaglia/projects/jrank/jrank
-
 OUTPUTS_DIR=$EVAL_DIR
 
 python $EVAL_DIR/get_model_qa.py \

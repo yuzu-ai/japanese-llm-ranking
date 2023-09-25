@@ -5,7 +5,7 @@ import argparse
 import concurrent.futures
 import os
 import time
-import json, requests 
+import json, requests
 
 import shortuuid
 import tqdm
@@ -14,9 +14,9 @@ from utils import load_jsonl, save_jsonl
 auth_key = os.getenv("SUPER_TORIN_KEY")
 assert auth_key, "Please set SUPER_TORIN_KEY environment variable"
 
-api_server_url = 'https://api.tringpt.com/'
+api_server_url = "https://api.tringpt.com/"
 
-headers = {'Authorization': 'Bearer {}'.format(auth_key)}
+headers = {"Authorization": "Bearer {}".format(auth_key)}
 
 
 def get_answer(question_id: int, question: str, max_tokens: int):
@@ -28,17 +28,18 @@ def get_answer(question_id: int, question: str, max_tokens: int):
     }
 
     send_body = {
-        'text': f"[#ユーザー]\n{question}\n\n[#アシスタント]\n",
-        'length': max_tokens,				# 出力するトークン数（1～300）　出力が重いと途中で強制終了する場合があります
-        'temperature': 0.7,			# ランダム度（0～2.5）　語彙が単調に感じる場合は上げてみてください
-        'top_p': 0.7,				# Top Pサンプリング（0.01～1.0）　1より低いほど確率の低いトークンが除外される。極端に関係のない語彙が出ることを防ぎます
-        'rep_pen': 1.15,			# 繰り返しペナルティ（1.0～2.0）　値が高すぎると出力が突飛になりすぎる可能性があります
+        "text": f"[#ユーザー]\n{question}\n\n[#アシスタント]\n",
+        "length": max_tokens,  # 出力するトークン数（1～300）　出力が重いと途中で強制終了する場合があります
+        "temperature": 0.7,  # ランダム度（0～2.5）　語彙が単調に感じる場合は上げてみてください
+        "top_p": 0.7,  # Top Pサンプリング（0.01～1.0）　1より低いほど確率の低いトークンが除外される。極端に関係のない語彙が出ることを防ぎます
+        "rep_pen": 1.15,  # 繰り返しペナルティ（1.0～2.0）　値が高すぎると出力が突飛になりすぎる可能性があります
     }
 
     for _ in range(3):
         try:
-            
-            response = requests.post(api_server_url+'/api', headers=headers, json=send_body)
+            response = requests.post(
+                api_server_url + "/api", headers=headers, json=send_body
+            )
             response_array = json.loads(response.text)
             print(response_array)
 
@@ -71,7 +72,11 @@ if __name__ == "__main__":
     else:
         answers = []
 
-    questions = [q for q in questions if q["question_id"] not in [a["question_id"] for a in answers]]
+    questions = [
+        q
+        for q in questions
+        if q["question_id"] not in [a["question_id"] for a in answers]
+    ]
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
         futures = []

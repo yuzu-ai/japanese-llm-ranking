@@ -1,6 +1,6 @@
 {
     "name": "llama-2",
-    "system": "You are an AI assistant that follows instructions very well. lang-ja\n\n",
+    "system_message": "You are an AI assistant that follows instructions very well. lang-ja\n\n",
     "roles": ["### User:\n", "### Assistant:\n"],
     "messages": [],
     "offset": 0,

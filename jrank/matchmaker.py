@@ -9,6 +9,7 @@ from tqdm import tqdm
 from utils import load_jsonl, save_jsonl
 from random import shuffle, choice
 
+
 class Bot:
     def __init__(self, cache_path: str):
         self.cache_path = cache_path
@@ -49,7 +50,7 @@ class Referee:
         # Load cache if exists; else create an empty cache file
         self.cache = self.load_cache() if os.path.isfile(self.cache_path) else {}
 
-        print(f'Cache length: {len(self.cache)}')
+        print(f"Cache length: {len(self.cache)}")
 
     def load_cache(self) -> Dict:
         cache = load_jsonl(self.cache_path)
@@ -72,11 +73,7 @@ class Referee:
         key = (question["question_id"], response1["answer_id"], response2["answer_id"])
         if key not in self.cache:
             review_json = get_review(
-                self.reviewers,
-                self.prompts,
-                question,
-                response1,
-                response2
+                self.reviewers, self.prompts, question, response1, response2
             )
             self.add_to_cache(review_json)
 
@@ -166,7 +163,9 @@ class MatchMaker:
         for bot1_id, bot2_id in all_possible_pairs:
             for q in self.questions:
                 if (bot1_id, bot2_id, q["question_id"]) not in matches:
-                    all_possible_new_matches.append((bot1_id, bot2_id, q["question_id"]))
+                    all_possible_new_matches.append(
+                        (bot1_id, bot2_id, q["question_id"])
+                    )
 
         shuffle(all_possible_new_matches)
 
@@ -177,18 +176,21 @@ class MatchMaker:
         for match in matches:
             bot_match_counts[match[0]] += 1
             bot_match_counts[match[1]] += 1
-            
 
         while len(matches) < num_matchups and all_possible_new_matches:
             # Sort bots by the number of matches they have participated in
             sorted_bots = sorted(bot_match_counts.items(), key=lambda x: x[1])
-            
+
             # Select a bot with fewest matches
-            selected_bot = choice([bot for bot, count in sorted_bots if count == sorted_bots[0][1]])
+            selected_bot = choice(
+                [bot for bot, count in sorted_bots if count == sorted_bots[0][1]]
+            )
 
             # Select a match involving the selected bot
-            selected_matches = [match for match in all_possible_new_matches if selected_bot in match]
-                      
+            selected_matches = [
+                match for match in all_possible_new_matches if selected_bot in match
+            ]
+
             # Select a match and add it to matches
             possible_match = choice(selected_matches)
             if possible_match not in matches:
@@ -199,8 +201,9 @@ class MatchMaker:
                 bot_match_counts[possible_match[0]] += 1
                 bot_match_counts[possible_match[1]] += 1
             else:
-                raise RuntimeError("Match already exists in matches despite being drawn from all_possible_new_matches")
-        
+                raise RuntimeError(
+                    "Match already exists in matches despite being drawn from all_possible_new_matches"
+                )
 
         print(f"Finished generating matchups")
 
@@ -249,15 +252,15 @@ if __name__ == "__main__":
         Bot("answers/rakuda_v1/gpt3.jsonl"),
         Bot("answers/rakuda_v1/rinna-ppo.jsonl"),
         Bot("answers/rakuda_v1/rinna-sft.jsonl"),
-        #Bot("answers/rakuda_v1/rinna.jsonl"),
+        # Bot("answers/rakuda_v1/rinna.jsonl"),
         Bot("answers/rakuda_v1/stormy.jsonl"),
-        #Bot("answers/rakuda_v1/calm.jsonl"),
-        #Bot("answers/rakuda_v1/rwkv.jsonl"),
+        # Bot("answers/rakuda_v1/calm.jsonl"),
+        # Bot("answers/rakuda_v1/rwkv.jsonl"),
         Bot("answers/rakuda_v1/rwkv-jp-v1.jsonl"),
         Bot("answers/rakuda_v1/stablebeluga2.jsonl"),
         Bot("answers/rakuda_v1/super-trin.jsonl"),
         Bot("answers/rakuda_v1/japanese-stablelm-instruct-alpha.jsonl"),
-        Bot("answers/rakuda_v1/japanese-stablelm-experimental.jsonl"),
+        # Bot("answers/rakuda_v1/japanese-stablelm-experimental.jsonl"),
         Bot("answers/rakuda_v1/line-3.6b-sft.jsonl"),
         Bot("answers/rakuda_v1/weblab-10b-instruction-sft.jsonl"),
         Bot("answers/rakuda_v1/elyza-7b-fast-instruct.jsonl"),

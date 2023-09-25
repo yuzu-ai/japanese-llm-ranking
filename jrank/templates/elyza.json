@@ -1,6 +1,6 @@
 {
-    "name": "llama-2",
-    "system": "<s>[INST] <<SYS>>\nあなたは誠実で優秀な日本人のアシスタントです。\n<</SYS>>\n\n",
+    "name": "elyza",
+    "system_message": "<s>[INST] <<SYS>>\nあなたは誠実で優秀な日本人のアシスタントです。\n<</SYS>>\n\n",
     "roles": ["[INST]", "[/INST]"],
     "messages": [],
     "offset": 0,

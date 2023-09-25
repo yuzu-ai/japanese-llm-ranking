@@ -124,7 +124,7 @@ def get_review(
 
     if not model:
         model = reviewers[reviewer_id - 1]["reviewer_id"]
-        
+
     review = get_eval(sys_prompt, prompt, max_tokens, model)
 
     score = parse_three_class_score(review)

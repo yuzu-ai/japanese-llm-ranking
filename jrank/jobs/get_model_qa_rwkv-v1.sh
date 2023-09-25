@@ -1,5 +1,4 @@
 EVAL_DIR=/home/mdxuser/japanese-llm-ranking/jrank
-
 OUTPUT_DIR=$EVAL_DIR
 
 python $EVAL_DIR/get_model_qa.py \

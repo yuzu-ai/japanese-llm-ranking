@@ -1,6 +1,6 @@
 {
     "name":"rwkv_world",
-    "system":"",
+    "system_message":"",
     "roles":["User", "Assistant"],
     "messages":[
         ["User", "hi"],
