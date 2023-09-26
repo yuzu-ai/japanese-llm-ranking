@@ -8,7 +8,7 @@ python gen_judgment.py --bench-name rakuda_v2_test --model-list claude-2 gpt-3.5
 
 python gen_judgment.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --parallel 2 --mode pairwise-n --judge-model claude-2 --n 2000
 
-python gen_judgment.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --parallel 2 --mode pairwise-n --judge-model gpt4 --n 1000
+python gen_judgment.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --parallel 2 --mode pairwise-n --judge-model gpt-4 --n 1400
 """
 import argparse
 from concurrent.futures import ThreadPoolExecutor
@@ -341,6 +341,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--n", type=int, help="For pairwise-n mode, run `n` judgments."
     )
+    parser.add_argument(
+        "--skip-confirm",
+        action="store_true",
+        help="Whether to skip user confirmation before starting the evaluation.",
+    )
     args = parser.parse_args()
 
     question_file = f"data/{args.bench_name}/questions.jsonl"
@@ -442,7 +447,8 @@ if __name__ == "__main__":
     # print(matches)
     print("Stats:")
     print(json.dumps(match_stat, indent=4))
-    input("Press Enter to confirm...")
+    if not args.skip_confirm:
+        input("Press Enter to confirm...")
 
     # Play matches
     if args.parallel == 1:

@@ -1,0 +1,146 @@
+{
+    "date": "2023-09-26T16:53:40.592787",
+    "judge": "claude-2",
+    "ranking": [
+        {
+            "model_id": "rinna-3.6b-sft",
+            "lower": 552.4831432119565,
+            "median": 569.0197538813468,
+            "upper": 587.9554302518738,
+            "error_plus": 18.935676370527062,
+            "error_minus": 16.536610669390257,
+            "median_rounded": 569.0,
+            "short_name": "rinna-3.6b (SFT)"
+        },
+        {
+            "model_id": "rinna-3.6b-ppo",
+            "lower": 574.9988379400882,
+            "median": 594.5515615704852,
+            "upper": 609.8767163548724,
+            "error_plus": 15.325154784387223,
+            "error_minus": 19.552723630397054,
+            "median_rounded": 595.0,
+            "short_name": "rinna-3.6b (PPO)"
+        },
+        {
+            "model_id": "weblab-10b-instruction-sft",
+            "lower": 711.5487949263638,
+            "median": 725.9894978455496,
+            "upper": 739.969565898559,
+            "error_plus": 13.980068053009404,
+            "error_minus": 14.44070291918581,
+            "median_rounded": 726.0,
+            "short_name": "weblab-10b-instruction-sft"
+        },
+        {
+            "model_id": "jslm7b-instruct-alpha",
+            "lower": 813.1482191983448,
+            "median": 827.3673071414925,
+            "upper": 840.8008729112648,
+            "error_plus": 13.433565769772372,
+            "error_minus": 14.219087943147656,
+            "median_rounded": 827.0,
+            "short_name": "jslm7b-instruct-alpha"
+        },
+        {
+            "model_id": "line-3.6b-sft",
+            "lower": 851.1537670845831,
+            "median": 861.7673086297872,
+            "upper": 874.6232708071722,
+            "error_plus": 12.855962177384981,
+            "error_minus": 10.613541545204043,
+            "median_rounded": 862.0,
+            "short_name": "line-3.6b-sft"
+        },
+        {
+            "model_id": "super-trin",
+            "lower": 951.3212518921332,
+            "median": 964.2409631746702,
+            "upper": 976.2062952812735,
+            "error_plus": 11.965332106603228,
+            "error_minus": 12.919711282537037,
+            "median_rounded": 964.0,
+            "short_name": "super-trin"
+        },
+        {
+            "model_id": "chatntq-7b-jpntuned",
+            "lower": 1057.7768497878833,
+            "median": 1069.0740712110867,
+            "upper": 1081.0650045939992,
+            "error_plus": 11.990933382912544,
+            "error_minus": 11.297221423203382,
+            "median_rounded": 1069.0,
+            "short_name": "chatntq-7b-jpntuned"
+        },
+        {
+            "model_id": "rwkv-world-jp-v1",
+            "lower": 1092.9399314173718,
+            "median": 1103.398250189937,
+            "upper": 1114.5574528767743,
+            "error_plus": 11.159202686837261,
+            "error_minus": 10.458318772565235,
+            "median_rounded": 1103.0,
+            "short_name": "rwkv-world-7b (jp-v1)"
+        },
+        {
+            "model_id": "elyza-7b-instruct",
+            "lower": 1104.9798549328705,
+            "median": 1117.0720729207321,
+            "upper": 1128.5133507301643,
+            "error_plus": 11.441277809432222,
+            "error_minus": 12.092217987861659,
+            "median_rounded": 1117.0,
+            "short_name": "elyza-7b-instruct"
+        },
+        {
+            "model_id": "elyza-7b-fast-instruct",
+            "lower": 1124.370275863751,
+            "median": 1133.738738613782,
+            "upper": 1146.991045926959,
+            "error_plus": 13.25230731317697,
+            "error_minus": 9.368462750031085,
+            "median_rounded": 1134.0,
+            "short_name": "elyza-7b-fast-instruct"
+        },
+        {
+            "model_id": "stablebeluga2",
+            "lower": 1137.5052753577243,
+            "median": 1150.8030542789984,
+            "upper": 1162.6083973811908,
+            "error_plus": 11.80534310219241,
+            "error_minus": 13.29777892127413,
+            "median_rounded": 1151.0,
+            "short_name": "stablebeluga2"
+        },
+        {
+            "model_id": "gpt-3.5-turbo-0301-20230614",
+            "lower": 1218.9017223705914,
+            "median": 1232.0260337289403,
+            "upper": 1243.1008323599947,
+            "error_plus": 11.074798631054364,
+            "error_minus": 13.124311358348905,
+            "median_rounded": 1232.0,
+            "short_name": "gpt-3.5"
+        },
+        {
+            "model_id": "claude-2",
+            "lower": 1243.5261704498,
+            "median": 1256.8464194660546,
+            "upper": 1269.6729333626683,
+            "error_plus": 12.826513896613733,
+            "error_minus": 13.320249016254593,
+            "median_rounded": 1257.0,
+            "short_name": "claude-2"
+        },
+        {
+            "model_id": "gpt-4-20230713",
+            "lower": 1380.2188935939741,
+            "median": 1394.96109589475,
+            "upper": 1409.9536685323062,
+            "error_plus": 14.992572637556123,
+            "error_minus": 14.742202300775944,
+            "median_rounded": 1395.0,
+            "short_name": "gpt-4"
+        }
+    ]
+}
