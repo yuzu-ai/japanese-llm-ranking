@@ -1,24 +1,22 @@
 """Bradley Terry model for ranking models on the Rakuda benchmark
 Usage:
 
-python bradley-terry.py --bench-name rakuda_v2 --model-list [LIST-OF-MODEL-ID|all] --judge-model --judge-model [gpt-4|gpt-3.5-turbo|claude-2]  --mode [pairwise|single] --compute [mcmc|mle|winrate] --make-charts [True|False]
+python make_ranking.py --bench-name rakuda_v2 --model-list [LIST-OF-MODEL-ID|all] --judge-model --judge-model [gpt-4|gpt-3.5-turbo|claude-2]  --mode [pairwise|single] --compute [mcmc|mle|winrate] --make-charts [True|False]
 
+Winrate:
+    python make_ranking.py --bench-name rakuda_v2 --model-list all --judge-model claude-2 --mode pairwise --compute winrate --make-charts
 
-Winrate: 
-    
-    python bradley-terry.py --bench-name rakuda_v2 --model-list all --judge-model claude-2 --mode pairwise --compute winrate --make-charts 
+    python make_ranking.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --judge-model gpt-4 --mode pairwise --compute winrate --make-charts
 
-    python bradley-terry.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --judge-model gpt-4 --mode pairwise --compute winrate --make-charts
+MLE:
+    python make_ranking.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --judge-model gpt-4 --mode pairwise --compute mle --make-charts  --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct  --advanced-charts
 
-MLE: 
-    python bradley-terry.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --judge-model gpt-4 --mode pairwise --compute mle --make-charts   --bootstrap-n 500
+    python make_ranking.py --bench-name rakuda_v2 --judge-model claude-2 --mode pairwise --compute mle --make-charts --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct  --advanced-charts
 
-    python bradley-terry.py --bench-name rakuda_v2 --judge-model claude-2 --mode pairwise --compute mle --make-charts --bootstrap-n 500
+MCMC:
+    python make_ranking.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --judge-model gpt-4 --mode pairwise --compute mcmc --make-charts --nsamples 15000 --nwalkers 40 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct  --advanced-charts
 
-MCMC: 
-    python bradley-terry.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --judge-model gpt-4 --mode pairwise --compute mcmc --make-charts --nsamples 15000 --nwalkers 40
-
-    python bradley-terry.py --bench-name rakuda_v2 --judge-model claude-2 --mode pairwise --compute mcmc --make-charts --nsamples 15000 --nwalkers 40
+    python make_ranking.py --bench-name rakuda_v2 --judge-model claude-2 --mode pairwise --compute mcmc --make-charts --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct  --advanced-charts --nsamples 15000 --nwalkers 40
 """
 
 import json
@@ -44,30 +42,59 @@ from pandas import DataFrame
 from registry import StandingsRegistry
 from scipy.optimize import minimize
 
-# pd.options.display.float_format = "{:.3f}".format
-# plt.rcParams["text.usetex"] = False
 
-def short_name(name: str) -> str:
-    # For display purposes it's helpful to have a short version of the model names
+def display_name(name: str) -> str:
     name_map = {
         "gpt-3.5": "gpt-3.5",
         "gpt-4": "gpt-4",
         "open-calm-7b": "opencalm-7b",
         "stormy": "opencalm-7b (stormy)",
-        "StableBeluga2": "llama2-70b (StableBeluga2)",
-        "japanese-stablelm": "ja-stablelm-7b (instruct-alpha)",
-        "rwkv-world-jp-v1": "rwkv-world-7b (jp-v1)",
+        "stablebeluga2": "llama2-70b (StableBeluga2)",
+        "jslm7b-instruct-alpha": "ja-stablelm-7b",
+        "rwkv-world-jp-v1": "rwkv-world-7b-jp-v1",
         "rinna-3.6b-ppo": "rinna-3.6b (PPO)",
         "rinna-3.6b-sft": "rinna-3.6b (SFT)",
-        "neox-3.6b": "rinna-3.6b"
+        "neox-3.6b": "rinna-3.6b",
+        "line-3.6b-sft": "line-3.6b",
+        "weblab-10b-instruction-sft": "weblab-10b",
+        "elyza-7b-fast-instruct": "elyza-7b-fast",
     }
-    
     for key, value in name_map.items():
         if key in name:
             return value
-    
+
     return name
-    
+
+
+def licensing(name: str) -> str:
+    # Basic licensing information ('closed', 'non-commercial', 'open')
+    licensing_map = {
+        "gpt-4": "closed",
+        "gpt-3.5": "closed",
+        "claude-2": "closed",
+        "stormy": "open",
+        "line-3.6b-sft": "open",
+        "super-trin": "closed",
+        "rinna/japanese-gpt-neox-3.6b-instruction-ppo": "open",
+        "stablebeluga2": "non-commercial",
+        "rwkv-world-jp-v1": "open",
+        "chatntq-7b-jpntuned": "open",
+        "rinna-3.6b-ppo": "open",
+        "rinna-3.6b-sft": "open",
+        "jslm": "non-commercial",
+        "gpt-4:20230713": "closed",
+        "weblab-10b": "non-commercial",
+        "elyza": "open",
+        "elyza": "open",
+    }
+
+    for key, value in licensing_map.items():
+        if key in name:
+            return value
+
+    return "unknown"
+
+
 def log_prior(x):
     """
     Prior: What we knew before running the experiment
@@ -77,10 +104,12 @@ def log_prior(x):
         return 0.0
     return -np.inf
 
+
 def log_likelihood(alpha, betas, Y_m, i_m, j_m):
     """log likelihood of the data given the parameters"""
     alpha_plus_betas_diff = alpha + betas[i_m] - betas[j_m]
     return np.sum(Y_m * alpha_plus_betas_diff - np.log1p(np.exp(alpha_plus_betas_diff)))
+
 
 def log_probability(x, Y_m, i_m, j_m):
     """Log Probability = Log_Prior + Log Likelihood"""
@@ -89,6 +118,7 @@ def log_probability(x, Y_m, i_m, j_m):
     if not np.isfinite(lp):
         return -np.inf
     return lp + log_likelihood(x[0], x[1:], Y_m, i_m, j_m)
+
 
 def save_ranking(
     strengths: DataFrame,
@@ -99,7 +129,7 @@ def save_ranking(
     Output standings to file
     """
 
-    strengths["short_name"] = strengths["model_id"].apply(lambda x: short_name(x))
+    strengths["display_name"] = strengths["model_id"].apply(lambda x: display_name(x))
     strengths = strengths.sort_values("median")
 
     output = {
@@ -115,6 +145,7 @@ def save_ranking(
 
     # registry = StandingsRegistry("./registry/registry.jsonl")
     # registry.register(output_path)
+
 
 def load_ranking(
     path: str,
@@ -141,8 +172,8 @@ def compute_bt_mle(
 
     # Score vector
     Y_m = matches_df["score"].values
-    #import collections
-    #print(collections.Counter(Y_m))
+    # import collections
+    # print(collections.Counter(Y_m))
     # 1 if i_m beat j_m in the mth game, .5 for a draw, 0 otherwise
 
     # match vectors: who played in the mth match
@@ -184,6 +215,7 @@ def compute_bt_mle(
             scaled_MLE_advantage,
         )
 
+
 def mle_convergence(
     matches_df: DataFrame,
     n_steps: int = 100,
@@ -217,7 +249,7 @@ def mle_convergence(
         fig, ax = plt.subplots()
 
         for model in score_history.index:
-            ax.plot(steps, score_history.loc[model], label=short_name(model))
+            ax.plot(steps, score_history.loc[model], label=display_name(model))
 
         ax.set_xlabel("Total matches")
         ax.set_ylabel("Strength")
@@ -225,6 +257,7 @@ def mle_convergence(
         ax.legend(loc="upper left")
 
         fig.savefig(chart_dir + "mle_evolution.png")
+
 
 def get_bootstrap_result(
     matches_df: DataFrame,
@@ -260,6 +293,7 @@ def get_bootstrap_result(
 
     return bars
 
+
 def plot_strengths(
     strengths: DataFrame,
     chart_dir: Optional[str] = None,
@@ -267,56 +301,146 @@ def plot_strengths(
     filename: str = "ranking",
     color: Optional[str] = None,
     label: Optional[str] = None,
-    order: pd.Series = None
+    order: pd.Series = None,
+    figax=None,
+    legend_title=None,
+    show_licensing=True,
+    title="Strengths of Japanese AI Assistants",
+    subtitle="by relative performance on Rakuda benchmark"
 ):
     if order is None:
         order = strengths.sort_values(by="median")["model_id"]
-    
-    strengths = strengths.set_index('model_id').reindex(order).reset_index()
+
+    strengths = strengths.set_index("model_id").reindex(order).reset_index()
     x_values = strengths["median"]
     y_values = strengths["median"].index
     errors = [strengths["error_plus"], strengths["error_minus"]]
-    labels = strengths["model_id"].apply(lambda x: short_name(x))
+    labels = strengths["model_id"].apply(lambda x: display_name(x))
+
+    license_colormap = {
+        "closed": np.array([145, 49, 41]) / 255,
+        "non-commercial": np.array([255, 183, 50]) / 255,
+        "open": np.array([51, 153, 255]) / 255,
+        "unknown": "black",
+    }
+    license_textmap = {
+        "closed": "Closed source",
+        "non-commercial": "No commercial use",
+        "open": "Commercial OK",
+        "unknown": "Unknown",
+    }
+    licenses = strengths["model_id"].apply(lambda x: licensing(x))
+    license_colors = strengths["model_id"].apply(
+        lambda x: license_colormap[licensing(x)]
+    )
 
     if advanced_charts:
-        cb = CircusBoy()
-        BGColor = "#FFFFFF"
-        plt.rcParams["axes.facecolor"] = BGColor
-        plt.rcParams["figure.facecolor"] = BGColor
-        plt.rcParams["savefig.facecolor"] = BGColor
+        if not figax:
+            cb = CircusBoy()
+            BGColor = "#FFFFFF"
+            plt.rcParams["axes.facecolor"] = BGColor
+            plt.rcParams["figure.facecolor"] = BGColor
+            plt.rcParams["savefig.facecolor"] = BGColor
 
-        fig, ax = cb.handlers()
-
-        ax.errorbar(x_values, y_values, xerr=errors, fmt="o")
-        ax.set_xlabel(r"Model Strength")
-        cb.set_byline(ax, "Sam Passaglia / YuzuAI", pad=7)
-
-        cb.set_title(
-            ax,
-            title="Strengths of Japanese AI Assistants",
-            subtitle="by relative performance on Rakuda benchmark",
-        )
-
-        ax.set_yticks(y_values, [])
-
-        for i, txt in enumerate(labels):
-            ax.annotate(
-                txt,
-                xy=(x_values[i], y_values[i]),
-                xytext=(-3, 7),
-                ha="right",
-                va="center",
-                textcoords="offset points",
-                color=cb.grey,
+            fig, ax = cb.handlers()
+            ax.set_xlabel(r"Model Strength")
+            cb.set_byline(ax, "Sam Passaglia / YuzuAI", pad=7)
+            cb.set_title(
+                ax,
+                title=title,
+                subtitle=subtitle,
             )
+            ax.set_yticks(y_values, [])
+            for i, txt in enumerate(labels):
+                ax.annotate(
+                    txt,
+                    xy=(x_values[i], y_values[i]),
+                    xytext=(-3, 6),
+                    ha="right",
+                    va="center",
+                    textcoords="offset points",
+                    color=cb.grey,
+                )
+            used_licenses = np.unique(licenses.values)
+            markers = [
+                plt.Line2D(
+                    [0, 0],
+                    [0, 0],
+                    color=license_colormap[license],
+                    marker="o",
+                    linestyle="",
+                )
+                for license in used_licenses
+            ]
+            if show_licensing:
+                legend = ax.legend(
+                    markers,
+                    [license_textmap[k] for k in used_licenses],
+                    prop=dict(weight="bold"),
+                    labelcolor="linecolor",
+                    frameon=True,
+                    framealpha=1,
+                    facecolor="white",
+                    edgecolor="white",
+                    numpoints=1,
+                    loc="lower right",
+                )
+
+        else:
+            fig, ax = figax
+
+            for child in ax.get_children():
+                if isinstance(child, matplotlib.text.Annotation):
+                    if child.xy[0] > 1:
+                        # print(child._text)
+                        # print(child.xy)
+                        if child.xy[0] > x_values[child.xy[1]]:
+                            # child._text = 'changed'
+                            child.xy = (x_values[child.xy[1]] - 3, child.xy[1])
+
+        if show_licensing:
+            colors = license_colors
+        else:
+            if color:
+                colors = [color] * len(license_colors)
+            else:
+                colors = ["blue"] * len(license_colors)
+
+        ax.errorbar(x_values, y_values, xerr=errors, fmt="None", ecolor=colors)
+        for i in range(len(x_values)):
+            ax.scatter(x_values[i], y_values[i], color=colors[i], label=label if i==0 else None)
 
         if chart_dir:
+            if label:
+                legend = ax.legend(
+                    #markers,
+                    #[license_textmap[k] for k in used_licenses],
+                    prop=dict(weight="bold"),
+                    title=legend_title,
+                    title_fontproperties=dict(weight="bold"),
+                    #labelcolor="linecolor",
+                    frameon=True,
+                    framealpha=1,
+                    facecolor="white",
+                    edgecolor="white",
+                    numpoints=1,
+                    loc="lower right",
+                )
             fig.savefig(chart_dir + filename + ".png")
-        matplotlib.rcParams.update(matplotlib.rcParamsDefault)
-        plt.rcParams["text.usetex"] = True
+            matplotlib.rcParams.update(matplotlib.rcParamsDefault)
+            plt.rcParams["text.usetex"] = True
+        else:
+            return fig, ax
     else:
-        #plt.figure(figsize=(10, 6))
-        plt.errorbar(
+        if not figax:
+            fig = plt.figure(figsize=(10, 6))
+            ax = plt.gca()
+            ax.set_xlabel("Model Strength")
+            ax.set_yticks(y_values, labels)
+        else:
+            fig, ax = figax
+
+        ax.errorbar(
             x_values,
             y_values,
             xerr=errors,
@@ -324,10 +448,12 @@ def plot_strengths(
             color=color,
             label=label,
         )
-        plt.xlabel("Model Strength")
-        plt.yticks(y_values, labels)
+
         if chart_dir:
             plt.savefig(chart_dir + filename + ".png")
+        else:
+            return fig, ax
+
 
 def compute_winrates(
     matches_df: DataFrame,
@@ -376,7 +502,7 @@ def compute_winrates(
 
     # Get x values and error values
     x_values = win_rates.values
-    labels = [short_name(model) for model in win_rates.index]
+    labels = [display_name(model) for model in win_rates.index]
     y_values = range(len(x_values))
 
     if chart_dir:
@@ -428,6 +554,7 @@ def compute_winrates(
 
     return win_rates
 
+
 def compute_bt_mcmc(
     matches_df: DataFrame,
     chain_path: str,
@@ -442,11 +569,11 @@ def compute_bt_mcmc(
 ) -> DataFrame:
     """
     Calculate the posterior probability distribution of Bradley Terry scores using MCMC.
-    
-    Bayesian confidence regions are computed using MCMC. 
+
+    Bayesian confidence regions are computed using MCMC.
     Refer to the emcee tutorial for a crash corse: https://emcee.readthedocs.io/en/stable/tutorials/line/
     For a more comprehensive view: https://arxiv.org/abs/1008.4686
-    
+
     Note:
         This MCMC process takes about ~4 minutes to run on an M1 mac CPU. If it's too slow,
         consider reducing the nsamples or nwalkers. The default numbers are overkill for computing confidence intervals.
@@ -606,7 +733,7 @@ def compute_bt_mcmc(
             > scaled_samples[:, models[modelB] + 1]
         ) / len(flat_samples)
         print(
-            f"{short_name(modelA)} is stronger than {short_name(modelB)} with {A_stronger_rate:.2%} confidence"
+            f"{display_name(modelA)} is stronger than {display_name(modelB)} with {A_stronger_rate:.2%} confidence"
         )
         strengths.loc[
             strengths["model_id"] == modelA, "stronger_than_next_confidence"
@@ -649,7 +776,7 @@ def compute_bt_mcmc(
     # ) / len(scaled_samples)
 
     # print(
-    #     f"{short_names[modelA]} is stronger than {short_names[modelB]} with {A_stronger_rate:.2%} confidence"
+    #     f"{display_names[modelA]} is stronger than {display_names[modelB]} with {A_stronger_rate:.2%} confidence"
     # )
 
     # if generate_charts:
@@ -665,7 +792,7 @@ def compute_bt_mcmc(
 
     #         hist = ax.hist(diffs, 100, histtype="step")
     #         ax.set_xlabel(
-    #             rf"{short_names[modelA]} $-$ {short_names[modelB]}$",
+    #             rf"{display_names[modelA]} $-$ {display_names[modelB]}$",
     #             size=16,
     #         )
     #         arrow_height = 1.0
@@ -685,7 +812,7 @@ def compute_bt_mcmc(
     #         )
 
     #         ax.annotate(
-    #             f"{A_stronger_rate:.1%} of samples have \n {short_names[modelA].split('(')[0].strip()} > {short_names[modelB].split('(')[0].strip()}",
+    #             f"{A_stronger_rate:.1%} of samples have \n {display_names[modelA].split('(')[0].strip()} > {display_names[modelB].split('(')[0].strip()}",
     #             xy=(0.0, arrow_height),
     #             xycoords=("data", "axes fraction"),
     #             xytext=(10, 10),
@@ -696,7 +823,7 @@ def compute_bt_mcmc(
     #         ax.axvline(0, color=cb.grey, lw=1)
     #         cb.set_title(
     #             ax,
-    #             title=f"Relative strength of {short_names[modelA].split('(')[0].strip()} and {short_names[modelB].split('(')[0].strip()}",
+    #             title=f"Relative strength of {display_names[modelA].split('(')[0].strip()} and {display_names[modelB].split('(')[0].strip()}",
     #             subtitle="Posterior distribution",
     #             titlesize=16,
     #             subtitlesize=14,
@@ -726,13 +853,14 @@ def compute_bt_mcmc(
     #     # Finally we can make a triangle plot just to show off
     #     samples = MCSamples(
     #         samples=scaled_samples[::200],
-    #         names=["alpha"] + [short_names[model] for model in list(models.index)],
+    #         names=["alpha"] + [display_names[model] for model in list(models.index)],
     #     )
 
     #     # Triangle plot
     #     g = plots.get_subplot_plotter()
     #     g.triangle_plot([samples], ["alpha", "gpt-4", "gpt-3.5"], filled=True)
     #     g.export(charts_prefix + "corner_getdist.png")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -826,6 +954,13 @@ if __name__ == "__main__":
         default=None,
         help="Path to save the ranking",
     )
+    parser.add_argument(
+        "--plot-skip-list",
+        type=str,
+        nargs="+",
+        default=[],
+        help="A list of models to not show in plots",
+    )
     args = parser.parse_args()
 
     # Paths
@@ -837,9 +972,12 @@ if __name__ == "__main__":
         if args.make_charts
         else None
     )
-    output_path = args.output_path or f"./data/{args.bench_name}/rankings/{args.judge_model}_{args.compute}.json"
+    output_path = (
+        args.output_path
+        or f"./data/{args.bench_name}/rankings/{args.judge_model}_{args.compute}.json"
+    )
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    
+
     if chart_dir:
         os.makedirs(chart_dir, exist_ok=True)
 
@@ -847,7 +985,7 @@ if __name__ == "__main__":
     with open(reviews_file, "r", encoding="utf-8") as f:
         matches = []
         for line in f:
-            #print(line)
+            # print(line)
             data = json.loads(line)
             matches.append(data)
 
@@ -896,12 +1034,22 @@ if __name__ == "__main__":
         print(strengths_df)
         if chart_dir:
             print("Generating strength chart")
-            plot_strengths(strengths_df, chart_dir=chart_dir, filename="mle_ranking")
-        
+            plottable_strengths = strengths_df[
+                strengths_df["model_id"].map(lambda x: x not in args.plot_skip_list)
+            ].reset_index()
+            plot_strengths(
+                plottable_strengths,
+                chart_dir=chart_dir,
+                filename="mle_ranking",
+                advanced_charts=args.advanced_charts,
+            )
+
         save_ranking(strengths_df, judge=args.judge_model, output_path=output_path)
 
     elif args.compute == "mcmc":
-        chain_path = args.chain_path or f"./data/{args.bench_name}/chains/{args.judge_model}.h5"
+        chain_path = (
+            args.chain_path or f"./data/{args.bench_name}/chains/{args.judge_model}.h5"
+        )
         os.makedirs(os.path.dirname(chain_path), exist_ok=True)
 
         strengths_df = compute_bt_mcmc(
@@ -919,7 +1067,15 @@ if __name__ == "__main__":
         print(strengths_df)
         if chart_dir:
             print("Generating strength chart")
-            plot_strengths(strengths_df, chart_dir=chart_dir, filename="mcmc_ranking")
+            plottable_strengths = strengths_df[
+                strengths_df["model_id"].map(lambda x: x not in args.plot_skip_list)
+            ].reset_index()
+            plot_strengths(
+                plottable_strengths,
+                chart_dir=chart_dir,
+                advanced_charts=args.advanced_charts,
+                filename="mcmc_ranking",
+            )
 
     elif args.compute == "winrate":
         winrates_df = compute_winrates(

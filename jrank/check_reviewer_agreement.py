@@ -1,6 +1,6 @@
 """ Check agreement between two reviewers.
 Usage: 
-python check_agreement.py data/rakuda_v2/model_judgment/claude-2_pair.jsonl data/rakuda_v2/model_judgment/gpt-4_pair.jsonl
+python check_reviewer_agreement.py data/rakuda_v2/model_judgment/claude-2_pair.jsonl data/rakuda_v2/model_judgment/gpt-4_pair.jsonl
 """
 import argparse
 import json

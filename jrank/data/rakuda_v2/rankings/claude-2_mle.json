@@ -1,146 +1,146 @@
 {
-    "date": "2023-09-26T16:53:40.592787",
+    "date": "2023-09-27T15:00:24.952605",
     "judge": "claude-2",
     "ranking": [
         {
             "model_id": "rinna-3.6b-sft",
-            "lower": 552.4831432119565,
-            "median": 569.0197538813468,
-            "upper": 587.9554302518738,
-            "error_plus": 18.935676370527062,
-            "error_minus": 16.536610669390257,
-            "median_rounded": 569.0,
-            "short_name": "rinna-3.6b (SFT)"
+            "lower": 550.691717236718,
+            "median": 568.3442859582593,
+            "upper": 585.8280838822321,
+            "error_plus": 17.483797923972816,
+            "error_minus": 17.652568721541343,
+            "median_rounded": 568.0,
+            "display_name": "rinna-3.6b (SFT)"
         },
         {
             "model_id": "rinna-3.6b-ppo",
-            "lower": 574.9988379400882,
-            "median": 594.5515615704852,
-            "upper": 609.8767163548724,
-            "error_plus": 15.325154784387223,
-            "error_minus": 19.552723630397054,
-            "median_rounded": 595.0,
-            "short_name": "rinna-3.6b (PPO)"
+            "lower": 575.7831569787468,
+            "median": 593.9876736054194,
+            "upper": 612.3878646118166,
+            "error_plus": 18.400191006397108,
+            "error_minus": 18.20451662667267,
+            "median_rounded": 594.0,
+            "display_name": "rinna-3.6b (PPO)"
         },
         {
             "model_id": "weblab-10b-instruction-sft",
-            "lower": 711.5487949263638,
-            "median": 725.9894978455496,
-            "upper": 739.969565898559,
-            "error_plus": 13.980068053009404,
-            "error_minus": 14.44070291918581,
-            "median_rounded": 726.0,
-            "short_name": "weblab-10b-instruction-sft"
+            "lower": 710.6272961556613,
+            "median": 724.4463985751879,
+            "upper": 739.1129302077185,
+            "error_plus": 14.666531632530564,
+            "error_minus": 13.819102419526644,
+            "median_rounded": 724.0,
+            "display_name": "weblab-10b"
         },
         {
             "model_id": "jslm7b-instruct-alpha",
-            "lower": 813.1482191983448,
-            "median": 827.3673071414925,
-            "upper": 840.8008729112648,
-            "error_plus": 13.433565769772372,
-            "error_minus": 14.219087943147656,
+            "lower": 813.6436392434507,
+            "median": 827.1147789265617,
+            "upper": 839.4347314496947,
+            "error_plus": 12.319952523132997,
+            "error_minus": 13.471139683111005,
             "median_rounded": 827.0,
-            "short_name": "jslm7b-instruct-alpha"
+            "display_name": "ja-stablelm-7b"
         },
         {
             "model_id": "line-3.6b-sft",
-            "lower": 851.1537670845831,
-            "median": 861.7673086297872,
-            "upper": 874.6232708071722,
-            "error_plus": 12.855962177384981,
-            "error_minus": 10.613541545204043,
-            "median_rounded": 862.0,
-            "short_name": "line-3.6b-sft"
+            "lower": 850.7838994492859,
+            "median": 864.5832331379095,
+            "upper": 877.762865485169,
+            "error_plus": 13.179632347259485,
+            "error_minus": 13.79933368862362,
+            "median_rounded": 865.0,
+            "display_name": "line-3.6b"
         },
         {
             "model_id": "super-trin",
-            "lower": 951.3212518921332,
-            "median": 964.2409631746702,
-            "upper": 976.2062952812735,
-            "error_plus": 11.965332106603228,
-            "error_minus": 12.919711282537037,
-            "median_rounded": 964.0,
-            "short_name": "super-trin"
+            "lower": 949.8989832150148,
+            "median": 962.9781638667141,
+            "upper": 976.3288048465215,
+            "error_plus": 13.350640979807395,
+            "error_minus": 13.07918065169929,
+            "median_rounded": 963.0,
+            "display_name": "super-trin"
         },
         {
             "model_id": "chatntq-7b-jpntuned",
-            "lower": 1057.7768497878833,
-            "median": 1069.0740712110867,
-            "upper": 1081.0650045939992,
-            "error_plus": 11.990933382912544,
-            "error_minus": 11.297221423203382,
-            "median_rounded": 1069.0,
-            "short_name": "chatntq-7b-jpntuned"
+            "lower": 1057.7597023459814,
+            "median": 1070.0855839048113,
+            "upper": 1082.1797802032647,
+            "error_plus": 12.094196298453426,
+            "error_minus": 12.325881558829906,
+            "median_rounded": 1070.0,
+            "display_name": "chatntq-7b-jpntuned"
         },
         {
             "model_id": "rwkv-world-jp-v1",
-            "lower": 1092.9399314173718,
-            "median": 1103.398250189937,
-            "upper": 1114.5574528767743,
-            "error_plus": 11.159202686837261,
-            "error_minus": 10.458318772565235,
-            "median_rounded": 1103.0,
-            "short_name": "rwkv-world-7b (jp-v1)"
+            "lower": 1091.9440992693787,
+            "median": 1104.0298659741932,
+            "upper": 1115.446028498007,
+            "error_plus": 11.41616252381391,
+            "error_minus": 12.085766704814432,
+            "median_rounded": 1104.0,
+            "display_name": "rwkv-world-7b (jp-v1)"
         },
         {
             "model_id": "elyza-7b-instruct",
-            "lower": 1104.9798549328705,
-            "median": 1117.0720729207321,
-            "upper": 1128.5133507301643,
-            "error_plus": 11.441277809432222,
-            "error_minus": 12.092217987861659,
-            "median_rounded": 1117.0,
-            "short_name": "elyza-7b-instruct"
+            "lower": 1105.3684038013828,
+            "median": 1117.846541440636,
+            "upper": 1127.9954177935742,
+            "error_plus": 10.14887635293826,
+            "error_minus": 12.478137639253191,
+            "median_rounded": 1118.0,
+            "display_name": "elyza-7b-instruct"
         },
         {
             "model_id": "elyza-7b-fast-instruct",
-            "lower": 1124.370275863751,
-            "median": 1133.738738613782,
-            "upper": 1146.991045926959,
-            "error_plus": 13.25230731317697,
-            "error_minus": 9.368462750031085,
-            "median_rounded": 1134.0,
-            "short_name": "elyza-7b-fast-instruct"
+            "lower": 1124.3733283997053,
+            "median": 1135.9666155614013,
+            "upper": 1147.4486804201883,
+            "error_plus": 11.482064858786998,
+            "error_minus": 11.593287161696026,
+            "median_rounded": 1136.0,
+            "display_name": "elyza-7b-fast"
         },
         {
             "model_id": "stablebeluga2",
-            "lower": 1137.5052753577243,
-            "median": 1150.8030542789984,
-            "upper": 1162.6083973811908,
-            "error_plus": 11.80534310219241,
-            "error_minus": 13.29777892127413,
+            "lower": 1135.5557488350078,
+            "median": 1151.0830925746334,
+            "upper": 1164.2746307915797,
+            "error_plus": 13.191538216946356,
+            "error_minus": 15.527343739625621,
             "median_rounded": 1151.0,
-            "short_name": "stablebeluga2"
+            "display_name": "llama2-70b (StableBeluga2)"
         },
         {
             "model_id": "gpt-3.5-turbo-0301-20230614",
-            "lower": 1218.9017223705914,
-            "median": 1232.0260337289403,
-            "upper": 1243.1008323599947,
-            "error_plus": 11.074798631054364,
-            "error_minus": 13.124311358348905,
+            "lower": 1219.6674274306251,
+            "median": 1231.6761264289887,
+            "upper": 1243.6544483404405,
+            "error_plus": 11.978321911451758,
+            "error_minus": 12.00869899836357,
             "median_rounded": 1232.0,
-            "short_name": "gpt-3.5"
+            "display_name": "gpt-3.5"
         },
         {
             "model_id": "claude-2",
-            "lower": 1243.5261704498,
-            "median": 1256.8464194660546,
-            "upper": 1269.6729333626683,
-            "error_plus": 12.826513896613733,
-            "error_minus": 13.320249016254593,
+            "lower": 1243.4888250894157,
+            "median": 1257.4306539241702,
+            "upper": 1270.0072498113313,
+            "error_plus": 12.576595887161147,
+            "error_minus": 13.94182883475446,
             "median_rounded": 1257.0,
-            "short_name": "claude-2"
+            "display_name": "claude-2"
         },
         {
             "model_id": "gpt-4-20230713",
-            "lower": 1380.2188935939741,
-            "median": 1394.96109589475,
-            "upper": 1409.9536685323062,
-            "error_plus": 14.992572637556123,
-            "error_minus": 14.742202300775944,
-            "median_rounded": 1395.0,
-            "short_name": "gpt-4"
+            "lower": 1377.2212659360998,
+            "median": 1392.8917303357848,
+            "upper": 1407.092624197287,
+            "error_plus": 14.200893861502209,
+            "error_minus": 15.670464399684988,
+            "median_rounded": 1393.0,
+            "display_name": "gpt-4"
         }
     ]
 }
