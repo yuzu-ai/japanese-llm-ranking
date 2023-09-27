@@ -287,8 +287,8 @@ def get_bootstrap_result(
         .reset_index(names="model_id")
         .sort_values("median", ascending=False)
     )
-    bars["error_plus"] = bars["upper"] - bars["median"]
-    bars["error_minus"] = bars["median"] - bars["lower"]
+    bars["one_sigma_plus"] = bars["upper"] - bars["median"]
+    bars["one_sigma_minus"] = bars["median"] - bars["lower"]
     bars["median_rounded"] = np.round(bars["median"], 0)
 
     return bars
@@ -314,7 +314,7 @@ def plot_strengths(
     strengths = strengths.set_index("model_id").reindex(order).reset_index()
     x_values = strengths["median"]
     y_values = strengths["median"].index
-    errors = [strengths["error_plus"], strengths["error_minus"]]
+    errors = [strengths["one_sigma_plus"], strengths["one_sigma_minus"]]
     labels = strengths["model_id"].apply(lambda x: display_name(x))
 
     license_colormap = {
@@ -689,13 +689,13 @@ def compute_bt_mcmc(
     q = np.diff(mcmc)
     advantage_quantiles = {
         "median": mcmc[1],
-        "error_plus": q[1],
-        "error_minus": q[0],
+        "one_sigma_plus": q[1],
+        "one_sigma_minus": q[0],
     }
     print("advantage parameter", advantage_quantiles)
 
     strengths = pd.DataFrame(
-        columns=["model_id", "median", "error_plus", "error_minus"]
+        columns=["model_id", "median", "one_sigma_plus", "one_sigma_minus"]
     )
 
     for i in range(ndim - 1):
@@ -710,8 +710,8 @@ def compute_bt_mcmc(
                         {
                             "model_id": list(models.index)[i],
                             "median": mcmc[1],
-                            "error_plus": q[1],
-                            "error_minus": q[0],
+                            "one_sigma_plus": q[1],
+                            "one_sigma_minus": q[0],
                         }
                     ]
                 ),
@@ -1076,6 +1076,8 @@ if __name__ == "__main__":
                 advanced_charts=args.advanced_charts,
                 filename="mcmc_ranking",
             )
+
+        save_ranking(strengths_df, judge=args.judge_model, output_path=output_path)
 
     elif args.compute == "winrate":
         winrates_df = compute_winrates(
