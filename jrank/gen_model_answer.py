@@ -2,9 +2,9 @@
 
 Usage:
 
-python3 gen_model_answer.py --model-path EleutherAI/pythia-70m  --model-id pythia-70m --conv_template ./templates/yuzulm.json
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path EleutherAI/pythia-70m  --model-id pythia-70m --conv_template ./templates/yuzulm.json
 
-python3 gen_model_answer.py --model-path line-corporation/japanese-large-lm-1.7b-instruction-sft --model-id line-1.7b --conv_template ./templates/line.json
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path line-corporation/japanese-large-lm-1.7b-instruction-sft --model-id line-1.7b --conv_template ./templates/line.json
 
 python3 gen_model_answer.py --model-path lmsys/fastchat-t5-3b-v1.0 --model-id fastchat-t5-3b-v1.0
 
@@ -65,7 +65,7 @@ def get_conv_from_template_path(template_path):
 def get_model_answers(
     model_path: str,
     model_id,
-    bench_name: str = "rakuda_v2_test",
+    bench_name: str = "rakuda_v2",
     answer_file: str = None,
     # debug_params
     question_begin: Optional[int] = None,
