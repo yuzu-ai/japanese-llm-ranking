@@ -1,0 +1,146 @@
+{
+    "date": "2023-09-27T15:00:24.952605",
+    "judge": "claude-2",
+    "ranking": [
+        {
+            "model_id": "rinna-3.6b-sft",
+            "lower": 550.691717236718,
+            "median": 568.3442859582593,
+            "upper": 585.8280838822321,
+            "one_sigma_plus": 17.483797923972816,
+            "one_sigma_minus": 17.652568721541343,
+            "median_rounded": 568.0,
+            "display_name": "rinna-3.6b (SFT)"
+        },
+        {
+            "model_id": "rinna-3.6b-ppo",
+            "lower": 575.7831569787468,
+            "median": 593.9876736054194,
+            "upper": 612.3878646118166,
+            "one_sigma_plus": 18.400191006397108,
+            "one_sigma_minus": 18.20451662667267,
+            "median_rounded": 594.0,
+            "display_name": "rinna-3.6b (PPO)"
+        },
+        {
+            "model_id": "weblab-10b-instruction-sft",
+            "lower": 710.6272961556613,
+            "median": 724.4463985751879,
+            "upper": 739.1129302077185,
+            "one_sigma_plus": 14.666531632530564,
+            "one_sigma_minus": 13.819102419526644,
+            "median_rounded": 724.0,
+            "display_name": "weblab-10b"
+        },
+        {
+            "model_id": "jslm7b-instruct-alpha",
+            "lower": 813.6436392434507,
+            "median": 827.1147789265617,
+            "upper": 839.4347314496947,
+            "one_sigma_plus": 12.319952523132997,
+            "one_sigma_minus": 13.471139683111005,
+            "median_rounded": 827.0,
+            "display_name": "ja-stablelm-7b"
+        },
+        {
+            "model_id": "line-3.6b-sft",
+            "lower": 850.7838994492859,
+            "median": 864.5832331379095,
+            "upper": 877.762865485169,
+            "one_sigma_plus": 13.179632347259485,
+            "one_sigma_minus": 13.79933368862362,
+            "median_rounded": 865.0,
+            "display_name": "line-3.6b"
+        },
+        {
+            "model_id": "super-trin",
+            "lower": 949.8989832150148,
+            "median": 962.9781638667141,
+            "upper": 976.3288048465215,
+            "one_sigma_plus": 13.350640979807395,
+            "one_sigma_minus": 13.07918065169929,
+            "median_rounded": 963.0,
+            "display_name": "super-trin"
+        },
+        {
+            "model_id": "chatntq-7b-jpntuned",
+            "lower": 1057.7597023459814,
+            "median": 1070.0855839048113,
+            "upper": 1082.1797802032647,
+            "one_sigma_plus": 12.094196298453426,
+            "one_sigma_minus": 12.325881558829906,
+            "median_rounded": 1070.0,
+            "display_name": "chatntq-7b-jpntuned"
+        },
+        {
+            "model_id": "rwkv-world-jp-v1",
+            "lower": 1091.9440992693787,
+            "median": 1104.0298659741932,
+            "upper": 1115.446028498007,
+            "one_sigma_plus": 11.41616252381391,
+            "one_sigma_minus": 12.085766704814432,
+            "median_rounded": 1104.0,
+            "display_name": "rwkv-world-7b (jp-v1)"
+        },
+        {
+            "model_id": "elyza-7b-instruct",
+            "lower": 1105.3684038013828,
+            "median": 1117.846541440636,
+            "upper": 1127.9954177935742,
+            "one_sigma_plus": 10.14887635293826,
+            "one_sigma_minus": 12.478137639253191,
+            "median_rounded": 1118.0,
+            "display_name": "elyza-7b-instruct"
+        },
+        {
+            "model_id": "elyza-7b-fast-instruct",
+            "lower": 1124.3733283997053,
+            "median": 1135.9666155614013,
+            "upper": 1147.4486804201883,
+            "one_sigma_plus": 11.482064858786998,
+            "one_sigma_minus": 11.593287161696026,
+            "median_rounded": 1136.0,
+            "display_name": "elyza-7b-fast"
+        },
+        {
+            "model_id": "stablebeluga2",
+            "lower": 1135.5557488350078,
+            "median": 1151.0830925746334,
+            "upper": 1164.2746307915797,
+            "one_sigma_plus": 13.191538216946356,
+            "one_sigma_minus": 15.527343739625621,
+            "median_rounded": 1151.0,
+            "display_name": "llama2-70b (StableBeluga2)"
+        },
+        {
+            "model_id": "gpt-3.5-turbo-0301-20230614",
+            "lower": 1219.6674274306251,
+            "median": 1231.6761264289887,
+            "upper": 1243.6544483404405,
+            "one_sigma_plus": 11.978321911451758,
+            "one_sigma_minus": 12.00869899836357,
+            "median_rounded": 1232.0,
+            "display_name": "gpt-3.5"
+        },
+        {
+            "model_id": "claude-2",
+            "lower": 1243.4888250894157,
+            "median": 1257.4306539241702,
+            "upper": 1270.0072498113313,
+            "one_sigma_plus": 12.576595887161147,
+            "one_sigma_minus": 13.94182883475446,
+            "median_rounded": 1257.0,
+            "display_name": "claude-2"
+        },
+        {
+            "model_id": "gpt-4-20230713",
+            "lower": 1377.2212659360998,
+            "median": 1392.8917303357848,
+            "upper": 1407.092624197287,
+            "one_sigma_plus": 14.200893861502209,
+            "one_sigma_minus": 15.670464399684988,
+            "median_rounded": 1393.0,
+            "display_name": "gpt-4"
+        }
+    ]
+}

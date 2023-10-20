@@ -1,0 +1,146 @@
+{
+    "date": "2023-09-27T14:46:38.783250",
+    "judge": "gpt-4",
+    "ranking": [
+        {
+            "model_id": "rinna-3.6b-sft",
+            "lower": 619.566715863221,
+            "median": 655.6983885104456,
+            "upper": 689.5266654245853,
+            "one_sigma_plus": 33.82827691413968,
+            "one_sigma_minus": 36.131672647224605,
+            "median_rounded": 656.0,
+            "display_name": "rinna-3.6b (SFT)"
+        },
+        {
+            "model_id": "rinna-3.6b-ppo",
+            "lower": 644.254353159584,
+            "median": 676.5678006652333,
+            "upper": 709.5456324258695,
+            "one_sigma_plus": 32.97783176063615,
+            "one_sigma_minus": 32.31344750564938,
+            "median_rounded": 677.0,
+            "display_name": "rinna-3.6b (PPO)"
+        },
+        {
+            "model_id": "weblab-10b-instruction-sft",
+            "lower": 734.7022292063158,
+            "median": 767.1456365176113,
+            "upper": 796.8860158109311,
+            "one_sigma_plus": 29.740379293319847,
+            "one_sigma_minus": 32.44340731129546,
+            "median_rounded": 767.0,
+            "display_name": "weblab-10b (SFT)"
+        },
+        {
+            "model_id": "jslm7b-instruct-alpha",
+            "lower": 813.415043107987,
+            "median": 840.2497404408183,
+            "upper": 868.4002338580127,
+            "one_sigma_plus": 28.15049341719441,
+            "one_sigma_minus": 26.834697332831297,
+            "median_rounded": 840.0,
+            "display_name": "ja-stablelm-7b (instruct-alpha)"
+        },
+        {
+            "model_id": "line-3.6b-sft",
+            "lower": 875.0113564156279,
+            "median": 898.944207772736,
+            "upper": 924.3727280186296,
+            "one_sigma_plus": 25.428520245893537,
+            "one_sigma_minus": 23.93285135710812,
+            "median_rounded": 899.0,
+            "display_name": "line-3.6b (sft)"
+        },
+        {
+            "model_id": "super-trin",
+            "lower": 895.5273014347935,
+            "median": 921.3332034913315,
+            "upper": 948.7456160516333,
+            "one_sigma_plus": 27.412412560301846,
+            "one_sigma_minus": 25.805902056538002,
+            "median_rounded": 921.0,
+            "display_name": "super-trin"
+        },
+        {
+            "model_id": "rwkv-world-jp-v1",
+            "lower": 948.2568989552537,
+            "median": 972.0663639120805,
+            "upper": 993.1123485945799,
+            "one_sigma_plus": 21.045984682499352,
+            "one_sigma_minus": 23.809464956826787,
+            "median_rounded": 972.0,
+            "display_name": "rwkv-world-7b (jp-v1)"
+        },
+        {
+            "model_id": "elyza-7b-instruct",
+            "lower": 984.2719049278703,
+            "median": 1012.2207915560615,
+            "upper": 1042.0469712802642,
+            "one_sigma_plus": 29.82617972420269,
+            "one_sigma_minus": 27.94888662819119,
+            "median_rounded": 1012.0,
+            "display_name": "elyza-7b-instruct"
+        },
+        {
+            "model_id": "chatntq-7b-jpntuned",
+            "lower": 993.2485080788538,
+            "median": 1018.8739927602277,
+            "upper": 1042.462741804757,
+            "one_sigma_plus": 23.58874904452921,
+            "one_sigma_minus": 25.625484681373905,
+            "median_rounded": 1019.0,
+            "display_name": "chatntq-7b-jpntuned"
+        },
+        {
+            "model_id": "elyza-7b-fast-instruct",
+            "lower": 1016.4635130641401,
+            "median": 1043.879055039291,
+            "upper": 1069.9012871058026,
+            "one_sigma_plus": 26.022232066511606,
+            "one_sigma_minus": 27.41554197515086,
+            "median_rounded": 1044.0,
+            "display_name": "elyza-7b-fast-instruct"
+        },
+        {
+            "model_id": "stablebeluga2",
+            "lower": 1062.085259345537,
+            "median": 1088.8301335657657,
+            "upper": 1118.9629634540893,
+            "one_sigma_plus": 30.132829888323613,
+            "one_sigma_minus": 26.744874220228667,
+            "median_rounded": 1089.0,
+            "display_name": "llama2-70b (StableBeluga2)"
+        },
+        {
+            "model_id": "gpt-3.5-turbo-0301-20230614",
+            "lower": 1253.8904632247368,
+            "median": 1283.3217431179173,
+            "upper": 1315.6370390091363,
+            "one_sigma_plus": 32.315295891218966,
+            "one_sigma_minus": 29.431279893180545,
+            "median_rounded": 1283.0,
+            "display_name": "gpt-3.5"
+        },
+        {
+            "model_id": "claude-2",
+            "lower": 1307.8540520565994,
+            "median": 1351.8331985725033,
+            "upper": 1393.3750413963576,
+            "one_sigma_plus": 41.54184282385427,
+            "one_sigma_minus": 43.97914651590395,
+            "median_rounded": 1352.0,
+            "display_name": "claude-2"
+        },
+        {
+            "model_id": "gpt-4-20230713",
+            "lower": 1428.62979853042,
+            "median": 1468.178605345533,
+            "upper": 1514.379045566642,
+            "one_sigma_plus": 46.20044022110892,
+            "one_sigma_minus": 39.54880681511304,
+            "median_rounded": 1468.0,
+            "display_name": "gpt-4"
+        }
+    ]
+}

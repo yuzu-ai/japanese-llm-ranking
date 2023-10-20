@@ -1,6 +1,6 @@
 {
     "name": "stablebeluga2",
-    "system": "### System:\nYou are Stable Beluga, an AI that follows instructions extremely well. Help as much as you can. Remember, be safe, and don't do anything illegal.\n\n",
+    "system_message": "### System:\nYou are Stable Beluga, an AI that follows instructions extremely well. Help as much as you can. Remember, be safe, and don't do anything illegal.\n\n",
     "roles": ["### User:\n", "### Assistant:\n"],
     "messages": [],
     "offset": 0,

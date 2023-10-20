@@ -1,6 +1,6 @@
 {
     "name":"chatntq",
-    "system":"",
+    "system_message":"",
     "roles":["Human: ", "Assistant: "],
     "messages":[],
     "offset":0,

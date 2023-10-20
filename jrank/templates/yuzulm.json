@@ -1,0 +1,11 @@
+{
+    "name": "yuzulm",
+    "system_message": "<s>[INST] <<SYS>>\nYou are a helpful assistant. Answer questions clearly and accurately and follow instructions closely.\n<</SYS>>\n\n",
+    "roles": ["[INST]", "[/INST]"],
+    "messages": [],
+    "offset": 0,
+    "sep_style": "LLAMA2",
+    "sep": " ",
+    "sep2": " </s><s>",
+    "stop_token_ids": [2]
+}

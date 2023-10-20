@@ -4,12 +4,12 @@ todo.md
 references
 
 jrank/helper
-jrank/jobs
 jrank/models
 
 out
 *.err
 *.out
+*.h5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
