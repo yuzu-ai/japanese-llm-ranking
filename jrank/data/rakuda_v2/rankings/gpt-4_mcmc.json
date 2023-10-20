@@ -1,0 +1,118 @@
+{
+    "date": "2023-09-27T16:58:13.512231",
+    "judge": "gpt-4",
+    "ranking": [
+        {
+            "model_id": "rinna-3.6b-sft",
+            "median": 652.6989146109397,
+            "one_sigma_plus": 36.37477934171193,
+            "one_sigma_minus": 37.73507724312674,
+            "stronger_than_next_confidence": -1.0,
+            "display_name": "rinna-3.6b (SFT)"
+        },
+        {
+            "model_id": "rinna-3.6b-ppo",
+            "median": 673.7233831237754,
+            "one_sigma_plus": 35.64555733465136,
+            "one_sigma_minus": 36.280349658622754,
+            "stronger_than_next_confidence": 0.6623035714285714,
+            "display_name": "rinna-3.6b (PPO)"
+        },
+        {
+            "model_id": "weblab-10b-instruction-sft",
+            "median": 763.836601949163,
+            "one_sigma_plus": 32.56708530828257,
+            "one_sigma_minus": 32.576355214997875,
+            "stronger_than_next_confidence": 0.9753,
+            "display_name": "weblab-10b"
+        },
+        {
+            "model_id": "jslm7b-instruct-alpha",
+            "median": 839.2947128838123,
+            "one_sigma_plus": 28.09274644254083,
+            "one_sigma_minus": 28.569578186036892,
+            "stronger_than_next_confidence": 0.9530196428571429,
+            "display_name": "ja-stablelm-7b"
+        },
+        {
+            "model_id": "line-3.6b-sft",
+            "median": 898.7825523252451,
+            "one_sigma_plus": 28.82384046580944,
+            "one_sigma_minus": 29.070523905911728,
+            "stronger_than_next_confidence": 0.927575,
+            "display_name": "line-3.6b"
+        },
+        {
+            "model_id": "super-trin",
+            "median": 921.118393083101,
+            "one_sigma_plus": 27.18469486114634,
+            "one_sigma_minus": 27.200289271240763,
+            "stronger_than_next_confidence": 0.7136946428571429,
+            "display_name": "super-trin"
+        },
+        {
+            "model_id": "rwkv-world-jp-v1",
+            "median": 970.7959914002674,
+            "one_sigma_plus": 28.52280863405133,
+            "one_sigma_minus": 27.5168817973871,
+            "stronger_than_next_confidence": 0.897975,
+            "display_name": "rwkv-world-7b-jp-v1"
+        },
+        {
+            "model_id": "elyza-7b-instruct",
+            "median": 1016.1720194472717,
+            "one_sigma_plus": 28.732209603388014,
+            "one_sigma_minus": 28.392490638465915,
+            "stronger_than_next_confidence": 0.8679035714285714,
+            "display_name": "elyza-7b-instruct"
+        },
+        {
+            "model_id": "chatntq-7b-jpntuned",
+            "median": 1016.8497051171896,
+            "one_sigma_plus": 29.04714082059627,
+            "one_sigma_minus": 28.150871058144958,
+            "stronger_than_next_confidence": 0.5085285714285714,
+            "display_name": "chatntq-7b-jpntuned"
+        },
+        {
+            "model_id": "elyza-7b-fast-instruct",
+            "median": 1044.4112717321623,
+            "one_sigma_plus": 28.560980868968727,
+            "one_sigma_minus": 28.827280778398517,
+            "stronger_than_next_confidence": 0.7498767857142857,
+            "display_name": "elyza-7b-fast"
+        },
+        {
+            "model_id": "stablebeluga2",
+            "median": 1088.6785490528137,
+            "one_sigma_plus": 29.794989054424377,
+            "one_sigma_minus": 29.497019270963165,
+            "stronger_than_next_confidence": 0.8578821428571428,
+            "display_name": "llama2-70b (StableBeluga2)"
+        },
+        {
+            "model_id": "gpt-3.5-turbo-0301-20230614",
+            "median": 1285.491011849812,
+            "one_sigma_plus": 36.84824049263602,
+            "one_sigma_minus": 35.1275864006916,
+            "stronger_than_next_confidence": 0.9999928571428571,
+            "display_name": "gpt-3.5"
+        },
+        {
+            "model_id": "claude-2",
+            "median": 1353.3087611209419,
+            "one_sigma_plus": 41.79495685016059,
+            "one_sigma_minus": 40.06226924033467,
+            "stronger_than_next_confidence": 0.8926339285714285,
+            "display_name": "claude-2"
+        },
+        {
+            "model_id": "gpt-4-20230713",
+            "median": 1472.116969058443,
+            "one_sigma_plus": 48.63374899469318,
+            "one_sigma_minus": 45.46327329060205,
+            "stronger_than_next_confidence": 0.9747107142857143,
+            "display_name": "gpt-4"
+        }
+    ]
+}
