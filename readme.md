@@ -14,7 +14,7 @@ Rakuda follows the same API as LLM Judge. First start with a question list you w
 Then generate model answers to these questions using `jrank/gen_model_answer.py`:
 
 ```bash
-python gen_model_answer.py --model-path line-corporation/japanese-large-lm-1.7b-instruction-sft --model-id line-1.7b --conv_template ./templates/line.json
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path line-corporation/japanese-large-lm-1.7b-instruction-sft --model-id line-1.7b --conv_template ./templates/line.json
 ```
 
 For API models, use `gen_api_answer.py` instead.
@@ -27,12 +27,7 @@ python gen_judgment.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned c
 
 The mode option determines what kind of judgements are performed. The default for rakuda is `pairwise-n`, in which model answers are compared pairwise until `n` judgements have been reached.
 
-Finally, use these judgements to create a model ranking. 
+Finally, fit a Bradley-Terry model to these judgements to create a model ranking. 
 ```bash
-python make_ranking.py --bench-name rakuda_v2 --judge-model claude-2 --mode pairwise --compute mle --make-charts --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct  --advanced-charts
+python make_ranking.py --bench-name rakuda_v2 --judge-model claude-2 --mode pairwise --compute mle --make-charts --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct
 ```
-
-
-Once your model has answered the Rakuda questions, use `jrank/matchmaker.py` to send pairs of answers from your model and other ranked models to an external reviewer, by default GPT-4 (`jrank/reviewer_gpt.py`). The reviewer will evaluate which answer is better and store its results in `jrank/reviews`. 
-
-Finally run the analysis notebook `jrank/bradley-terry.ipynb` which will perform a Bayesian analysis of the reviews and infer the strength of each model. The ranking will be output to `jrank/rankings/`.
