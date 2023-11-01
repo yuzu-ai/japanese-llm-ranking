@@ -1,11 +1,10 @@
 from fastchat.model.model_adapter import BaseModelAdapter
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import sys
+import torch
 
-
-## For Rinna support
+# For Rinna support
 class FastTokenizerAvailableBaseAdapter(BaseModelAdapter):
-    # https://huggingface.co/spaces/izumi-lab/stormy-7b-10ep/blob/main/app.py
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
         print(
             "Loading using default adapter with model kwargs:", from_pretrained_kwargs
@@ -20,26 +19,49 @@ class FastTokenizerAvailableBaseAdapter(BaseModelAdapter):
         return model, tokenizer
 
 
-## For JapaneseStableLM support
-class JapaneseStableLMAdapter(BaseModelAdapter):
+# For JapaneseStableLM-alpha support
+class JapaneseStableLMAlphaAdapter(BaseModelAdapter):
     def match(self, model_path: str):
-        return ("japanese-stablelm" in model_path.lower()) or (
-            "llm-experimental" in model_path.lower()
-        )
+        return (model_path.split('/')[-1] == "japanese-stablelm-instruct-alpha-7b")
 
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
-        print("Loading using Japanese-StableLM adapter", file=sys.stderr)
+        print("Loading using Japanese-StableLM alpha adapter", file=sys.stderr)
         print("model kwargs:", from_pretrained_kwargs, file=sys.stderr)
         from transformers import LlamaTokenizer
 
-        tokenizer = LlamaTokenizer.from_pretrained("novelai/nerdstash-tokenizer-v1")
+        tokenizer = LlamaTokenizer.from_pretrained("novelai/nerdstash-tokenizer-v1", additional_special_tokens=['▁▁'])
 
         model = AutoModelForCausalLM.from_pretrained(
             model_path, trust_remote_code=True, **from_pretrained_kwargs
         )
+        model.half()
+        model.eval()
+
 
         return model, tokenizer
 
+# For JapaneseStableLM-alpha-v2 support
+class JapaneseStableLMAlphaAdapterv2(BaseModelAdapter):
+    def match(self, model_path: str):
+        match = (model_path == "japanese-stablelm-instruct-alpha-7b-v2")
+        return match
+
+    def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        print("Loading using Japanese-StableLM alpha v2 adapter", file=sys.stderr)
+        print("model kwargs:", from_pretrained_kwargs, file=sys.stderr)
+        from transformers import LlamaTokenizer
+
+        tokenizer = LlamaTokenizer.from_pretrained("novelai/nerdstash-tokenizer-v1", additional_special_tokens=['▁▁'])
+
+        model = AutoModelForCausalLM.from_pretrained(
+            "stabilityai/japanese-stablelm-instruct-alpha-7b-v2",
+            trust_remote_code=True,
+            torch_dtype=torch.float16,
+            variant="fp16",
+        )
+        model.eval()
+
+        return model, tokenizer
 
 # For Rwkv_world support
 from fastchat.model.model_adapter import RwkvAdapter
