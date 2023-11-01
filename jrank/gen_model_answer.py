@@ -6,9 +6,15 @@ python3 gen_model_answer.py --bench_name rakuda_v2 --model-path EleutherAI/pythi
 
 python3 gen_model_answer.py --bench_name rakuda_v2 --model-path line-corporation/japanese-large-lm-1.7b-instruction-sft --model-id line-1.7b --conv_template ./templates/line.json
 
-python3 gen_model_answer.py --model-path lmsys/fastchat-t5-3b-v1.0 --model-id fastchat-t5-3b-v1.0
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path stabilityai/japanese-stablelm-instruct-alpha-7b-v2 --model-id stablelm-alpha-7b-v2 --conv_template ./templates/japanese-stablelm.json --top_p 0.95 --temperature 1
 
-python3 gen_model_answer.py --model-path lmsys/fastchat-t5-3b-v1.0 --model-id fastchat-t5-3b-v1.0
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path stabilityai/japanese-stablelm-instruct-gamma-7b --model-id stablelm-gamma-7b --conv_template ./templates/japanese-stablelm.json --repetition_penalty 1.05 --max_new_tokens 512 --top_p 0.95
+
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path rinna/youri-7b-chat --model-id youri-7b-chat --conv_template ./templates/youri-chat.json --repetition_penalty 1.05 --num_beams 5
+
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path rinna/youri-7b-instruction --model-id youri-7b-instruction --conv_template ./templates/youri-instruction.json --repetition_penalty 1.05
+
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path llm-jp/llm-jp-13b-instruct-full-jaster-dolly-oasst-v1.0 --model-id llm-jp-13b-instruct --conv_template ./templates/llm-jp-instruct.json --repetition_penalty 1.05
 
 """
 
@@ -28,7 +34,8 @@ from fastchat.conversation import Conversation, SeparatorStyle
 
 from adapters import (
     FastTokenizerAvailableBaseAdapter,
-    JapaneseStableLMAdapter,
+    JapaneseStableLMAlphaAdapter,
+    JapaneseStableLMAlphaAdapterv2,
     RwkvWorldAdapter,
 )
 
@@ -39,7 +46,9 @@ from transformers import GenerationConfig, StoppingCriteriaList, StoppingCriteri
 
 # Hack the fastchat model adapters
 model_adapters[-1] = FastTokenizerAvailableBaseAdapter()
-model_adapters.insert(0, JapaneseStableLMAdapter())
+model_adapters.insert(0, JapaneseStableLMAlphaAdapter())
+model_adapters.insert(1, JapaneseStableLMAlphaAdapterv2())
+
 for i in range(len(model_adapters)):
     if "Rwkv" in type(model_adapters[i]).__name__:
         model_adapters[i] = RwkvWorldAdapter()
@@ -65,6 +74,7 @@ def get_conv_from_template_path(template_path):
 def get_model_answers(
     model_path: str,
     model_id,
+    model_variant: str = None,
     bench_name: str = "rakuda_v2",
     answer_file: str = None,
     # debug_params
@@ -109,11 +119,15 @@ def get_model_answers(
             load_8bit=load_8bit,
             cpu_offloading=cpu_offloading,
             debug=debug,
+            dtype="auto",
         )
-        if lora_path is not None:
-            model = PeftModel.from_pretrained(
-                model, lora_path, torch_dtype=torch.float16
-            )
+        model.config.use_cache = False
+        model.eval()
+
+        # if lora_path is not None:
+        #     model = PeftModel.from_pretrained(
+        #         model, lora_path, torch_dtype=torch.float16
+        #     )
 
         if max_tokens is None:
             seqlen_config_attrs = ("n_positions", "max_position_embeddings", "n_ctx")
@@ -143,14 +157,6 @@ def get_model_answers(
                 temperature = temperature_config[question["category"]]
             else:
                 temperature = 0.7
-
-        generation_config = GenerationConfig(
-            temperature=temperature,
-            top_p=top_p,
-            top_k=top_k,
-            num_beams=num_beams,
-            repetition_penalty=repetition_penalty,
-        )
 
         if os.path.exists(conv_template):
             conv = get_conv_from_template_path(conv_template)
@@ -192,7 +198,8 @@ def get_model_answers(
                     for stop_word in stop_words
                 ]
 
-            stop_words_ids += [torch.Tensor(conv.stop_token_ids).to(model.device)]
+            if conv.stop_token_ids:
+                stop_words_ids += [torch.Tensor(conv.stop_token_ids).to(model.device)]
 
             print(f"stop_words_ids {stop_words_ids}", file=sys.stderr)
 
@@ -227,11 +234,6 @@ def get_model_answers(
                     print(f"input_ids: {input_ids}", file=sys.stderr)
                     print(f"len(input_ids): {len(input_ids[0])}", file=sys.stderr)
 
-                    if temperature < 1e-4:
-                        do_sample = False
-                    else:
-                        do_sample = True
-
                     # some models may error out when generating long outputs
                     try:
                         if "RWKV" in model_path:
@@ -246,12 +248,17 @@ def get_model_answers(
                         else:
                             output_ids = model.generate(
                                 input_ids=input_ids.to(model.device),
-                                generation_config=generation_config,
                                 stopping_criteria=stopping_criteria,
                                 max_new_tokens=max_tokens - len(input_ids[0]),
                                 pad_token_id=tokenizer.pad_token_id,
                                 bos_token_id=tokenizer.bos_token_id,
                                 eos_token_id=tokenizer.eos_token_id,
+                                temperature=temperature,
+                                top_p=top_p,
+                                top_k=top_k,
+                                num_beams=num_beams,
+                                repetition_penalty=repetition_penalty,
+                                do_sample=True if temperature > 1e-4 else False,
                             )
 
                             if model.config.is_encoder_decoder:
@@ -259,11 +266,17 @@ def get_model_answers(
                             else:
                                 output_ids = output_ids[0][len(input_ids[0]) :]
 
-                        print(f"output_ids: {output_ids}", file=sys.stderr)
+                        print(f"output_ids: { {id:tokenizer.convert_ids_to_tokens([id]) for id in output_ids.detach().cpu().numpy()} }", file=sys.stderr)
                         print(f"len(output_ids): {len(output_ids)}", file=sys.stderr)
 
                         if "RWKV" in model_path:
                             output = tokenizer.decode(output_ids).strip()
+                        elif "stablelm-instruct-alpha" in model_path:
+                            print('special stablelm-alpha decode')
+                            output = tokenizer.decode(
+                                output_ids,
+                                skip_special_tokens=True,
+                            )
                         else:
                             output = tokenizer.decode(
                                 output_ids,
@@ -278,16 +291,14 @@ def get_model_answers(
                                 output = output.replace(special_token, "")
 
                         if conv.stop_str:
-                            outputs = outputs.split(conv.stop_str)[0].strip()
-
-                        if conv.name == "xgen" and output.startswith("Assistant:"):
-                            output = output.replace("Assistant:", "", 1).strip()
+                            output = output.split(conv.stop_str)[0].strip()
 
                         output = output.strip()
 
                         print(f"output: {output}", file=sys.stderr)
 
                     except RuntimeError as e:
+                        print(e)
                         print("ERROR question ID: ", question["question_id"])
                         output = "ERROR"
 
