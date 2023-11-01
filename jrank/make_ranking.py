@@ -9,7 +9,7 @@ Winrate:
     python make_ranking.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --judge-model gpt-4 --mode pairwise --compute winrate --make-charts
 
 MLE:
-    python make_ranking.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --judge-model gpt-4 --mode pairwise --compute mle --make-charts  --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct  --advanced-charts
+    python make_ranking.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin llm-jp-13b-instruct stablelm-alpha-7b-v2 --judge-model gpt-4 --mode pairwise --compute mle --make-charts  --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct  --advanced-charts
 
     python make_ranking.py --bench-name rakuda_v2 --judge-model claude-2 --mode pairwise --compute mle --make-charts --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct  --advanced-charts
 
@@ -39,7 +39,7 @@ import pandas as pd
 from getdist import MCSamples, plots
 from multiprocess import Pool
 from pandas import DataFrame
-from registry import StandingsRegistry
+#from registry import StandingsRegistry
 from scipy.optimize import minimize
 
 
