@@ -9,9 +9,9 @@ Winrate:
     python make_ranking.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --judge-model gpt-4 --mode pairwise --compute winrate --make-charts
 
 MLE:
-    python make_ranking.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin llm-jp-13b-instruct stablelm-alpha-7b-v2 --judge-model gpt-4 --mode pairwise --compute mle --make-charts  --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct  --advanced-charts
+    python make_ranking.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft stablelm-gamma-7b super-trin llm-jp-13b-instruct stablelm-alpha-7b-v2 youri-7b-instruction --judge-model gpt-4 --mode pairwise --compute mle --make-charts  --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct stablelm-alpha-7b-v2 chatntq-7b-jpntuned  --advanced-charts
 
-    python make_ranking.py --bench-name rakuda_v2 --judge-model claude-2 --mode pairwise --compute mle --make-charts --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct  --advanced-charts
+    python make_ranking.py --bench-name rakuda_v2 --judge-model claude-2 --mode pairwise --compute mle --make-charts --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct stablelm-alpha-7b-v2 chatntq-7b-jpntuned  --advanced-charts
 
 MCMC:
     python make_ranking.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --judge-model gpt-4 --mode pairwise --compute mcmc --make-charts --nsamples 15000 --nwalkers 40 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct  --advanced-charts
@@ -49,15 +49,18 @@ def display_name(name: str) -> str:
         "gpt-4": "gpt-4",
         "open-calm-7b": "opencalm-7b",
         "stormy": "opencalm-7b (stormy)",
-        "stablebeluga2": "llama2-70b (StableBeluga2)",
-        "jslm7b-instruct-alpha": "ja-stablelm-7b",
-        "rwkv-world-jp-v1": "rwkv-world-7b-jp-v1",
-        "rinna-3.6b-ppo": "rinna-3.6b (PPO)",
+        "stablebeluga2": "StableBeluga2-70b (llama2)",
+        "jslm7b-instruct-alpha": "stablelm-alpha-7b",
+        "llm-jp-13b-instruct": "llm-jp-13b",
+        "rwkv-world-jp-v1": "rwkv-world-7b",
+        "rinna-3.6b-ppo": "rinna-3.6b",
         "rinna-3.6b-sft": "rinna-3.6b (SFT)",
         "neox-3.6b": "rinna-3.6b",
         "line-3.6b-sft": "line-3.6b",
         "weblab-10b-instruction-sft": "weblab-10b",
-        "elyza-7b-fast-instruct": "elyza-7b-fast",
+        "elyza-7b-fast-instruct": "elyza-7b-fast (llama2)",
+        "youri-7b-instruction": "youri-7b (llama2)",
+        "stablelm-gamma-7b": "stablelm-gamma-7b (mistral)",
     }
     for key, value in name_map.items():
         if key in name:
@@ -86,6 +89,9 @@ def licensing(name: str) -> str:
         "weblab-10b": "non-commercial",
         "elyza": "open",
         "elyza": "open",
+        "stablelm-gamma-7b": "open",
+        "llm-jp-13b-instruct": "open",
+        "youri-7b-instruction": "open",
     }
 
     for key, value in licensing_map.items():
