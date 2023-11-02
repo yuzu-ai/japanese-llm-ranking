@@ -9,6 +9,12 @@ python gen_judgment.py --bench-name rakuda_v2_test --model-list claude-2 gpt-3.5
 python gen_judgment.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --parallel 2 --mode pairwise-n --judge-model claude-2 --n 2000
 
 python gen_judgment.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --parallel 2 --mode pairwise-n --judge-model gpt-4 --n 1400
+
+python gen_judgment.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo  rwkv-world-jp-v1 stablelm-alpha-7b-v2 weblab-10b-instruction-sft llm-jp-13b-instruct youri-7b-instruction stablelm-gamma-7b stablelm-beta-70b --parallel 2 --mode pairwise-n --judge-model gpt-4 --n 2200
+
+python gen_judgment.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rwkv-world-jp-v1 stablelm-alpha-7b-v2 weblab-10b-instruction-sft llm-jp-13b-instruct  youri-7b-instruction stablelm-gamma-7b stablelm-beta-70b --parallel 2 --mode pairwise-n --judge-model claude-2 --n 12000
+
+
 """
 import argparse
 from concurrent.futures import ThreadPoolExecutor
@@ -151,7 +157,7 @@ def make_n_match_pairs(
                     matches.append((model1_id, model2_id, question_id))
                 else:
                     #print(f"{model1_id} {model2_id} {question_id} {judge.model_name}")
-                    print(f"{data['model1_id']} {data['model2_id']} {data['judge']}")
+                    print(f"Rejecting {data['model1_id']} {data['model2_id']} {data['judge']}")
                     #raise RuntimeError("Match in cache does not match the current settings")
 
         print(f"Number of matches imported from cache {len(matches)}")
