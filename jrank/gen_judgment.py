@@ -112,7 +112,7 @@ def make_match_all_pairs(
                         dict(q), m_1, m_2, a_1, a_2, judge, multi_turn=multi_turn
                     )
                 matches.append(match)
-    return 
+    return matches
 
 
 def make_n_match_pairs(
