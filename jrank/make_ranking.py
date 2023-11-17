@@ -494,9 +494,9 @@ def compute_winrates(
         print("WARNING: number of matches is incorrect")
 
     # overall average win rate
-    w_i = (a_ij + b_ij.T).sum(axis=1) / ((a_ij + b_ij.T) + (a_ij + b_ij.T).T).sum(
-        axis=1
-    )
+    numerator = a_ij.add(b_ij.T, fill_value=0).sum(axis=1)
+    denominator = (a_ij.add(b_ij.T, fill_value=0) + a_ij.add(b_ij.T, fill_value=0).T).sum(axis=1)
+    w_i = (numerator/denominator)
 
     win_rates = w_i.sort_values(ascending=True)
 
