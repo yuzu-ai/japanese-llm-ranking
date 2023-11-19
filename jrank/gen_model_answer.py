@@ -122,12 +122,16 @@ def get_model_answers(
             dtype="auto",
         )
         model.config.use_cache = False
-        model.eval()
 
         # if lora_path is not None:
         #     model = PeftModel.from_pretrained(
         #         model, lora_path, torch_dtype=torch.float16
         #     )
+        if lora_path is not None:
+            model = PeftModel.from_pretrained(
+                model, lora_path, device_map="auto"
+            )
+        model.eval()
 
         if max_tokens is None:
             seqlen_config_attrs = ("n_positions", "max_position_embeddings", "n_ctx")
@@ -140,7 +144,7 @@ def get_model_answers(
                 raise ValueError(
                     "max_tokens must be specified if model.config doesn't have an attribute n_positions, max_position_embeddings, or n_ctx"
                 )
-
+        # FIXME: モデルごとに指定する
         if model_id == "matsuo-lab/weblab-10b-instruction-sft":
             tokenizer.pad_token_id = 1
             tokenizer.eos_token_id = 0
