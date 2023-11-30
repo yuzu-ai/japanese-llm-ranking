@@ -6,15 +6,18 @@ python3 gen_model_answer.py --bench_name rakuda_v2 --model-path EleutherAI/pythi
 
 python3 gen_model_answer.py --bench_name rakuda_v2 --model-path line-corporation/japanese-large-lm-1.7b-instruction-sft --model-id line-1.7b --conv_template ./templates/line.json
 
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path stabilityai/japanese-stablelm-instruct-alpha-7b-v2 --model-id stablelm-alpha-7b-v2 --conv_template ./templates/japanese-stablelm.json --top_p 0.95 --temperature 1
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path stabilityai/japanese-stablelm-instruct-alpha-7b-v2 --model-id stablelm-alpha-7b-v2 --conv_template ./templates/japanese-stablelm.json --repetition_penalty 1.1 --max_tokens 512 
 
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path stabilityai/japanese-stablelm-instruct-gamma-7b --model-id stablelm-gamma-7b --conv_template ./templates/japanese-stablelm.json --repetition_penalty 1.05 --max_new_tokens 512 --top_p 0.95
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path stabilityai/japanese-stablelm-instruct-gamma-7b --model-id stablelm-gamma-7b --conv_template ./templates/japanese-stablelm.json --repetition_penalty 1.1 --max_tokens 512 
 
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path rinna/youri-7b-chat --model-id youri-7b-chat --conv_template ./templates/youri-chat.json --repetition_penalty 1.05 --num_beams 5
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path rinna/youri-7b-chat --model-id youri-7b-chat --conv_template ./templates/youri-chat.json --repetition_penalty 1.05 --max_tokens 512 
 
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path rinna/youri-7b-instruction --model-id youri-7b-instruction --conv_template ./templates/youri-instruction.json --repetition_penalty 1.05
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path rinna/youri-7b-instruction --model-id youri-7b-instruction --conv_template ./templates/youri-instruction.json --repetition_penalty 1.1 --max_tokens 512 
 
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path llm-jp/llm-jp-13b-instruct-full-jaster-dolly-oasst-v1.0 --model-id llm-jp-13b-instruct --conv_template ./templates/llm-jp-instruct.json --repetition_penalty 1.05
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path llm-jp/llm-jp-13b-instruct-full-jaster-dolly-oasst-v1.0 --model-id llm-jp-13b-instruct --conv_template ./templates/llm-jp-instruct.json --repetition_penalty 1.05 
+
+python3 gen_model_answer.py --bench_name rakuda_v2 --model-path stabilityai/japanese-stablelm-instruct-beta-70b --model-id stablelm-beta-70b --conv_template ./templates/japanese-stablelm-beta.json --max_tokens 1024 --max_gpu_memory "40GiB" --num_gpus 4
+
 
 """
 
@@ -90,7 +93,7 @@ def get_model_answers(
     cpu_offloading: bool = False,
     debug: bool = False,
     # generation parameters
-    temperature: Optional[float] = None,
+    temperature: Optional[float] = 0,
     top_p: float = 0.9,
     top_k: float = 0,
     repetition_penalty: float = 1.0,
@@ -152,11 +155,6 @@ def get_model_answers(
             )
 
     for question in tqdm(questions):
-        if not temperature:
-            if question["category"] in temperature_config:
-                temperature = temperature_config[question["category"]]
-            else:
-                temperature = 0.7
 
         if os.path.exists(conv_template):
             conv = get_conv_from_template_path(conv_template)
@@ -246,6 +244,7 @@ def get_model_answers(
 
                             output_ids = output_ids[0][len(input_ids[0]) :]
                         else:
+                            print('GENERATING ')
                             output_ids = model.generate(
                                 input_ids=input_ids.to(model.device),
                                 stopping_criteria=stopping_criteria,
@@ -260,6 +259,7 @@ def get_model_answers(
                                 repetition_penalty=repetition_penalty,
                                 do_sample=True if temperature > 1e-4 else False,
                             )
+                            print('COMPLETED GENERATING')
 
                             if model.config.is_encoder_decoder:
                                 output_ids = output_ids[0]

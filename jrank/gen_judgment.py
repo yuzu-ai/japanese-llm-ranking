@@ -156,14 +156,13 @@ def make_n_match_pairs(
                 if model1_id and model2_id and question_id and judge.model_name == data["judge"][0]:
                     matches.append((model1_id, model2_id, question_id))
                 else:
-                    #print(f"{model1_id} {model2_id} {question_id} {judge.model_name}")
-                    print(f"Rejecting {data['model1_id']} {data['model2_id']} {data['judge']}")
+                    #print(f"Rejecting {data['model1_id']} {data['model2_id']} {data['judge']}")
+                    pass
                     #raise RuntimeError("Match in cache does not match the current settings")
 
         print(f"Number of matches imported from cache {len(matches)}")
 
     
-    #all_possible_pairs = list(combinations(models, 2))
     all_possible_pairs = list(permutations(models, 2))
     all_possible_new_matches = []
     for model1_id, model2_id in all_possible_pairs:
