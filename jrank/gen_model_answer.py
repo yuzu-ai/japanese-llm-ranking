@@ -83,15 +83,17 @@ def get_model_answers(
     
     default_tokenizer_kwargs = {
         "use_fast": True,
+        "trust_remote_code": True
     }
 
-    tokenizer_kwargs = default_tokenizer_kwargs.update(tokenizer_kwargs)
+    tokenizer_kwargs = default_tokenizer_kwargs | tokenizer_kwargs
 
     # TODO: ADD SUPPORT FOR OTHER QUESTION DATASETS LIKE JA-MT-BENCH AND ELYZA-TASKS-100
     question_file = f"data/{bench_name}/questions.jsonl"
     questions = load_questions(question_file)
 
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, tokenizer_kwargs)
+    print(tokenizer_kwargs)
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, **tokenizer_kwargs)
 
     # CHECK IF THE TOKENIZER INCLUDES A CHAT TEMPLATE AND IF IT DOESNT AND A TEMPLATE IS NOT PROVIDE, THROW AN ERROR
     if chat_template is None:
