@@ -39,7 +39,6 @@ import pandas as pd
 from getdist import MCSamples, plots
 from multiprocessing import Pool
 from pandas import DataFrame
-from registry import StandingsRegistry
 from scipy.optimize import minimize
 
 
