@@ -37,7 +37,7 @@ from samplotlib.circusboy import CircusBoy
 import numpy as np
 import pandas as pd
 from getdist import MCSamples, plots
-from multiprocess import Pool
+from multiprocessing import Pool
 from pandas import DataFrame
 from registry import StandingsRegistry
 from scipy.optimize import minimize
