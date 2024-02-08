@@ -2,7 +2,7 @@ samplotlib==0.0.6
 emcee==3.1.4
 transformers==4.36.0
 openai==0.27.7
-fschat==0.2.23
+fschat==0.2.35
 peft @ git+https://github.com/huggingface/peft.git@b1059b73aab9043b118ff19b0cf96263ea86248a
 fire==0.5.0
 shortuuid==1.0.11
@@ -12,3 +12,4 @@ numpy
 pandas
 getdist
 anthropic
+rwkv==0.8.24
