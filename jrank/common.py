@@ -6,15 +6,14 @@ import ast
 import dataclasses
 import glob
 import json
-import hashlib
 import os
 import re
 import time
 from typing import Optional
 
-import openai
 import anthropic
-
+import openai
+from openai import OpenAI
 from fastchat.model.model_adapter import get_conversation_template
 
 # API setting constants
@@ -53,6 +52,8 @@ reverse_model_map = {
 
 @dataclasses.dataclass
 class Judge:
+    """A judge model."""
+
     model_name: str
     prompt_template: dict
     ref_based: bool = False
@@ -61,30 +62,34 @@ class Judge:
 
 @dataclasses.dataclass
 class MatchSingle:
+    """A single model competing on a question."""
+
     question: dict
     model: str
     answer: dict
     judge: Judge
-    ref_answer: dict = None
+    ref_answer: Optional[dict] = None
     multi_turn: bool = False
 
 
 @dataclasses.dataclass
 class MatchPair:
+    """A pair of models competing on a question."""
+
     question: dict
     model1_id: str
     model2_id: str
     answer_1: dict
     answer_2: dict
     judge: Judge
-    ref_answer: dict = None
+    ref_answer: Optional[dict] = None
     multi_turn: bool = False
 
 
 def load_questions(question_file: str, begin: Optional[int], end: Optional[int]):
     """Load questions from a file."""
     questions = []
-    with open(question_file, "r") as ques_file:
+    with open(question_file, "r", encoding="utf-8") as ques_file:
         for line in ques_file:
             if line:
                 questions.append(json.loads(line))
@@ -105,8 +110,8 @@ def load_model_answers(answer_dir: str):
     for filename in filenames:
         model_name = os.path.basename(filename)[:-6]
         answer = {}
-        with open(filename) as fin:
-            for line in fin:
+        with open(filename, encoding="utf-8") as file_in:
+            for line in file_in:
                 line = json.loads(line)
                 answer[line["question_id"]] = line
         model_answers[model_name] = answer
@@ -121,14 +126,15 @@ def load_judge_prompts(prompt_file: str):
     Dict[judge_name: str -> dict]
     """
     prompts = {}
-    with open(prompt_file) as fin:
-        for line in fin:
+    with open(prompt_file, encoding="utf-8") as file_in:
+        for line in file_in:
             line = json.loads(line)
             prompts[line["name"]] = line
     return prompts
 
 
 def run_judge_single(question, answer, judge, ref_answer, multi_turn=False):
+    """Run a single answer grading judge."""
     kwargs = {}
     model = judge.model_name
     if ref_answer is not None:
@@ -158,11 +164,11 @@ def run_judge_single(question, answer, judge, ref_answer, multi_turn=False):
     conv.append_message(conv.roles[0], user_prompt)
     conv.append_message(conv.roles[1], None)
 
-    if 'gpt' in model:
-        judgment = chat_completion_openai(model, conv, temperature=0, max_tokens=2048)
+    if "gpt" in model:
+        judgment = chat_completion_openai(model, conv, temperature=0.0, max_tokens=2048)
     elif "claude" in model:
         judgment = chat_completion_anthropic(
-            model, conv, temperature=0, max_tokens=1024
+            model, conv, temperature=0.0, max_tokens=1024
         )
     else:
         raise ValueError(f"Invalid judge model name: {model}")
@@ -221,10 +227,11 @@ def play_a_match_single(match: MatchPair, output_file: str):
 
     if output_file:
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
-        with open(output_file, "a") as fout:
-            fout.write(json.dumps(result, ensure_ascii=False) + "\n")
+        with open(output_file, "a", encoding="utf-8") as file_out:
+            file_out.write(json.dumps(result, ensure_ascii=False) + "\n")
 
     return result
+
 
 def run_judge_pair(question, answer_a, answer_b, judge, ref_answer, multi_turn=False):
 
@@ -310,13 +317,22 @@ def run_judge_pair(question, answer_a, answer_b, judge, ref_answer, multi_turn=F
         raise ValueError(
             f"invalid output format: {judge.prompt_template['output_format']}"
         )
-    
+
     return winner, user_prompt, judgment
 
 
 def play_a_match_pair(match: MatchPair, output_file: str):
-    
-    question, model1_id, model2_id, answer_1, answer_2, judge, ref_answer, multi_turn = (
+
+    (
+        question,
+        model1_id,
+        model2_id,
+        answer_1,
+        answer_2,
+        judge,
+        ref_answer,
+        multi_turn,
+    ) = (
         match.question,
         match.model1_id,
         match.model2_id,
@@ -328,12 +344,17 @@ def play_a_match_pair(match: MatchPair, output_file: str):
     )
 
     if os.path.exists(output_file):
-        with open(output_file, 'r') as file:
+        with open(output_file, "r", encoding="utf-8") as file:
             for line in file:
                 data = json.loads(line)
-                if data['model1_id'] == model1_id and data['model2_id'] == model2_id and data['question_id'] == question['question_id'] and data['judge'][0] == judge.model_name:
+                if (
+                    data["model1_id"] == model1_id
+                    and data["model2_id"] == model2_id
+                    and data["question_id"] == question["question_id"]
+                    and data["judge"][0] == judge.model_name
+                ):
                     return data
-                
+
     if judge.prompt_template["type"] == "pairwise":
         winner, prompt, judgment = run_judge_pair(
             question, answer_1, answer_2, judge, ref_answer, multi_turn=multi_turn
@@ -343,9 +364,9 @@ def play_a_match_pair(match: MatchPair, output_file: str):
         # )
 
         g1_map = {"A": "model1_id", "B": "model2_id"}
-        #g2_map = {"A": "model2_id", "B": "model1_id"}
+        # g2_map = {"A": "model2_id", "B": "model1_id"}
         winner = g1_map.get(winner, winner)
-        #g2_winner = g2_map.get(g2_winner, g2_winner)
+        # g2_winner = g2_map.get(g2_winner, g2_winner)
         question_id = question["question_id"]
         turn = 1 if not multi_turn else 2
 
@@ -354,20 +375,20 @@ def play_a_match_pair(match: MatchPair, output_file: str):
             "model1_id": model1_id,
             "model2_id": model2_id,
             "winner": winner,
-            #"g1_winner": g1_winner,
-            #"g2_winner": g2_winner,
+            # "g1_winner": g1_winner,
+            # "g2_winner": g2_winner,
             "judge": (judge.model_name, judge.prompt_template["name"]),
             "prompt": prompt,
             "judgment": judgment,
-            #"g2_user_prompt": g2_user_prompt,
-            #"g2_judgment": g2_judgment,
+            # "g2_user_prompt": g2_user_prompt,
+            # "g2_judgment": g2_judgment,
             "turn": turn,
             "tstamp": time.time(),
         }
 
         print(
             f"question: {question_id}, turn: {turn}, model1_id: {model1_id}, model2_id: {model2_id}, "
-            f"winner: {winner},"# g2_winner: {g2_winner}, "
+            f"winner: {winner},"  # g2_winner: {g2_winner}, "
             f"judge: {(judge.model_name, judge.prompt_template['name'])}"
         )
     elif judge.prompt_template["type"] == "single":
@@ -391,8 +412,8 @@ def play_a_match_pair(match: MatchPair, output_file: str):
             "model1_id": model1_id,
             "model2_id": model2_id,
             "winner": winner,
-            #"g1_winner": winner,
-            #"g2_winner": winner,
+            # "g1_winner": winner,
+            # "g2_winner": winner,
             "judge": (judge.model_name, judge.prompt_template["name"]),
             "g1_user_prompt": m1_user_prompt,
             "g1_judgment": m1_judgment,
@@ -418,28 +439,46 @@ def play_a_match_pair(match: MatchPair, output_file: str):
     return result
 
 
-def chat_completion_openai(model, conv, temperature, max_tokens):
+def chat_completion_openai(
+    model, conv, temperature: float = 0.0, max_tokens: int = 2048
+):
+    """Chat completion using OpenAI API."""
     output = API_ERROR_OUTPUT
     for _ in range(API_MAX_RETRY):
         try:
             messages = conv.to_openai_api_messages()
-            response = openai.ChatCompletion.create(
+            print(messages)
+            client = OpenAI(
+                # This is the default and can be omitted
+                api_key=os.environ.get("OPENAI_API_KEY"),
+            )
+            chat_completion = client.chat.completions.create(
                 model=model,
                 messages=messages,
-                n=1,
-                temperature=temperature,
+                temperature=0,
                 max_tokens=max_tokens,
             )
-            output = response["choices"][0]["message"]["content"]
+            output = chat_completion["choices"][0]["message"]["content"]
             break
-        except openai.error.OpenAIError as e:
-            print(type(e), e)
+        except openai.APIConnectionError as e:
+            print("The server could not be reached")
+            print(e.__cause__)  # an underlying Exception, likely raised within httpx.
+            time.sleep(API_RETRY_SLEEP)
+        except openai.RateLimitError as _e:
+            print("A 429 status code was received; we should back off a bit.")
+            time.sleep(API_RETRY_SLEEP)
+        except openai.APIStatusError as e:
+            print("Another non-200-range status code was received")
+            print(e.status_code)
+            print(e.response.json())
             time.sleep(API_RETRY_SLEEP)
 
     return output
 
 
-def chat_completion_anthropic(model, conv, temperature, max_tokens):
+def chat_completion_anthropic(
+    model, conv, temperature: float = 0.0, max_tokens: int = 2048
+):
     output = API_ERROR_OUTPUT
     for _ in range(API_MAX_RETRY):
         try:
@@ -460,7 +499,9 @@ def chat_completion_anthropic(model, conv, temperature, max_tokens):
     return output.strip()
 
 
-def chat_completion_palm(chat_state, model, conv, temperature, max_tokens):
+def chat_completion_palm(
+    chat_state, model, conv, temperature: float = 0.0, max_tokens: int = 2048
+):
     from fastchat.serve.api_provider import init_palm_chat
 
     assert model == "palm-2-chat-bison-001"
@@ -518,10 +559,14 @@ def load_pairwise_model_judgments(filename: str):
     """
     judge_dict = {}
 
-    for line in open(filename):
+    for line in open(filename, encoding="utf-8"):
         obj = json.loads(line)
         judge = tuple(obj["judge"])
-        qid, model1_id, model2_id = obj["question_id"], obj["model1_id"], obj["model2_id"]
+        qid, model1_id, model2_id = (
+            obj["question_id"],
+            obj["model1_id"],
+            obj["model2_id"],
+        )
 
         if judge not in judge_dict:
             judge_dict[judge] = {}
@@ -561,7 +606,7 @@ def load_single_model_judgments(filename: str):
     """
     judge_dict = {}
 
-    for line in open(filename):
+    for line in open(filename, encoding="utf-8"):
         obj = json.loads(line)
         judge = tuple(obj["judge"])
         qid, model = obj["question_id"], obj["model"]
@@ -584,13 +629,13 @@ def resolve_pairwise_judgment_dict(
     """Return the correct pairwise judge."""
     if multi_turn:
         if question["category"] in NEED_REF_CATS:
-            return model_judgments_math[("gpt-4", "pair-math-v1-multi-turn")]
-        return model_judgments_normal[("gpt-4", "pair-v2-multi-turn")]
+            return model_judgments_math[("gpt-4-turbo", "pair-math-v1-multi-turn")]
+        return model_judgments_normal[("gpt-4-turbo", "pair-v2-multi-turn")]
 
     if question["category"] in NEED_REF_CATS:
-        return model_judgments_math[("gpt-4", "pair-math-v1")]
+        return model_judgments_math[("gpt-4-turbo", "pair-math-v1")]
     else:
-        return model_judgments_normal[("gpt-4", "pair-v2")]
+        return model_judgments_normal[("gpt-4-turbo", "pair-v2")]
 
 
 def resolve_single_judgment_dict(
@@ -599,13 +644,13 @@ def resolve_single_judgment_dict(
     """Return the correct single answer grading judge."""
     if multi_turn:
         if question["category"] in NEED_REF_CATS:
-            return model_judgments_math[("gpt-4", "single-math-v1-multi-turn")]
-        return model_judgments_normal[("gpt-4", "single-v1-multi-turn")]
+            return model_judgments_math[("gpt-4-turbo", "single-math-v1-multi-turn")]
+        return model_judgments_normal[("gpt-4-turbo", "single-v1-multi-turn")]
 
     if question["category"] in NEED_REF_CATS:
-        return model_judgments_math[("gpt-4", "single-math-v1")]
+        return model_judgments_math[("gpt-4-turbo", "single-math-v1")]
     else:
-        return model_judgments_normal[("gpt-4", "single-v1")]
+        return model_judgments_normal[("gpt-4-turbo", "single-v1")]
 
 
 def get_pairwise_judge_explanation(gamekey, judgment_dict):
@@ -625,7 +670,7 @@ def get_pairwise_judge_explanation(gamekey, judgment_dict):
         return (
             f"**Game 1**. **A**: {model1_id}, **B**: {model2_id}\n\n"
             f"**Judgment**: {g1_judgment}"
-            + f"\n\n`--------------------------`\n\n"
+            + "\n\n`--------------------------`\n\n"
             + f"**Game 2**. **A**: {model2_id}, **B**: {model1_id}\n\n"
             f"**Judgment**: {g2_judgment}"
         )
@@ -652,6 +697,7 @@ def get_single_judge_explanation(gamekey, judgment_dict):
 
 
 def check_data(questions, model_answers, ref_answers, models, judges):
+    """Check the data integrity."""
     # check model answers
     for m in models:
         assert m in model_answers, f"Missing model answer for {m}"
@@ -673,6 +719,7 @@ def check_data(questions, model_answers, ref_answers, models, judges):
 
 
 def get_model_list(answer_dir):
+    """Get the list of model names from the answer directory."""
     file_paths = glob.glob(f"{answer_dir}/*.jsonl")
     file_names = [os.path.splitext(os.path.basename(f))[0] for f in file_paths]
     return file_names
@@ -681,12 +728,12 @@ def get_model_list(answer_dir):
 def reorg_answer_file(answer_file):
     """Sort by question id and de-duplication"""
     answers = {}
-    with open(answer_file, "r") as fin:
-        for l in fin:
-            qid = json.loads(l)["question_id"]
-            answers[qid] = l
+    with open(answer_file, "r", encoding="utf-8") as file_in:
+        for answer in file_in:
+            qid = json.loads(answer)["question_id"]
+            answers[qid] = answer
 
-    qids = sorted(list(answers.keys()))
-    with open(answer_file, "w") as fout:
-        for qid in qids:
-            fout.write(answers[qid])
+    q_ids = sorted(list(answers.keys()))
+    with open(answer_file, "w", encoding="utf-8") as file_out:
+        for qid in q_ids:
+            file_out.write(answers[qid])

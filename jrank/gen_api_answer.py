@@ -6,28 +6,31 @@ python3 gen_api_answer.py --model gpt-4 --bench-name rakuda_v2_test
 python3 gen_api_answer.py --model claude-2 --bench-name rakuda_v2_test
 """
 import argparse
+import concurrent.futures
 import json
 import os
 import time
-import concurrent.futures
 
 import openai
 import shortuuid
 import tqdm
-
 from common import (
-    load_questions,
-    temperature_config,
-    chat_completion_openai,
     chat_completion_anthropic,
+    chat_completion_openai,
     chat_completion_palm,
+    load_questions,
     reorg_answer_file,
+    temperature_config,
 )
 from fastchat.model.model_adapter import get_conversation_template
 
 
 def get_answer(
-    question: dict, model: str, num_choices: int, max_tokens: int, answer_file: str
+    question: dict,
+    model: str,
+    num_choices: int,
+    answer_file: str,
+    max_tokens: int = 2048,
 ):
     if args.force_temperature:
         temperature = args.force_temperature
@@ -42,8 +45,8 @@ def get_answer(
         print(f"Model: {model}")
         conv = get_conversation_template(model)
         if conv.system_message:
-            conv.system_message = "あなたは役立つアシスタントです。"
-        print(conv)
+            conv.system_message = "あなたは役立つアシスタントです。日本語で答えでください。"
+        # print(conv)
         turns = []
         for j in range(len(question["turns"])):
             conv.append_message(conv.roles[0], question["turns"][j])
@@ -73,8 +76,8 @@ def get_answer(
     }
 
     os.makedirs(os.path.dirname(answer_file), exist_ok=True)
-    with open(answer_file, "a") as fout:
-        fout.write(json.dumps(ans, ensure_ascii=False) + "\n")
+    with open(answer_file, "a", encoding="utf-8") as file_out:
+        file_out.write(json.dumps(ans, ensure_ascii=False) + "\n")
 
 
 if __name__ == "__main__":
@@ -99,7 +102,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max-tokens",
         type=int,
-        default=1024,
+        default=2048,
         help="The maximum number of new generated tokens.",
     )
     parser.add_argument(
@@ -137,7 +140,7 @@ if __name__ == "__main__":
                 args.model,
                 args.num_choices,
                 args.max_tokens,
-                answer_file,
+                args.answer_file,
             )
             futures.append(future)
 
