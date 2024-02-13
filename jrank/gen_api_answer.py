@@ -30,7 +30,7 @@ def get_answer(
     model: str,
     num_choices: int,
     answer_file: str,
-    max_tokens: int = 2048,
+    max_tokens: int = 1024,
 ):
     if args.force_temperature:
         temperature = args.force_temperature
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max-tokens",
         type=int,
-        default=2048,
+        default=1024,
         help="The maximum number of new generated tokens.",
     )
     parser.add_argument(
