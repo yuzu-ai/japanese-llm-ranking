@@ -1,0 +1,41 @@
+{
+  "benchmark_name": "rakuda_v3",
+  "models": {
+    "local_models": [
+      {
+        "id": "model1",
+        "path": "path/to/model1",
+        "conversation_template": "/teamplates/model1-template.json"
+      },
+      {
+        "id": "model2",
+        "path": "path/to/model2",
+        "conversation_template": "/teamplates/model12-template.json"
+      }
+    ],
+    "api_models": [
+      {
+        "id": "gpt-3.5-turbo",
+        "path": "gpt-3.5-turbo"
+      },
+      {
+        "id": "gpt-4-turbo",
+        "path": "gpt-4-turbo"
+      }
+    ],
+    "judge_models": [
+      {
+        "id": "gpt-4",
+        "path": "gpt-4"
+      }
+    ],
+    "baseline_model": "gpt-3.5-turbo"
+  },
+  "max_token_length": 1024,
+  "temperature": 0,
+  "num_judges": 1000,
+  "evaluation_mode": "single",
+  "repetition_penalty": 1.05,
+  "top_p": 0.95,
+  "num_choices": 1
+}

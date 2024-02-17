@@ -129,9 +129,12 @@ def make_n_match_pairs(
     
     matches = []
 
+    print("Cache file: ", cache_file)
+    print("MODELS: ", models)
+    
     if os.path.exists(cache_file):
         print(f"Importing matches from cache {cache_file}")
-        with open(output_file, 'r') as file:
+        with open(cache_file, 'r', encoding="utf-8") as file:
             for line in file:
                 if len(matches) == n:
                     break
@@ -155,7 +158,6 @@ def make_n_match_pairs(
                     #raise RuntimeError("Match in cache does not match the current settings")
 
         print(f"Number of matches imported from cache {len(matches)}")
-
     
     #all_possible_pairs = list(combinations(models, 2))
     all_possible_pairs = list(permutations(models, 2))
@@ -206,7 +208,7 @@ def make_n_match_pairs(
                 "Match already exists in matches despite being drawn from all_possible_new_matches"
             )
 
-    print(f"Finished generating matchups")
+    print("Finished generating matchups")
 
     match_pairs = []
     for match in matches:
@@ -299,7 +301,7 @@ def make_judge_single(judge_model, judge_prompts):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--bench-name",
+        "--bench_name",
         type=str,
         default="rakuda_v2",
         help="The name of the benchmark question set.",

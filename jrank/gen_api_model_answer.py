@@ -29,8 +29,8 @@ def get_answer(
     question: dict,
     model: str,
     num_choices: int,
+    max_tokens: int,
     answer_file: str,
-    max_tokens: int = 1024,
 ):
     if args.force_temperature:
         temperature = args.force_temperature
@@ -75,6 +75,7 @@ def get_answer(
         "tstamp": time.time(),
     }
 
+    print("ANSWER FILE: ", answer_file)
     os.makedirs(os.path.dirname(answer_file), exist_ok=True)
     with open(answer_file, "a", encoding="utf-8") as file_out:
         file_out.write(json.dumps(ans, ensure_ascii=False) + "\n")
@@ -83,7 +84,7 @@ def get_answer(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--bench-name",
+        "--benchmark",
         type=str,
         default="rakuda_v2",
         help="The name of the benchmark question set.",
@@ -100,7 +101,7 @@ if __name__ == "__main__":
         "--force-temperature", type=float, help="Forcibly set a sampling temperature."
     )
     parser.add_argument(
-        "--max-tokens",
+        "--max_tokens",
         type=int,
         default=1024,
         help="The maximum number of new generated tokens.",
@@ -116,20 +117,16 @@ if __name__ == "__main__":
     parser.add_argument(
         "--parallel", type=int, default=1, help="The number of concurrent API calls."
     )
-    parser.add_argument("--openai-api-base", type=str, default=None)
     args = parser.parse_args()
 
-    if args.openai_api_base is not None:
-        openai.api_base = args.openai_api_base
+    # if args.openai_api_base is not None:
+    #     openai.api_base = args.openai_api_base
 
-    question_file = f"data/{args.bench_name}/questions.jsonl"
+    question_file = f"data/{args.benchmark}/questions.jsonl"
     questions = load_questions(question_file, args.question_begin, args.question_end)
 
-    if args.answer_file:
-        answer_file = args.answer_file
-    else:
-        answer_file = f"data/{args.bench_name}/answers/{args.model}.jsonl"
-    print(f"Output to {answer_file}")
+    args.answer_file = f"data/{args.benchmark}/answers/{args.model}.jsonl"
+    print(f"Output to {args.answer_file}")
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.parallel) as executor:
         futures = []
@@ -149,4 +146,4 @@ if __name__ == "__main__":
         ):
             future.result()
 
-    reorg_answer_file(answer_file)
+    reorg_answer_file(args.answer_file)

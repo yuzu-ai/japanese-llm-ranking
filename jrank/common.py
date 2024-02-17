@@ -13,8 +13,8 @@ from typing import Optional
 
 import anthropic
 import openai
-from openai import OpenAI
 from fastchat.model.model_adapter import get_conversation_template
+from openai import OpenAI
 
 # API setting constants
 API_MAX_RETRY = 16
@@ -440,10 +440,12 @@ def play_a_match_pair(match: MatchPair, output_file: str):
 
 
 def chat_completion_openai(
-    model, conv, temperature: float = 0.0, max_tokens: int = 2048
+    model, conv, temperature: float = 0.0, max_tokens: int = 1024
 ):
     """Chat completion using OpenAI API."""
     output = API_ERROR_OUTPUT
+    print("MAX TOKEN: ", max_tokens)
+    
     for _ in range(API_MAX_RETRY):
         try:
             messages = conv.to_openai_api_messages()
@@ -455,17 +457,18 @@ def chat_completion_openai(
             chat_completion = client.chat.completions.create(
                 model=model,
                 messages=messages,
-                temperature=0,
+                temperature=temperature,
                 max_tokens=max_tokens,
             )
-            output = chat_completion["choices"][0]["message"]["content"]
+            output = chat_completion.choices[0].message.content
             break
         except openai.APIConnectionError as e:
             print("The server could not be reached")
             print(e.__cause__)  # an underlying Exception, likely raised within httpx.
             time.sleep(API_RETRY_SLEEP)
-        except openai.RateLimitError as _e:
+        except openai.RateLimitError as e:
             print("A 429 status code was received; we should back off a bit.")
+            print(e.__cause__)
             time.sleep(API_RETRY_SLEEP)
         except openai.APIStatusError as e:
             print("Another non-200-range status code was received")
