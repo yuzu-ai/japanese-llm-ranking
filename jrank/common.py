@@ -267,7 +267,7 @@ def run_judge_pair(question, answer_a, answer_b, judge, ref_answer, multi_turn=F
     conv.append_message(conv.roles[0], user_prompt)
     conv.append_message(conv.roles[1], None)
 
-    if model in ["gpt-3.5-turbo", "gpt-4"]:
+    if model in ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo"]:
         conv.set_system_message(system_prompt)
         judgment = chat_completion_openai(model, conv, temperature=0, max_tokens=2048)
     elif "claude" in model:
@@ -644,13 +644,13 @@ def resolve_single_judgment_dict(
     """Return the correct single answer grading judge."""
     if multi_turn:
         if question["category"] in NEED_REF_CATS:
-            return model_judgments_math[("gpt-4-turbo", "single-math-v1-multi-turn")]
-        return model_judgments_normal[("gpt-4-turbo", "single-v1-multi-turn")]
+            return model_judgments_math[("gpt-4", "single-math-v1-multi-turn")]
+        return model_judgments_normal[("gpt-4", "single-v1-multi-turn")]
 
     if question["category"] in NEED_REF_CATS:
-        return model_judgments_math[("gpt-4-turbo", "single-math-v1")]
+        return model_judgments_math[("gpt-4", "single-math-v1")]
     else:
-        return model_judgments_normal[("gpt-4-turbo", "single-v1")]
+        return model_judgments_normal[("gpt-4", "single-v1")]
 
 
 def get_pairwise_judge_explanation(gamekey, judgment_dict):
