@@ -629,13 +629,13 @@ def resolve_pairwise_judgment_dict(
     """Return the correct pairwise judge."""
     if multi_turn:
         if question["category"] in NEED_REF_CATS:
-            return model_judgments_math[("gpt-4-turbo", "pair-math-v1-multi-turn")]
-        return model_judgments_normal[("gpt-4-turbo", "pair-v2-multi-turn")]
+            return model_judgments_math[("gpt-4", "pair-math-v1-multi-turn")]
+        return model_judgments_normal[("gpt-4", "pair-v2-multi-turn")]
 
     if question["category"] in NEED_REF_CATS:
-        return model_judgments_math[("gpt-4-turbo", "pair-math-v1")]
+        return model_judgments_math[("gpt-4", "pair-math-v1")]
     else:
-        return model_judgments_normal[("gpt-4-turbo", "pair-v2")]
+        return model_judgments_normal[("gpt-4", "pair-v2")]
 
 
 def resolve_single_judgment_dict(
