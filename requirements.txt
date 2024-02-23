@@ -13,3 +13,4 @@ pandas
 getdist
 anthropic
 ninja
+rwkv
