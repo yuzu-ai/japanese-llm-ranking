@@ -16,7 +16,7 @@ Rakuda follows the same API as LLM Judge. First start with a question list you w
 Then generate model answers to these questions using `jrank/gen_model_answer.py`:
 
 ```bash
-python3 gen_lobal_model_answer.py --bench_name rakuda_v2 --model-path line-corporation/japanese-large-lm-1.7b-instruction-sft --model-id line-1.7b --conv_template ./templates/line.json
+python3 gen_local_model_answer.py --bench_name rakuda_v2 --model-path line-corporation/japanese-large-lm-1.7b-instruction-sft --model-id line-1.7b --conv_template ./templates/line.json
 ```
 
 For API models, use `gen_api_answer.py` instead.
