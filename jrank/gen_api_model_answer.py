@@ -11,7 +11,6 @@ import json
 import os
 import time
 
-import openai
 import shortuuid
 import tqdm
 from common import (
@@ -45,7 +44,7 @@ def get_answer(
         print(f"Model: {model}")
         conv = get_conversation_template(model)
         if conv.system_message:
-            conv.system_message = "あなたは役立つアシスタントです。日本語で答えでください。"
+            conv.system_message = "あなたは役立つアシスタントです。日本語で答えてください。"
         # print(conv)
         turns = []
         for j in range(len(question["turns"])):
