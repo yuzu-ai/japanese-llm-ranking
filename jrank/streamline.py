@@ -80,6 +80,8 @@ if len(judge_models) > 0:
             f"{config['models']['baseline_model']}",
             "--mode",
             f"{config['evaluation_mode']}",
+            "--n",
+            "200"
         ]
 
         subprocess.run(command, check=True)

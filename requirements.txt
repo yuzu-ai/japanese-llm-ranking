@@ -12,3 +12,4 @@ numpy
 pandas
 getdist
 anthropic
+ninja
