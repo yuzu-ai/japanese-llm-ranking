@@ -124,9 +124,19 @@ def make_n_match_pairs(
     ref_answers=None,
     multi_turn=False,
     cache_file=None,
-    n=None,
+    n=200,
 ):
-    
+    print("Models: ", models)
+    print("Questions: ", questions)
+    print("Model answers: ", model_answers)
+    print("Judge: ", judge)
+    print("Baseline model: ", baseline_model)
+    print("Ref answers: ", ref_answers)
+    print("Multi turn: ", multi_turn)
+    print("Cache file: ", cache_file)
+    print("N: ", n)
+
+    output_file = cache_file
     matches = []
 
     if os.path.exists(cache_file):
@@ -159,6 +169,7 @@ def make_n_match_pairs(
     
     #all_possible_pairs = list(combinations(models, 2))
     all_possible_pairs = list(permutations(models, 2))
+    print("All possible pairs: ", all_possible_pairs)
     all_possible_new_matches = []
     for model1_id, model2_id in all_possible_pairs:
         for q in questions:
@@ -385,12 +396,15 @@ if __name__ == "__main__":
             f"data/{args.bench_name}/model_judgment/{args.judge_model}_pair.jsonl"
         )
         if args.mode == "pairwise-all":
+            print("Starting pairwise-all mode.")
             make_match_func = make_match_all_pairs
             baseline_model = None
         elif args.mode == "pairwise-n":
+            print("Starting pairwise-n mode.")
             make_match_func = partial(make_n_match_pairs, cache_file=output_file, n=args.n)
             baseline_model = None
         else:
+            print("Starting pairwise-baseline mode.")
             make_match_func = make_match
             baseline_model = args.baseline_model
 
