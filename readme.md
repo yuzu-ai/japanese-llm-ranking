@@ -13,7 +13,7 @@ This repository supports YuzuAI's [Rakuda leaderboard](https://yuzuai.jp/benchma
 
 Rakuda follows the same API as LLM Judge. First start with a question list you wish to compare the models on. These questions can be multi-turn. The default Rakuda question list is `jrank/data/rakuda_v2/questions.jsonl` ([HF](https://huggingface.co/datasets/yuzuai/rakuda-questions)).
 
-Then generate model answers to these questions using `jrank/gen_model_answer.py`:
+Then generate model answers to these questions using `jrank/gen_local_model_answer.py`:
 
 ```bash
 python3 gen_local_model_answer.py --bench_name rakuda_v2 --model-path line-corporation/japanese-large-lm-1.7b-instruction-sft --model-id line-1.7b --conv_template ./templates/line.json
