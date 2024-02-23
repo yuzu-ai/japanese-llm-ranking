@@ -34,8 +34,6 @@ if len(local_models) > 0:
             f"{config['max_token_length']}",
             "--top_p",
             f"{config['top_p']}",
-            "--n",
-            "200"
         ]
 
         subprocess.run(command, check=True)
