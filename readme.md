@@ -44,8 +44,13 @@ In order to ease the use of Rakuda, we have created a new method to generate the
 2. copy `config.json.example` content to `config.json`
 3. modify the content as you see fit, if `local_models` or `api_models` list is empty, then that part will be skipped
 4. start your local environment
-5. `pip install -r requirements.txt`
+5. `pip install -r requirements.txt`*
 6. `cd jrank`
 7. run `python3 streamline.py` it will run following the config file and generate a result file
+
+* if encounter `from openai import OpenAI` error, be sure to upgrade openai package
+```bash
+pip install openai --upgrade
+```
 
 More updates will be coming soon.
