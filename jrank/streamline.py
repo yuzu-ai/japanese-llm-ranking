@@ -30,7 +30,7 @@ if len(local_models) > 0:
             f"{model['conversation_template']}",
             "--repetition_penalty",
             f"{config['repetition_penalty']}",
-            "--max_new_tokens",
+            "--max_tokens",
             f"{config['max_token_length']}",
             "--top_p",
             f"{config['top_p']}",

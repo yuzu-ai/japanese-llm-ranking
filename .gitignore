@@ -175,3 +175,4 @@ cython_debug/
 # ignore default config.json
 config.json
 
+.vscode/

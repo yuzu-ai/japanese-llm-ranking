@@ -15,7 +15,7 @@
       },
       {
         "id": "gpt-4-turbo",
-        "path": "gpt-4-turbo"
+        "path": "gpt-4-turbo-preview"
       }
     ],
     "judge_models": [
@@ -29,7 +29,7 @@
   "max_token_length": 1024,
   "temperature": 0,
   "num_judges": 1000,
-  "evaluation_mode": "single",
+  "evaluation_mode": "pairwise-n",
   "repetition_penalty": 1.05,
   "top_p": 0.95,
   "num_choices": 1
