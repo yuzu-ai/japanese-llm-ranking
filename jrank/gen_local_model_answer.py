@@ -95,7 +95,7 @@ def get_model_answers(
     top_k: float = 0,
     repetition_penalty: float = 1.0,
     num_beams: int = 1,
-    max_tokens: Optional[int] = None,
+    max_tokens: Optional[int] = 1024,
     num_choices: int = 1,
     # generate the answers (set to False for debugging prompts)
     generate_answers: bool = True,
@@ -118,8 +118,7 @@ def get_model_answers(
             max_gpu_memory=max_gpu_memory,
             load_8bit=load_8bit,
             cpu_offloading=cpu_offloading,
-            debug=debug,
-            dtype="auto",
+            debug=debug
         )
         model.config.use_cache = False
         model.eval()
@@ -309,7 +308,7 @@ def get_model_answers(
 
         # Dump answers
         os.makedirs(os.path.dirname(answer_file), exist_ok=True)
-        with open(os.path.expanduser(answer_file), "a") as fout:
+        with open(os.path.expanduser(answer_file), "a", encoding="utf-8") as fout:
             ans_json = {
                 "question_id": question["question_id"],
                 "answer_id": shortuuid.uuid(),
