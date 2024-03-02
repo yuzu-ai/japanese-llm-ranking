@@ -5,7 +5,7 @@
       {
         "id": "line-1.7b",
         "path": "line-corporation/japanese-large-lm-1.7b-instruction-sft",
-        "conversation_template": "/teamplates/line.json"
+        "conversation_template": "/templates/line.json"
       }
     ],
     "api_models": [
