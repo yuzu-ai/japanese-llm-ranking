@@ -118,8 +118,7 @@ def get_model_answers(
             max_gpu_memory=max_gpu_memory,
             load_8bit=load_8bit,
             cpu_offloading=cpu_offloading,
-            debug=debug,
-            dtype="auto",
+            debug=debug
         )
         model.config.use_cache = False
         model.eval()
