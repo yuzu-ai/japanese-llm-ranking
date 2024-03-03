@@ -42,7 +42,7 @@ In order to ease the use of Rakuda, we have created a new method to generate the
 
 1. Create a new `config.json` in jrank folder
 2. Copy `config.json.example` content to `config.json`
-3. Modify the content as needed; if `local_models` or `api_models` list is empty, then that part will be skipped
+3. Modify the content as you see fit; if `local_models` or `api_models` list is empty, then that part will be skipped
 4. Start your local environment
 5. `pip install -r requirements.txt` *
 6. `cd jrank`
