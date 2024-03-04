@@ -36,15 +36,15 @@ python make_ranking.py --bench-name rakuda_v2 --judge-model claude-2 --mode pair
 
 ## New Method (Work in Progress)
 
-In order to ease the use of Rakuda, we have created a new method to generate the model ranking result. 
+In order to ease the use of Rakuda, we have created a new method to generate the model ranking result.
 
 ### Steps
 
-1. create a new `config.json` in jrank folder
-2. copy `config.json.example` content to `config.json`
-3. modify the content as you see fit, if `local_models` or `api_models` list is empty, then that part will be skipped
-4. start your local environment
-5. `pip install -r requirements.txt`*
+1. Create a new `config.json` in jrank folder
+2. Copy `config.json.example` content to `config.json`
+3. Modify the content as you see fit; if `local_models` or `api_models` list is empty, then that part will be skipped
+4. Start your local environment
+5. `pip install -r requirements.txt` *
 6. `cd jrank`
 7. run `python3 streamline.py` it will run following the config file and generate a result file
 
