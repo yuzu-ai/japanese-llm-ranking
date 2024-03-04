@@ -1,22 +1,4 @@
-"""Generate answers with local models.
-
-Usage:
-
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path EleutherAI/pythia-70m  --model-id pythia-70m --conv_template ./templates/yuzulm.json
-
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path line-corporation/japanese-large-lm-1.7b-instruction-sft --model-id line-1.7b --conv_template ./templates/line.json
-
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path stabilityai/japanese-stablelm-instruct-alpha-7b-v2 --model-id stablelm-alpha-7b-v2 --conv_template ./templates/japanese-stablelm.json --top_p 0.95 --temperature 1
-
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path stabilityai/japanese-stablelm-instruct-gamma-7b --model-id stablelm-gamma-7b --conv_template ./templates/japanese-stablelm.json --repetition_penalty 1.05 --max_new_tokens 512 --top_p 0.95
-
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path rinna/youri-7b-chat --model-id youri-7b-chat --conv_template ./templates/youri-chat.json --repetition_penalty 1.05 --num_beams 5
-
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path rinna/youri-7b-instruction --model-id youri-7b-instruction --conv_template ./templates/youri-instruction.json --repetition_penalty 1.05
-
-python3 gen_model_answer.py --bench_name rakuda_v2 --model-path llm-jp/llm-jp-13b-instruct-full-jaster-dolly-oasst-v1.0 --model-id llm-jp-13b-instruct --conv_template ./templates/llm-jp-instruct.json --repetition_penalty 1.05
-
-"""
+"""This script is used to generate answers with local models."""
 
 import json
 import os
@@ -26,57 +8,39 @@ import time
 
 import shortuuid
 import torch
-
-from common import load_questions, temperature_config
+from fire import Fire
+from tqdm import tqdm
+from transformers import StoppingCriteriaList, StoppingCriteria
 from fastchat.model import load_model, get_conversation_template
 from fastchat.model.model_adapter import model_adapters
-from fastchat.conversation import Conversation, SeparatorStyle
 
+from common import load_questions, temperature_config
 from adapters import (
     FastTokenizerAvailableBaseAdapter,
     JapaneseStableLMAlphaAdapter,
     JapaneseStableLMAlphaAdapterv2,
     RwkvWorldAdapter,
 )
+from helper_local_model import get_conv_from_template_path
 
-from fire import Fire
-from peft import PeftModel
-from tqdm import tqdm
-from transformers import GenerationConfig, StoppingCriteriaList, StoppingCriteria
 
 # Hack the fastchat model adapters
 model_adapters[-1] = FastTokenizerAvailableBaseAdapter()
 model_adapters.insert(0, JapaneseStableLMAlphaAdapter())
 model_adapters.insert(1, JapaneseStableLMAlphaAdapterv2())
 
-for i in range(len(model_adapters)):
-    if "Rwkv" in type(model_adapters[i]).__name__:
+for i, adapter in enumerate(model_adapters):
+    if "Rwkv" in type(adapter).__name__:
         model_adapters[i] = RwkvWorldAdapter()
-
-
-# Helper that generate a fastchat conversation from a template file
-def get_conv_from_template_path(template_path):
-    with open(template_path, "r") as file:
-        config = json.load(file)
-
-    # Convert sep_style from string to SeparatorStyle enum
-    if "sep_style" in config:
-        config["sep_style"] = SeparatorStyle[config["sep_style"]]
-
-    # Start a conversation
-    if "messages" not in config:
-        config["messages"] = []
-
-    return Conversation(**config)
 
 
 @torch.inference_mode()
 def get_model_answers(
     model_path: str,
     model_id,
-    model_variant: str = None,
+    model_variant: Optional[str] = None,
     bench_name: str = "rakuda_v2",
-    answer_file: str = None,
+    answer_file: Optional[str] = None,
     # debug_params
     question_begin: Optional[int] = None,
     question_end: Optional[int] = None,
@@ -90,7 +54,7 @@ def get_model_answers(
     cpu_offloading: bool = False,
     debug: bool = False,
     # generation parameters
-    temperature: Optional[float] = None,
+    temperature: Optional[float] = 0.0,
     top_p: float = 0.9,
     top_k: float = 0,
     repetition_penalty: float = 1.0,
@@ -100,6 +64,7 @@ def get_model_answers(
     # generate the answers (set to False for debugging prompts)
     generate_answers: bool = True,
 ):
+    """Generate answers with local models."""
     question_file = f"data/{bench_name}/questions.jsonl"
     if not answer_file:
         answer_file = f"data/{bench_name}/answers/{model_id}.jsonl"
@@ -175,7 +140,7 @@ def get_model_answers(
                     self, input_ids: torch.LongTensor, scores: torch.FloatTensor
                 ):
                     for stop in self.stops:
-                        if torch.all((stop == input_ids[0][-len(stop) :])).item():
+                        if torch.all((stop == input_ids[0][-len(stop):])).item():
                             return True
 
                     return False
@@ -243,7 +208,7 @@ def get_model_answers(
                                 max_new_tokens=1024,
                             )
 
-                            output_ids = output_ids[0][len(input_ids[0]) :]
+                            output_ids = output_ids[0][len(input_ids[0]):]
                         else:
                             output_ids = model.generate(
                                 input_ids=input_ids.to(model.device),
@@ -263,7 +228,7 @@ def get_model_answers(
                             if model.config.is_encoder_decoder:
                                 output_ids = output_ids[0]
                             else:
-                                output_ids = output_ids[0][len(input_ids[0]) :]
+                                output_ids = output_ids[0][len(input_ids[0]):]
 
                         print(f"output_ids: { {id:tokenizer.convert_ids_to_tokens([id]) for id in output_ids.detach().cpu().numpy()} }", file=sys.stderr)
                         print(f"len(output_ids): {len(output_ids)}", file=sys.stderr)

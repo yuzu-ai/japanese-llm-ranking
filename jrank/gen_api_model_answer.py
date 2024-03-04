@@ -13,10 +13,8 @@ import time
 
 import shortuuid
 import tqdm
+from helper_api import chat_completion_anthropic, chat_completion_openai, chat_completion_palm
 from common import (
-    chat_completion_anthropic,
-    chat_completion_openai,
-    chat_completion_palm,
     load_questions,
     reorg_answer_file,
     temperature_config,
@@ -31,6 +29,7 @@ def get_answer(
     max_tokens: int,
     answer_file: str,
 ):
+    """Get an answer for a question."""
     if args.force_temperature:
         temperature = args.force_temperature
     elif question["category"] in temperature_config:

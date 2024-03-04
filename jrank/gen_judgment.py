@@ -1,18 +1,7 @@
-"""
-Usage:
-python gen_judgment.py --model-list [LIST-OF-MODEL-ID] --parallel [num-concurrent-api-call] --mode [single|pairwise-baseline|pairwise-all|pairwise-n] --judge-model [gpt-4|gpt-3.5-turbo|claude-2] --n ["all"|int]
-
-python gen_judgment.py --model-list [LIST-OF-MODEL-ID] --parallel [num-concurrent-api-call] --mode [single|pairwise-baseline|pairwise-all|pairwise-n] --judge-model [gpt-4|gpt-3.5-turbo|claude-2] --n ["all"|int]
-
-python gen_judgment.py --bench-name rakuda_v2_test --model-list claude-2 gpt-3.5-turbo line-1.7b --parallel 1 --mode pairwise-n --judge-model claude-2 --n 2
-
-python gen_judgment.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --parallel 2 --mode pairwise-n --judge-model claude-2 --n 2000
-
-python gen_judgment.py --bench-name rakuda_v2 --model-list chatntq-7b-jpntuned claude-2 gpt-3.5-turbo-0301-20230614 gpt-4-20230713 elyza-7b-fast-instruct elyza-7b-instruct jslm7b-instruct-alpha line-3.6b-sft rinna-3.6b-ppo rinna-3.6b-sft rwkv-world-jp-v1 stablebeluga2 weblab-10b-instruction-sft super-trin --parallel 2 --mode pairwise-n --judge-model gpt-4 --n 1400
-"""
+"""Generate judgment for the benchmark."""
 import argparse
 from concurrent.futures import ThreadPoolExecutor
-from itertools import permutations, combinations
+from itertools import permutations
 from functools import partial
 import json
 from random import shuffle, choice
@@ -23,16 +12,19 @@ from tqdm import tqdm
 from common import (
     load_questions,
     load_model_answers,
-    load_judge_prompts,
     check_data,
-    play_a_match_pair,
-    play_a_match_single,
     get_model_list,
+    NEED_REF_CATS,
+)
+from helper_judge import (
     Judge,
     MatchPair,
     MatchSingle,
-    NEED_REF_CATS,
+    play_a_match_pair,
+    play_a_match_single,
+    load_judge_prompts,
 )
+
 
 def make_match(
     questions,
@@ -43,13 +35,13 @@ def make_match(
     ref_answers=None,
     multi_turn=False,
 ):
-    matches = []
+    """Make match pairs."""
+    all_matches = []
     for q in questions:
         if multi_turn and len(q["turns"]) != 2:
             continue
-        for i in range(len(models)):
+        for _i, m_1 in enumerate(models):
             q_id = q["question_id"]
-            m_1 = models[i]
             m_2 = baseline_model
             if m_1 == m_2:
                 continue
@@ -57,7 +49,7 @@ def make_match(
             a_2 = model_answers[baseline_model][q_id]
             if ref_answers is not None:
                 ref = ref_answers[judge.model_name][q_id]
-                match = MatchPair(
+                match_pair = MatchPair(
                     dict(q),
                     m_1,
                     m_2,
@@ -68,11 +60,11 @@ def make_match(
                     multi_turn=multi_turn,
                 )
             else:
-                match = MatchPair(
+                match_pair = MatchPair(
                     dict(q), m_1, m_2, a_1, a_2, judge, multi_turn=multi_turn
                 )
-            matches.append(match)
-    return matches
+            all_matches.append(match_pair)
+    return all_matches
 
 
 def make_match_all_pairs(
@@ -84,15 +76,14 @@ def make_match_all_pairs(
     ref_answers=None,
     multi_turn=False,
 ):
-    matches = []
+    """Make match all pairs."""
+    all_pairs_matches = []
     for q in questions:
         if multi_turn and len(q["turns"]) != 2:
             continue
-        for i in range(len(models)):
-            for j in range(i + 1, len(models)):
+        for i, m_1 in enumerate(models):
+            for m_2 in models[i + 1:]:
                 q_id = q["question_id"]
-                m_1 = models[i]
-                m_2 = models[j]
                 a_1 = model_answers[m_1][q_id]
                 a_2 = model_answers[m_2][q_id]
                 if ref_answers is not None:
@@ -111,8 +102,8 @@ def make_match_all_pairs(
                     match = MatchPair(
                         dict(q), m_1, m_2, a_1, a_2, judge, multi_turn=multi_turn
                     )
-                matches.append(match)
-    return matches
+                all_pairs_matches.append(match)
+    return all_pairs_matches
 
 
 def make_n_match_pairs(
@@ -126,6 +117,7 @@ def make_n_match_pairs(
     cache_file=None,
     n=200,
 ):
+    """Make n match pairs."""
     print("Models: ", models)
     print("Questions: ", questions)
     print("Model answers: ", model_answers)
@@ -136,7 +128,6 @@ def make_n_match_pairs(
     print("Cache file: ", cache_file)
     print("N: ", n)
 
-    output_file = cache_file
     matches = []
 
     print("Cache file: ", cache_file)
@@ -163,13 +154,13 @@ def make_n_match_pairs(
                 if model1_id and model2_id and question_id and judge.model_name == data["judge"][0]:
                     matches.append((model1_id, model2_id, question_id))
                 else:
-                    #print(f"{model1_id} {model2_id} {question_id} {judge.model_name}")
+                    # print(f"{model1_id} {model2_id} {question_id} {judge.model_name}")
                     print(f"{data['model1_id']} {data['model2_id']} {data['judge']}")
-                    #raise RuntimeError("Match in cache does not match the current settings")
+                    # raise RuntimeError("Match in cache does not match the current settings")
 
         print(f"Number of matches imported from cache {len(matches)}")
     
-    #all_possible_pairs = list(combinations(models, 2))
+    # all_possible_pairs = list(combinations(models, 2))
     all_possible_pairs = list(permutations(models, 2))
     print("All possible pairs: ", all_possible_pairs)
     all_possible_new_matches = []
@@ -256,27 +247,30 @@ def make_match_single(
     ref_answers=None,
     multi_turn=False,
 ):
-    matches = []
+    """Make match single pairs."""
+    single_matches = []
+    
     for q in questions:
         if multi_turn and len(q["turns"]) != 2:
             continue
-        for i in range(len(models)):
+        for _i, m in enumerate(models):
             q_id = q["question_id"]
-            m = models[i]
             a = model_answers[m][q_id]
             if ref_answers is not None:
                 ref = ref_answers[judge.model_name][q_id]
-                matches.append(
+                single_matches.append(
                     MatchSingle(
                         dict(q), m, a, judge, ref_answer=ref, multi_turn=multi_turn
                     )
                 )
             else:
-                matches.append(MatchSingle(dict(q), m, a, judge, multi_turn=multi_turn))
-    return matches
+                single_matches.append(MatchSingle(dict(q), m, a, judge, multi_turn=multi_turn))
+                
+    return single_matches
 
 
 def make_judge_pairwise(judge_model, judge_prompts):
+    """Make pairwise judges."""
     judges = {}
     judges["default"] = Judge(judge_model, judge_prompts["pair-ja"])
     # judges["default"] = Judge(judge_model, judge_prompts["pair-v2"])
@@ -294,6 +288,7 @@ def make_judge_pairwise(judge_model, judge_prompts):
 
 
 def make_judge_single(judge_model, judge_prompts):
+    """Make single judges."""
     judges = {}
     judges["default"] = Judge(judge_model, judge_prompts["single-v1"])
     judges["math"] = Judge(judge_model, judge_prompts["single-math-v1"], ref_based=True)
@@ -472,8 +467,8 @@ if __name__ == "__main__":
             play_a_match_func(match, output_file=output_file)
     else:
 
-        def play_a_match_wrapper(match):
-            play_a_match_func(match, output_file=output_file)
+        def play_a_match_wrapper(a_match):
+            play_a_match_func(a_match, output_file=output_file)
 
         np.random.seed(0)
         np.random.shuffle(matches)
